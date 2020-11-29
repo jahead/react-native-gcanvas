@@ -316,7 +316,7 @@ JNIEXPORT void JNICALL Java_com_taobao_gcanvas_GCanvasJNI_render(
         int length = je->GetStringUTFLength(renderCommands);
         if (0 != length) {
             const char *result = theCanvas->CallNative(0x60000001, rc);
-            if (result) {
+            if (result != nullptr && strlen(result) != 0) {
                 delete result;
             }
             je->ReleaseStringUTFChars(renderCommands, rc);
