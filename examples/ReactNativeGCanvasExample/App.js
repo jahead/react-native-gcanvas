@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     top: 20,
     width: 414,
     height :700,
-    backgroundColor: '#FF000030'
+    // backgroundColor: '#FF000030', // TextureView doesn't support displaying a background drawable since Android API 24
   },
   container: {
     flex: 1,
