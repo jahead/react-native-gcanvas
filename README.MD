@@ -80,6 +80,8 @@ See the  [Introduction to GCanvas](https://alibaba.github.io/GCanvas/docs/Develo
 Follow [Weex Setup Guide](https://alibaba.github.io/GCanvas/docs/Integrate%20GCanvas%20on%20Weex.html) to integrate GCanvas on Weex
 
 ### ReactNative
+Only support render2d canvas as described in `Java_com_taobao_gcanvas_GCanvasJNI_render()` of `core/android/GCanvasJNI.cpp`.
+
 Follow [ReactNative Setup Guide](https://alibaba.github.io/GCanvas/docs/Integrate%20GCanvas%20on%20ReactNative.html)  to integrate GCanvas on ReactNative.
 
 ### JavaScript
