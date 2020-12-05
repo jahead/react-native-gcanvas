@@ -5,6 +5,9 @@ project.ext.meta.vcsUrl = "https://github.com/alibaba/GCanvas.git"
 version = project.version
 buildscript {
     repositories {
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
         //本地库，local repository(${user.home}/.m2/repository)
         jcenter()
         mavenCentral()
@@ -122,28 +125,28 @@ artifacts {
 }
 
 //上传到jcenter
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+// Properties properties = new Properties()
+// properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-bintray {
-    //读取 local.properties 文件里面的 bintray.user,对应的是https://bintray.com/signup/oss 的用户名
-    user = properties.getProperty("bintray.user")  
-     //读取 local.properties 文件里面的 bintray.apikey,对应的是https://bintray.com/signup/oss的api-key
-    key = properties.getProperty("bintray.apikey")  
-    configurations = ['archives']
-    pkg {
-        repo = "GCanvas"
-        name = "${project.group}:${project.ext.id}"
-        //读取 local.properties 文件里面的 bintray.user,对应的是https://bintray.com/signup/oss 的用户名
-        userOrg = properties.getProperty("bintray.userOrg")
-        licenses = ['Apache-2.0']
-        websiteUrl = "https://g-platform.github.io"
-        vcsUrl = project.ext.meta.vcsUrl
-        labels = project.ext.meta.labels
-        version {
-            name = project.version
-            desc = project.ext.meta.description
-            vcsTag = project.version
-        }
-    }
-}
+// bintray {
+//     //读取 local.properties 文件里面的 bintray.user,对应的是https://bintray.com/signup/oss 的用户名
+//     user = properties.getProperty("bintray.user")
+//      //读取 local.properties 文件里面的 bintray.apikey,对应的是https://bintray.com/signup/oss的api-key
+//     key = properties.getProperty("bintray.apikey")
+//     configurations = ['archives']
+//     pkg {
+//         repo = "GCanvas"
+//         name = "${project.group}:${project.ext.id}"
+//         //读取 local.properties 文件里面的 bintray.user,对应的是https://bintray.com/signup/oss 的用户名
+//         userOrg = properties.getProperty("bintray.userOrg")
+//         licenses = ['Apache-2.0']
+//         websiteUrl = "https://g-platform.github.io"
+//         vcsUrl = project.ext.meta.vcsUrl
+//         labels = project.ext.meta.labels
+//         version {
+//             name = project.version
+//             desc = project.ext.meta.description
+//             vcsTag = project.version
+//         }
+//     }
+// }
