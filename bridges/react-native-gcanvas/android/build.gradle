@@ -1,15 +1,12 @@
 apply plugin: 'com.android.library'
 
-group = rootProject.extensions.groups.Bridge
-version = "1.1.0"
-
 android {
-    compileSdkVersion rootProject.extensions.sdks.CompileSDK
-    buildToolsVersion rootProject.extensions.sdks.BuildTool
+    compileSdkVersion 26
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
-        minSdkVersion rootProject.extensions.sdks.MinSDK
-        targetSdkVersion rootProject.extensions.sdks.TargetSDK
+        minSdkVersion 16
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
 
@@ -25,21 +22,19 @@ android {
 }
 
 dependencies {
-    compile "com.taobao.gcanvas:corelib:1.0.2"
-    compile "com.taobao.gcanvas.bridges:spec:1.0.1"
-    compile "com.taobao.gcanvas.adapters:img_fresco:1.0.1"
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation "com.taobao.gcanvas:corelib:1.0.4"
+    implementation "com.taobao.gcanvas.adapters:img:1.0.0"
+    implementation "com.taobao.gcanvas.adapters:img_fresco:1.0.1"
+    implementation "com.taobao.gcanvas.bridges:spec:1.0.1"
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile "junit:junit:${rootProject.extensions.sdks.JUnit}"
-    provided "com.facebook.react:react-native:+"
-    provided "com.android.support:support-v4:${rootProject.extensions.sdks.Support}"
-    provided "com.android.support:support-annotations:${rootProject.extensions.sdks.Support}"
-    compile "com.android.support:support-dynamic-animation:${rootProject.extensions.sdks.Support}"
-}
+    testImplementation "junit:junit:${rootProject.extensions.sdks.JUnit}"
 
-project.ext.id = rootProject.extensions.artifacts.ReactNative
-project.ext.meta.labels = ['ReactNative', 'GPU', 'OpenGL', 'GCanvas', "canvas", 'WebGL', 'GCanvas ReactNative Bridge']
-project.ext.meta.description = 'GCanvas ReactNative bridge.'
-//apply from: "${rootProject.projectDir}/publish.gradle"
+    compileOnly "com.facebook.react:react-native:+"
+    compileOnly "com.android.support:support-v4:${rootProject.extensions.sdks.Support}"
+    compileOnly "com.android.support:support-annotations:${rootProject.extensions.sdks.Support}"
+}
