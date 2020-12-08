@@ -2,6 +2,9 @@ package com.taobao.gcanvas.bridges.rn;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.graphics.SurfaceTexture;
+import android.view.TextureView;
 
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.taobao.gcanvas.surface.GTextureView;
