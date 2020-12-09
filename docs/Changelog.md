@@ -3,6 +3,17 @@
 All notable changes of this project will be documented in.
 
 
+## [1.2.0] - 2020-12-13
+
+### Changed
+
+* React Native GCanvas Component
+	* Android worked again
+	* fix: `A/libc(13515): Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x7af4c00ed8 in tid 13656 (mqt_native_modu)`
+	* fix: can render2d canvas on Android now
+	* fix: avoid sometimes `java.lang.NullPointerException: Attempt to invoke virtual method 'boolean com.taobao.gcanvas.bridges.rn.GReactTextureView.isReady()' on a null object reference`
+
+
 ## [1.1.0] - 2019-10-31
 
 ### Changed
@@ -17,11 +28,11 @@ All notable changes of this project will be documented in.
 	* Font support `measureText` and `Italic` style
 	* `Fill()`、`Clip()` , support winding-rule and promote performance
 	* Out of Android platform- implementation :`GCanvas2DContextAndroid`,`GCanvasAndroid`,`GFontManagerAndroid`,
-	* Refactor Android-Weex `GcanvasWeexAndroid` 
+	* Refactor Android-Weex `GcanvasWeexAndroid`
 	* Fix some compatibility issue
 
 
-	
+
 * Weex GCanvas Component
 	* Update New `WeexSDK` (>=0.26.0)
 	* [iOS] `iOS` deployment_target update to iOS 9.0
