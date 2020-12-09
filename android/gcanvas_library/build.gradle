@@ -1,11 +1,12 @@
 apply plugin: 'com.android.library'
+apply from: "../../build.gradle"
 
-group = rootProject.extensions.groups.Main
+group = localExtensions.groups.Main
 version = "1.2.0"
 
 android {
-    compileSdkVersion rootProject.extensions.sdks.CompileSDK
-    buildToolsVersion rootProject.extensions.sdks.BuildTool
+    compileSdkVersion localExtensions.sdks.CompileSDK
+    buildToolsVersion localExtensions.sdks.BuildTool
     publishNonDefault true
     sourceSets {
         main {
@@ -28,8 +29,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion rootProject.extensions.sdks.MinSDK
-        targetSdkVersion rootProject.extensions.sdks.TargetSDK
+        minSdkVersion localExtensions.sdks.MinSDK
+        targetSdkVersion localExtensions.sdks.TargetSDK
 
         consumerProguardFiles 'proguard-rules.txt'
         externalNativeBuild {
@@ -51,7 +52,7 @@ android {
     }
 
 
-    if (rootProject.extensions.sdks.EXCLUDE_CPP_SHARED) {
+    if (localExtensions.sdks.EXCLUDE_CPP_SHARED) {
         packagingOptions {
             exclude '**/libc++_shared.so'
             exclude '**/**/libc++_shared.so'
@@ -64,8 +65,8 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.alibaba:fastjson:1.1.54.android'
 }
-project.ext.id = rootProject.extensions.artifacts.Core
+project.ext.id = localExtensions.artifacts.Core
 project.ext.meta.labels = ['Weex', 'ReactNative', 'GPU', 'OpenGL', 'GCanvas', "canvas", 'WebGL', 'Rendering', 'High Performance']
 project.ext.meta.description = 'This package defines GCanvas main library.'
-apply from: "${rootProject.projectDir}/publish.gradle"
+// apply from: "../../publish.gradle"
 

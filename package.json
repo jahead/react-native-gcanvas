@@ -1,6 +1,6 @@
 {
-  "name": "react-native-gcanvas",
-  "version": "0.0.7-dev",
+  "name": "@flyskywhy/react-native-gcanvas",
+  "version": "1.2.0",
   "description": "GCanvas React-Native version",
   "main": "index.js",
   "scripts": {
@@ -8,9 +8,8 @@
   },
   "keywords": [
     "react-native",
-    "gcanvas"
-  ],
-  "peerDependencies": {
-    "@gcanvas/core": "^1.0.0"
-  }
+    "canvas",
+    "gcanvas",
+    "gpu"
+  ]
 }

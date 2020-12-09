@@ -1,14 +1,15 @@
 apply plugin: 'com.android.library'
+apply from: "../../../build.gradle"
 
-group = rootProject.extensions.groups.Adapter
+group = localExtensions.groups.Adapter
 version = "1.1.0"
 
 android {
-    compileSdkVersion rootProject.extensions.sdks.CompileSDK
+    compileSdkVersion localExtensions.sdks.CompileSDK
 
     defaultConfig {
-        minSdkVersion rootProject.extensions.sdks.MinSDK
-        targetSdkVersion rootProject.extensions.sdks.TargetSDK
+        minSdkVersion localExtensions.sdks.MinSDK
+        targetSdkVersion localExtensions.sdks.TargetSDK
         versionCode 1
         versionName "1.0"
 
@@ -28,12 +29,12 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    compileOnly "com.squareup.picasso:picasso:${rootProject.extensions.sdks.Picasso}"
+    compileOnly "com.squareup.picasso:picasso:${localExtensions.sdks.Picasso}"
 
-    implementation project(':android:adapters:bridge_adapter')
+    api project(':android:adapters:bridge_adapter')
 }
 
-project.ext.id = rootProject.extensions.artifacts.PicassoAdapter
+project.ext.id = localExtensions.artifacts.PicassoAdapter
 project.ext.meta.labels = ['Weex', 'ReactNative', 'GPU', 'OpenGL', 'GCanvas', "canvas", 'Picasso', 'Image Loader']
 project.ext.meta.description = 'This package is the Picasso implemation of GCanvas image adapter.'
-apply from: "${rootProject.projectDir}/publish.gradle"
+// apply from: "../../../publish.gradle"

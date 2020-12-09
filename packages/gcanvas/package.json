@@ -2,7 +2,7 @@
   "name": "@gcanvas/core",
   "version": "1.0.0",
   "description": "Javascript Bridge for GCanvas",
-  "main": "dist/gcanvas.js",
+  "main": "src/index.js",
   "scripts": {
     "build": "rollup --config",
     "lint": "npm run lint:nofix -- --fix",

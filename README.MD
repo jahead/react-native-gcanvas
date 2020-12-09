@@ -12,6 +12,39 @@ Supported operating systems are Android 4.0+ (API 14) and  iOS 8.0+.
 - [Contributing](#contributing)
 - [License](#license)
 
+## Usage
+### react-native
+
+    npm install @flyskywhy/react-native-gcanvas --save
+
+#### Android
+Add bellow into `android/settings.gradle`
+```
+include ':android:gcanvas_library'
+project(':android:gcanvas_library').projectDir = new File(rootProject.projectDir, '../node_modules/@flyskywhy/react-native-gcanvas/android/gcanvas_library')
+include ':android:bridge_spec'
+project(':android:bridge_spec').projectDir = new File(rootProject.projectDir, '../node_modules/@flyskywhy/react-native-gcanvas/android/bridge_spec')
+include ':android:adapters:gcanvas_imageloader_fresco'
+project(':android:adapters:gcanvas_imageloader_fresco').projectDir = new File(rootProject.projectDir, '../node_modules/@flyskywhy/react-native-gcanvas/android/adapters/gcanvas_imageloader_fresco')
+include ':android:adapters:bridge_adapter'
+project(':android:adapters:bridge_adapter').projectDir = new File(rootProject.projectDir, '../node_modules/@flyskywhy/react-native-gcanvas/android/adapters/bridge_adapter')
+```
+
+Add bellow into `react-native.config.js`
+```
+    '@flyskywhy/react-native-gcanvas': {
+      platforms: {
+        ios: null, // will open ios after test by me
+        android: {
+          packageImportPath: 'import com.taobao.gcanvas.bridges.rn.GReactPackage;',
+        },
+      },
+    },
+```
+
+#### iOS
+Not test yet.
+
 ## Distribution
 ###  GCanvas
 
@@ -58,30 +91,58 @@ GCanvas has browser-like canvas APIs, so almost all of the APIs are exactly same
 Check [Documentation](https://alibaba.github.io/GCanvas/docs/Introduction.html) for more information.
 
 ## Examples
-We take [Weex](https://github.com/apache/incubator-weex) as example, code snippet of context 2d using `GCanvas`.
+We take react-native as example, code snippet of context 2d using `GCanvas`.
 ```javascript
-import { enable, WeexBridge, Image as GImage } from "@gcanvas/core";
+import {GCanvasView} from '@flyskywhy/react-native-gcanvas';
+import {enable, ReactNativeBridge, Image as GImage} from "@flyskywhy/react-native-gcanvas/packages/gcanvas";
+import {
+  requireNativeComponent,
+  findNodeHandle,
+  NativeModules,
+  Platform,
+} from 'react-native';
+ReactNativeBridge.GCanvasModule = NativeModules.GCanvasModule;
+ReactNativeBridge.Platform = Platform;
+...
+  initCanvas = () => {
+    let canvas_ref = this.refs.canvas_holder;
 
-var gcanvas = enable(this.$refs.canvas_holder, {bridge: WeexBridge});
-var ctx = gcanvas.getContext("2d");
-//rect
-ctx.fillStyle = 'red';
-ctx.fillRect(0, 0, 100, 100);
+    let canvas_tag = findNodeHandle(canvas_ref);
+    let el = {ref: '' + canvas_tag, style: {width: 360, height: 700}};
 
-//rect
-ctx.fillStyle = 'black';
-ctx.fillRect(100, 100, 100, 100);
-ctx.fillRect(25, 210, 700, 5);
+    let canvas = enable(el, {bridge: ReactNativeBridge});
 
-//circle
-ctx.arc(450, 200, 100, 0, Math.PI * 2, true);
-ctx.fill();
+    this.ctx = canvas.getContext('2d');
+    //rect
+    this.ctx.fillStyle = 'red';
+    this.ctx.fillRect(0, 0, 100, 100);
 
-var image = new GImage();
-image.src = 'https://gw.alicdn.com/tfs/TB1KwRTlh6I8KJjy0FgXXXXzVXa-225-75.png';
-image.onload = function(){
-  ctx.drawImage(image, 100, 300);
-};
+    //rect
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillRect(100, 100, 100, 100);
+    this.ctx.fillRect(25, 205, 414 - 50, 5);
+
+    //circle
+    this.ctx.arc(200, 315, 100, 0, Math.PI * 2, true);
+    this.ctx.fill();
+  };
+...
+  render() {
+    if (Platform.OS === 'web') {
+      return (
+        <canvas
+          ref="canvas_holder"
+        />
+      );
+    } else {
+      return (
+        <GCanvasView
+          onLayout={this.initCanvas}
+          ref="canvas_holder"
+        />
+      );
+    }
+  }
 ```
 
 ## Built With

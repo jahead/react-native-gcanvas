@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
+apply from: "../../build.gradle"
 
-group = rootProject.extensions.groups.Bridge
+group = localExtensions.groups.Bridge
 version = "1.1.0"
 
 buildscript {
@@ -23,13 +24,13 @@ buildscript {
 }
 
 android {
-    compileSdkVersion rootProject.extensions.sdks.CompileSDK
-    buildToolsVersion rootProject.extensions.sdks.BuildTool
+    compileSdkVersion localExtensions.sdks.CompileSDK
+    buildToolsVersion localExtensions.sdks.BuildTool
 
 
     defaultConfig {
-        minSdkVersion rootProject.extensions.sdks.MinSDK
-        targetSdkVersion rootProject.extensions.sdks.TargetSDK
+        minSdkVersion localExtensions.sdks.MinSDK
+        targetSdkVersion localExtensions.sdks.TargetSDK
         versionCode 1
         versionName "1.0"
 
@@ -49,12 +50,12 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':android:gcanvas_library')
+    api project(':android:gcanvas_library')
     implementation 'com.taobao.gcanvas.adapters:img:1.0.1'
 //    implementation compileOnly('com.taobao.gcanvas:core:1.0.6')
 }
 
-project.ext.id = rootProject.extensions.artifacts.BridgeSpec
+project.ext.id = localExtensions.artifacts.BridgeSpec
 project.ext.meta.labels = ['Weex', 'ReactNative', 'GPU', 'OpenGL', 'GCanvas', "canvas", 'Customize Own Bridge', 'Bridge Specification']
 project.ext.meta.description = 'This package defines native interfaces that a customize GCanvas bridge must implements.'
-apply from: "${rootProject.projectDir}/publish.gradle"
+// apply from: "../../publish.gradle"

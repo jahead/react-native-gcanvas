@@ -1,15 +1,16 @@
 apply plugin: 'com.android.library'
+apply from: "../../../build.gradle"
 
-group = rootProject.extensions.groups.Adapter
+group = localExtensions.groups.Adapter
 version = "1.1.0"
 
 android {
-    compileSdkVersion rootProject.extensions.sdks.CompileSDK
-    buildToolsVersion rootProject.extensions.sdks.BuildTool
+    compileSdkVersion localExtensions.sdks.CompileSDK
+    buildToolsVersion localExtensions.sdks.BuildTool
 
     defaultConfig {
-        minSdkVersion rootProject.extensions.sdks.MinSDK
-        targetSdkVersion rootProject.extensions.sdks.TargetSDK
+        minSdkVersion localExtensions.sdks.MinSDK
+        targetSdkVersion localExtensions.sdks.TargetSDK
         versionCode 1
         versionName "1.0"
 
@@ -29,14 +30,14 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    compileOnly "com.android.support:appcompat-v7:${rootProject.extensions.sdks.Support}"
-    compileOnly "com.facebook.fresco:fresco:${rootProject.extensions.sdks.Fresco}"
-    testImplementation "junit:junit:${rootProject.extensions.sdks.JUnit}"
+    compileOnly "com.android.support:appcompat-v7:${localExtensions.sdks.Support}"
+    compileOnly "com.facebook.fresco:fresco:${localExtensions.sdks.Fresco}"
+    testImplementation "junit:junit:${localExtensions.sdks.JUnit}"
 
-    implementation project(':android:adapters:bridge_adapter')
+    api project(':android:adapters:bridge_adapter')
 }
 
-project.ext.id = rootProject.extensions.artifacts.FrescoAdapter
+project.ext.id = localExtensions.artifacts.FrescoAdapter
 project.ext.meta.labels = ['Weex', 'ReactNative', 'GPU', 'OpenGL', 'GCanvas', "canvas", 'Fresco', 'Image Loader']
 project.ext.meta.description = 'This package is the Fresco implemation of GCanvas image adapter.'
-apply from: "${rootProject.projectDir}/publish.gradle"
+// apply from: "../../../publish.gradle"
