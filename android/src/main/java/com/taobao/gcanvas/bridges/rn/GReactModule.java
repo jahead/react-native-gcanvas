@@ -220,7 +220,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
                         } else {
                             View v = activity.findViewById(viewTag);
                             view = (GReactTextureView) v;
-                            if (view.isReady()) {
+                            if (null != view && view.isReady()) {
                                 mViews.put(refId, view);
                             } else {
                                 view = null;
