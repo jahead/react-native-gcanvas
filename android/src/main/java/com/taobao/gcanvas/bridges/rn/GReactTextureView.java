@@ -7,6 +7,8 @@ import android.graphics.SurfaceTexture;
 import android.view.TextureView;
 
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.taobao.gcanvas.surface.GTextureView;
 
 /**
@@ -17,24 +19,30 @@ import com.taobao.gcanvas.surface.GTextureView;
 
 public class GReactTextureView extends GTextureView implements LifecycleEventListener, TextureView.SurfaceTextureListener {
     private boolean mIsReady = false;
+    private boolean mOnSurfaceTextureCreatedWithZeroSize = false;
+    private ReactContext mContext;
 
     public GReactTextureView(Context context, String id) {
         super(context, id);
+        mContext = (ReactContext)context;
         addSurfaceTextureListener(this);
     }
 
     public GReactTextureView(Context context, String id, AttributeSet attrs) {
         super(context, id, attrs);
+        mContext = (ReactContext)context;
         addSurfaceTextureListener(this);
     }
 
     public GReactTextureView(Context context, String id, AttributeSet attrs, int defStyleAttr) {
         super(context, id, attrs, defStyleAttr);
+        mContext = (ReactContext)context;
         addSurfaceTextureListener(this);
     }
 
     public GReactTextureView(Context context, String id, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, id, attrs, defStyleAttr, defStyleRes);
+        mContext = (ReactContext)context;
         addSurfaceTextureListener(this);
     }
 
@@ -60,23 +68,44 @@ public class GReactTextureView extends GTextureView implements LifecycleEventLis
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        mIsReady = true;
-        Log.e("test", "onSurfaceTextureAvailable=========");
+        if (!mIsReady) {
+            // onSurfaceTextureAvailable is sometimes called with 0 size texture
+            // and immediately followed by onSurfaceTextureSizeChanged with actual size
+            if (width == 0 || height == 0) {
+                mOnSurfaceTextureCreatedWithZeroSize = true;
+            }
+
+            mIsReady = true;
+
+            if (!mOnSurfaceTextureCreatedWithZeroSize) {
+                onIsReady();
+            }
+        }
     }
 
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
+        if (mOnSurfaceTextureCreatedWithZeroSize && (width != 0 || height != 0)) {
+            onIsReady();
+            mOnSurfaceTextureCreatedWithZeroSize = false;
+        }
     }
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         mIsReady = false;
-        Log.e("test", "onSurfaceTextureDestroyed=========");
+        onIsReady();
         return true;
     }
 
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+    }
+
+    private void onIsReady() {
+        mContext
+            .getNativeModule(UIManagerModule.class)
+            .getEventDispatcher()
+            .dispatchEvent(new GReactViewEvent(getId(), mIsReady));
     }
 }

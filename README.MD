@@ -104,6 +104,11 @@ import {
 ReactNativeBridge.GCanvasModule = NativeModules.GCanvasModule;
 ReactNativeBridge.Platform = Platform;
 ...
+  constructor(props) {
+    super(props);
+    this.isGReactTextureViewReady = true;
+  }
+
   componentDidMount() {
     if (Platform.OS === 'web') {
       setTimeout(() => {
@@ -137,7 +142,14 @@ ReactNativeBridge.Platform = Platform;
   };
 
   drawSome = () => {
-    if (this.ctx) {
+    // Sometimes this.isGReactTextureViewReady is false e.g.
+    // navigate from a canvas page into a drawer item page with
+    // react-navigation on Android, the canvas page will be maintain
+    // mounted by react-navigation, then if you continually call
+    // this drawSome() in some loop, it's wasting CPU and GPU,
+    // if you don't care about such wasting, you can delete
+    // this.isGReactTextureViewReady and related onIsReady.
+    if (this.ctx && this.isGReactTextureViewReady) {
       this.ctx.beginPath();
 
       //rect
@@ -177,6 +189,7 @@ ReactNativeBridge.Platform = Platform;
         <GCanvasView
           ref={(view) => (this.refCanvas = view)}
           onLayout={this.initCanvas}
+          onIsReady={(value) => this.isGReactTextureViewReady = value}
           style={{
             width: 200,
             height: 300,
