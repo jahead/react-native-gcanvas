@@ -29,7 +29,6 @@ dependencies {
     api project(':android:gcanvas_library')
     api project(':android:bridge_spec')
     api project(':android:adapters:gcanvas_imageloader_fresco')
-    api project(':android:adapters:bridge_adapter')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 

@@ -50,9 +50,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api project(':android:adapters:bridge_adapter')
     api project(':android:gcanvas_library')
-    implementation 'com.taobao.gcanvas.adapters:img:1.0.1'
-//    implementation compileOnly('com.taobao.gcanvas:core:1.0.6')
 }
 
 project.ext.id = localExtensions.artifacts.BridgeSpec

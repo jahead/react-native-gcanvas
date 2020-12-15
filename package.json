@@ -2,16 +2,27 @@
   "name": "@flyskywhy/react-native-gcanvas",
   "version": "1.2.1",
   "description": "GCanvas React-Native version",
-  "main": "index.js",
+  "main": "index",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flyskywhy/react-native-gcanvas.git"
   },
   "keywords": [
     "android",
     "react-native",
     "canvas",
     "gcanvas",
+    "glsl",
     "gpu",
+    "shader",
     "opengl"
-  ]
+  ],
+  "license": "Apache",
+  "bugs": {
+    "url": "https://github.com/flyskywhy/react-native-gcanvas/issues"
+  },
+  "homepage": "https://github.com/flyskywhy/react-native-gcanvas#readme"
 }
