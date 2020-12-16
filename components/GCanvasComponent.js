@@ -26,6 +26,10 @@ export default class GCanvasView extends Component {
     }
   }
 
+  componentDidMount() {
+    // ReactNativeBridge.GCanvasModule.setLogLevel(0); // 0 means DEBUG
+  }
+
   componentWillUnmount() {
     ReactNativeBridge.GCanvasModule.disable('' + findNodeHandle(this.refCanvas));
   }

@@ -102,7 +102,7 @@ void GCanvasWeex::AddTexture(int textureGroupId, int glID, int width, int height
 #ifdef IOS
 void GCanvasWeex::AddOfflineTexture(int textureGroupId, int glID){
     if (mContextLost) return;
-    
+
     std::map< int, int >::iterator iter = mOfflineTextures.find(glID);
     if (iter == mOfflineTextures.end())
     {
@@ -193,13 +193,13 @@ void GCanvasWeex::calculateFPS() {
         static timeval tvLast = {0, 0};
         struct timeval tvNow;
         gettimeofday(&tvNow, NULL);
-        
+
         if (tvNow.tv_sec > tvLast.tv_sec)
         {
             double delta = (tvNow.tv_sec - tvLast.tv_sec) +
             (tvNow.tv_usec - tvLast.tv_usec) / 1000000;
             mFps = static_cast<float>(static_cast<double>(mFrames) / delta);
-            
+
             mFrames = 0;
             tvLast = tvNow;
         }
@@ -216,7 +216,7 @@ void GCanvasWeex::Render(const char *renderCommands, int length) {
     if (0 != mCanvasContext->mContextType) {
         if (length > 0) {
             calculateFPS();
-            LOG_E("GCanvasWeex::Render:[WebGL] renderCommands:%s", renderCommands);
+            LOG_D("GCanvasWeex::Render:[WebGL] renderCommands:%s", renderCommands);
             executeWebGLCommands(renderCommands, length);
         }
     } else {
@@ -228,7 +228,7 @@ void GCanvasWeex::Render(const char *renderCommands, int length) {
         mCanvasContext->BindFBO();
         if (length > 0) {
             calculateFPS();
-            LOG_E("GCanvasWeex::Render:[2D] renderCommands:%s", renderCommands);
+            LOG_D("GCanvasWeex::Render:[2D] renderCommands:%s", renderCommands);
             execute2dCommands(renderCommands, length);
         }
         mCanvasContext->UnbindFBO();
@@ -594,16 +594,16 @@ const char *GCanvasWeex::parseSetTransform(
     while (*p && *p != ';' && iToken < 6)
     {
         tokens[iToken++] = atof(p);
-        
+
         while (*p && (*p != ',' && *p != ';'))
         {
             ++p;
         }
         if (*p == ',') ++p;
     }
-    
+
 #ifdef debug_Parsetokes
-    
+
     FILE *flog = fopen("/storage/sdcard0/ParseTokesOrigin1.txt", "a+");
     fwrite((p0 - 1), 1, (p - p0 + 1 + 1), flog);
     char buffer[256] = {0};
@@ -671,7 +671,7 @@ const char *GCanvasWeex::parseDrawImage(const char *p, ClipStruct *clipOut) {
 #if origin_code_realization
     float tokens[8] = {0, 0, 0, 0, 0, 0, 0, 0};
     int iToken = 0;
-    
+
     while (*p && *p != ';' && iToken < 9)
     {
         if (iToken == 0)
@@ -690,7 +690,7 @@ const char *GCanvasWeex::parseDrawImage(const char *p, ClipStruct *clipOut) {
         }
         if (*p == ',') ++p;
     }
-    
+
     clipOut->cx = tokens[0]; // cx
     clipOut->cy = tokens[1]; // cy
     clipOut->cw = tokens[2]; // cw
@@ -828,7 +828,7 @@ void GCanvasWeex::execute2dCommands(const char *renderCommands, int length) {
     GTransform &action = mCurrentTransform;
 
     mCanvasContext->ClearGeometryDataBuffers();
-    
+
     mCanvasContext->ApplyTransform(action.a, action.b, action.c, action.d, action.tx, action.ty);
     ClipStruct clip;
     const char *p = renderCommands;
@@ -1013,7 +1013,7 @@ void GCanvasWeex::execute2dCommands(const char *renderCommands, int length) {
                 char str[256];
                 p = extractOneParameterFromCommand(str, p);
                 p++;
-                
+
                 int count = atoi(str);
                 std::vector<float> params;
                 params.reserve(count);
@@ -1479,16 +1479,16 @@ void GCanvasWeex::signalUpGLthread() {
 
 std::string GCanvasWeex::canvasProc(int op, int sync, std::string args) {
 
-    LOG_E("canvasProc start.");
+    LOG_D("canvasProc start.");
 
     if (args.c_str() == nullptr || args.length() == 0 ||
         !strcmp(args.c_str(), "")) {
         return "";
     }
 
-    LOG_E("canvasProc,length = %d,args = %s\n", args.length(), args.c_str());
+    LOG_D("canvasProc,length = %d,args = %s\n", args.length(), args.c_str());
     this->Render(args.c_str(), (int) args.length());
-    LOG_E("canvasProc finished.");
+    LOG_D("canvasProc finished.");
 
     return "";
 }
@@ -1593,7 +1593,7 @@ void GCanvasWeex::QueueProc(std::queue<struct GCanvasCmd *> *queue) {
 
         std::string args = p->args;
 
-        LOG_E("start to process queue cmd.");
+        LOG_D("start to process queue cmd.");
 
         switch (cmd) {
             case CANVAS: {
