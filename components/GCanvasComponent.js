@@ -1,5 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { requireNativeComponent, View, Platform, findNodeHandle } from 'react-native';
+import {
+  disable,
+  ReactNativeBridge,
+} from '../packages/gcanvas';
 
 var CanvasView = Platform.select({
   ios: requireNativeComponent('RCTGCanvasView', null, {
@@ -11,40 +15,22 @@ var CanvasView = Platform.select({
 });
 
 export default class GCanvasView extends Component {
-  constructor(props) {
-    super(props);
-    this.isGReactTextureViewReady = null;
-
-    this.state = {
-      reAvailableCounts: 0,
-    };
-  }
-
   static propTypes = {
     // isOffscreen: PropTypes.bool,
     ...View.propTypes
   };
 
   _onIsReady = (event) => {
-    let value = event.nativeEvent.value;
-    if (this.isGReactTextureViewReady === false && value === true) {
-      // need re-render CanvasView after 2nd isGReactTextureViewReady is true e.g.
-      // quit from a drawer item page to current canvas page which is still maintain
-      // mounted by react-navigation on Android, otherwise will no display
-      this.isGReactTextureViewReady = null;
-      this.setState({
-        reAvailableCounts: this.state.reAvailableCounts + 1,
-      });
-    } else {
-      this.isGReactTextureViewReady = value;
-    }
-
     if (this.props.onIsReady) {
-      this.props.onIsReady(value);
+      this.props.onIsReady(event.nativeEvent.value);
     }
   }
 
+  componentWillUnmount() {
+    ReactNativeBridge.GCanvasModule.disable('' + findNodeHandle(this.refCanvas));
+  }
+
   render() {
-    return ( <CanvasView key={this.state.reAvailableCounts} onChange={this._onIsReady} {...this.props} /> );
+    return ( <CanvasView ref={(view) => (this.refCanvas = view)} onChange={this._onIsReady} {...this.props} /> );
   };
 }

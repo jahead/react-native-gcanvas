@@ -251,6 +251,16 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         }
 
         @Override
+        public void disable(String canvasId) {
+            GReactTextureView textureView = mViews.get(canvasId);
+            if (null == textureView) {
+                GLog.w(TAG, "can not find canvas with id ===> " + canvasId);
+                return;
+            }
+            textureView.manuallyDestroy();
+        }
+
+        @Override
         public void setContextType(String canvasId, ContextType type) {
             GReactTextureView textureView = mViews.get(canvasId);
             if (null == textureView) {
@@ -355,7 +365,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
 
     @ReactMethod
     public void setLogLevel(int level) {
-        GLog.d(TAG, "setLogLevel() args: " + level);
+        GLog.e(TAG, "setLogLevel() args: " + level);
         mImpl.setLogLevel(level);
     }
 
@@ -377,11 +387,28 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         JSONObject data = new JSONObject();
         try {
             data.putOpt("componentId", args.getString("componentId"));
+            GLog.d(TAG, "RNModuleImpl enable");
             return mImpl.enable(data);
         } catch (JSONException e) {
             GLog.e(TAG, "error when enable", e);
             return Boolean.FALSE.toString();
         }
+    }
+
+    @ReactMethod
+    public void disable(String refId) {
+        if (TextUtils.isEmpty(refId)) {
+            return;
+        }
+
+        GReactTextureView textureView = mViews.get(refId);
+        if (null == textureView) {
+            GLog.w(TAG, "disable ==> can not find canvas with id ===> " + refId);
+            return;
+        }
+
+        GLog.d(TAG, "RNModuleImpl disable");
+        mImpl.disable(refId);
     }
 
     @ReactMethod

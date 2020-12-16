@@ -51,6 +51,13 @@ public interface IGBridgeModule<JSCallback> {
     String enable(JSONObject data);
 
     /**
+     * Disable this bridge module, tell native view stop rendering.
+     * This will destroy relationship between GCanvas.js and native view.
+     * @param canvasId
+     */
+    void disable(String canvasId);
+
+    /**
      * bind the specified image to the specified canvas's OpenGL environment.
      * @param canvasId
      * @param src

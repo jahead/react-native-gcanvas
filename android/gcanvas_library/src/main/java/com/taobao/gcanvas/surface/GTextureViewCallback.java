@@ -121,13 +121,7 @@ public class GTextureViewCallback implements TextureView.SurfaceTextureListener 
             }
         }
 
-        onSurfaceDestroyed(this.mKey, mSurface);
-
-        if (null != mSurface && mSurface.isValid()) {
-            mSurface.release();
-            mSurface = null;
-        }
-        return true;
+        return false;
     }
 
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
@@ -136,6 +130,13 @@ public class GTextureViewCallback implements TextureView.SurfaceTextureListener 
 
     public void onRequestExit() {
         GLog.d("on RequestExit");
+
+        onSurfaceDestroyed(this.mKey, mSurface);
+
+        if (null != mSurface && mSurface.isValid()) {
+            mSurface.release();
+            mSurface = null;
+        }
 
         onRenderExit(this.mKey);
 
