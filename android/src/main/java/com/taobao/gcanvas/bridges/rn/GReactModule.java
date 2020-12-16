@@ -210,7 +210,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
                     @Override
                     public void run() {
                         Activity activity = getCurrentActivity();
-                        if (null == activity || mLifeRef.get().ordinal() > HostLifeState.Running.ordinal()) {
+                        if (null == activity || mLifeRef.get().ordinal() > HostLifeState.Paused.ordinal()) {
                             return;
                         }
 
