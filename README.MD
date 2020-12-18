@@ -88,25 +88,38 @@ module.exports = {
 ```
 
 #### iOS
-Not test yet, maybe can still work. PR is welcome.
+
+Add below into `ios/Podfile`
+```
+  pod "GCanvas", :path => "../node_modules/@flyskywhy/react-native-gcanvas/GCanvas.podspec"
+```
+    cd YOUR_PROJECT/ios
+    pod install
+
 
 ## Examples
 We take react-native as example, code snippet of context 2d using `GCanvas`.
 ```javascript
-import {GCanvasView} from '@flyskywhy/react-native-gcanvas';
-import {enable, ReactNativeBridge, Image as GImage} from "@flyskywhy/react-native-gcanvas/packages/gcanvas";
+import React, {Component} from 'react';
 import {
   requireNativeComponent,
   findNodeHandle,
   NativeModules,
+  PixelRatio,
   Platform,
+  StyleSheet,
+  View,
 } from 'react-native';
+import {GCanvasView} from '@flyskywhy/react-native-gcanvas';
+import {enable, ReactNativeBridge, Image as GImage} from "@flyskywhy/react-native-gcanvas/packages/gcanvas";
 ReactNativeBridge.GCanvasModule = NativeModules.GCanvasModule;
 ReactNativeBridge.Platform = Platform;
-...
+
+export default class App extends Component {
   constructor(props) {
     super(props);
-    this.isGReactTextureViewReady = true;
+    this.scale = Platform === 'ios' ? 1 : PixelRatio.get();
+    this.isGReactTextureViewReady = true; // Only useful on Android
   }
 
   componentDidMount() {
@@ -130,8 +143,8 @@ ReactNativeBridge.Platform = Platform;
         {
           ref: '' + findNodeHandle(this.refCanvas),
           style: {
-            width: 200,
-            height: 300,
+            width: styles.gcanvas.width,
+            height: styles.gcanvas.height,
           },
         },
         {bridge: ReactNativeBridge},
@@ -142,7 +155,7 @@ ReactNativeBridge.Platform = Platform;
   };
 
   drawSome = () => {
-    // Sometimes this.isGReactTextureViewReady is false e.g.
+    // On Android, sometimes this.isGReactTextureViewReady is false e.g.
     // navigate from a canvas page into a drawer item page with
     // react-navigation on Android, the canvas page will be maintain
     // mounted by react-navigation, then if you continually call
@@ -154,11 +167,11 @@ ReactNativeBridge.Platform = Platform;
 
       //rect
       this.ctx.fillStyle = 'red';
-      this.ctx.fillRect(0, 0, 50, 50);
+      this.ctx.fillRect(0, 0, 50 * this.scale, 50 * this.scale);
 
       //rect
       this.ctx.fillStyle = 'green';
-      this.ctx.fillRect(50, 50, 50, 50);
+      this.ctx.fillRect(50 * this.scale, 50 * this.scale, 50 * this.scale, 50 * this.scale);
 
       this.ctx.fill();
 
@@ -166,38 +179,58 @@ ReactNativeBridge.Platform = Platform;
 
       //circle
       this.ctx.fillStyle = 'blue';
-      this.ctx.moveTo(100, 150);
-      this.ctx.arc(100, 150, 50, 0, Math.PI * 2, true);
+      this.ctx.moveTo(100 * this.scale, 150 * this.scale);
+      this.ctx.arc(100 * this.scale, 150 * this.scale, 50 * this.scale, 0, Math.PI * 2, true);
 
       this.ctx.fill();
+
+      let image = new GImage();
+      image.onload = function(){
+        this.ctx.drawImage(image, 150 * this.scale, 0);
+      }
+      image.src = '//gw.alicdn.com/tfs/TB1KwRTlh6I8KJjy0FgXXXXzVXa-225-75.png';
     }
   };
 
   render() {
     if (Platform.OS === 'web') {
       return (
-        <canvas
-          ref={(view) => (this.refCanvas = view)}
-          style={{
-            width: 200,
-            height: 300,
-          }}
-        />
+        <View style={styles.container}>
+          <canvas
+            ref={(view) => (this.refCanvas = view)}
+            style={styles.gcanvas}
+          />
+        </View>
       );
     } else {
       return (
-        <GCanvasView
-          ref={(view) => (this.refCanvas = view)}
-          onLayout={this.initCanvas}
-          onIsReady={(value) => this.isGReactTextureViewReady = value}
-          style={{
-            width: 200,
-            height: 300,
-          }}
-        />
+        <View style={styles.container}>
+          <GCanvasView
+            ref={(view) => (this.refCanvas = view)}
+            onLayout={this.initCanvas}
+            onIsReady={(value) => (this.isGReactTextureViewReady = value)}
+            style={styles.gcanvas}
+          />
+        </View>
       );
     }
   }
+}
+
+const styles = StyleSheet.create({
+  gcanvas: {
+    top: 20,
+    width: 200,
+    height :300,
+    // backgroundColor: '#FF000030', // TextureView doesn't support displaying a background drawable since Android API 24
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+});
 ```
 
 ## Alibaba Distribution

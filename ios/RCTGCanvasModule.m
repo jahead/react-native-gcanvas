@@ -76,6 +76,10 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(enable:(NSDictionary*) args)
     return [self.gcanvasModule enable:args];
 }
 
+RCT_EXPORT_METHOD(disable:(NSString*) componentId)
+{
+}
+
 //render
 RCT_EXPORT_METHOD(render:(NSString *)commands componentId:(NSString*)componentId)
 {
