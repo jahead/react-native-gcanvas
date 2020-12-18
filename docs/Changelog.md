@@ -3,6 +3,17 @@
 All notable changes of this project will be documented in.
 
 
+## [1.2.5] - 2020-12-18
+
+### Changed
+
+* React Native GCanvas Component
+	* iOS worked again
+	* fix: a bug that will no display while quit from a drawer item page to current canvas page which is still maintain mounted by react-navigation on Android
+	* fix: a bug that will still no display after close a pop-up activity like permission request dialog
+	* feat: can render2d canvas on iOS now
+
+
 ## [1.2.0] - 2020-12-13
 
 ### Changed
