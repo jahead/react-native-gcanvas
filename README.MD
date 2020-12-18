@@ -32,9 +32,28 @@ With 200 circles backgroundColor generate (1 `ms`) and render continually, the r
 ### `setNativeProps` vs `expo-2d-context` vs `react-native-gcanvas` On react-native
 With 800 circles backgroundColor generate and render continually, the final UI `fps` and JS `fps` with react-native developer menu Perf Monitor on an old `Huawei Honor 6 Play` smartphone released in 2017 (Mediatek MT6737T 1.4 GHz, 2 GB RAM, Android 6):
 
-    setNativeProps        UI: 20 fps       JS: 1 fps  (1 fps is stuck for human eyes)
-    expo-2d-context       UI: 56 fps       JS: 1 fps  (1 fps is stuck for human eyes)
-    react-native-gcanvas  UI: 56 fps       JS: 20 fps (20 fps is smooth for human eyes)
+    setNativeProps        UI: 20 fps       JS: 1 fps  (stuck for human eyes)
+    expo-2d-context       UI: 56 fps       JS: 1 fps  (stuck for human eyes)
+    react-native-gcanvas  UI: 56 fps       JS: 20 fps (smooth for human eyes)
+
+On an old iPhone 7:
+
+With 800 circles backgroundColor generate and render continually
+
+    setNativeProps        UI: 60 fps       JS: 15 fps (smooth for human eyes)
+    react-native-gcanvas  UI: 20 fps       JS: 59 fps (stuck for human eyes)
+
+    // if render2d sync by dispatch_main_sync_safe with execCommandById() in ios/BridgeModule/GCanvasModule.m
+    react-native-gcanvas  UI: 40 fps       JS: 58 fps (very stuck for human eyes)
+
+With 1400 circles backgroundColor generate and render continually
+
+    setNativeProps        UI: 59 fps       JS: 7 fps  (smooth for human eyes)
+    react-native-gcanvas  UI: 10 fps       JS: 58 fps (stuck for human eyes)
+
+    // if render2d sync by dispatch_main_sync_safe with execCommandById() in ios/BridgeModule/GCanvasModule.m
+    react-native-gcanvas  UI: 40 fps       JS: 15 fps (very very stuck for human eyes)
+
 
 ## Convenient With Browser-like canvas APIs
 [gl-react](https://gl-react-cookbook.surge.sh/pixeleditor?menu=true) maybe can deal with the performance problem, but it need developer directly code with GLSL (OpenGL Shading Language), and there is no way to let many React components developed by browser-like canvas APIs be easily ported to React Native.
@@ -45,7 +64,7 @@ With 800 circles backgroundColor generate and render continually, the final UI `
 
 Ref to [Experiments with High Performance Animation in React Native](https://engineering.salesforce.com/experiments-with-high-performance-animation-in-react-native-80a0cb7052b0), it use many ways include `setNativeProps` and [React Native NanoVG](https://github.com/robclouth/react-native-art-nanovg). Maybe `nanovg` can deal with the performance problem, but for now (2020.12) there is no React Native canvas component using  `nanovg` to let many React components developed by browser-like canvas APIs be easily ported to React Native.
 
-So for now (2020.12), `@flyskywhy/react-native-gcanvas` is the best choice.
+So for now (2020.12), `@flyskywhy/react-native-gcanvas` is the best choice, at least on Android (performance on iOS is lower than setNativeProps).
 
 ### canvas projects ported from React to React Native
 * [react-native-particles-bg](https://github.com/flyskywhy/react-native-particles-bg) ported from [particles-bg](https://github.com/lindelof/particles-bg) which based on [Proton](https://github.com/drawcall/Proton). You can also compare it with [react-native-particles-webgl](https://github.com/flyskywhy/react-native-particles-webgl) which based on memory leaking [react-three-fiber](https://github.com/pmndrs/react-three-fiber).
@@ -119,7 +138,9 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.scale = Platform === 'ios' ? 1 : PixelRatio.get();
-    this.isGReactTextureViewReady = true; // Only useful on Android
+
+    // only useful on Android, because on iOS is always true
+    this.isGReactTextureViewReady = true;
   }
 
   componentDidMount() {

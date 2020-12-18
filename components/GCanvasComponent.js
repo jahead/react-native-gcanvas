@@ -1,5 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import { requireNativeComponent, View, Platform, findNodeHandle } from 'react-native';
+import {
+  NativeEventEmitter,
+  Platform,
+  View,
+  findNodeHandle,
+  requireNativeComponent,
+} from 'react-native';
 import {
   disable,
   ReactNativeBridge,
@@ -22,16 +28,26 @@ export default class GCanvasView extends Component {
 
   _onIsReady = (event) => {
     if (this.props.onIsReady) {
-      this.props.onIsReady(event.nativeEvent.value);
+      this.props.onIsReady(Platform.OS === 'ios' ? true : event.nativeEvent.value);
     }
   }
 
   componentDidMount() {
     // ReactNativeBridge.GCanvasModule.setLogLevel(0); // 0 means DEBUG
+
+    if (Platform.OS === 'ios') {
+      const emitter = new NativeEventEmitter(ReactNativeBridge.GCanvasModule);
+      emitter.addListener('GCanvasReady', this._onIsReady);
+    }
   }
 
   componentWillUnmount() {
     ReactNativeBridge.GCanvasModule.disable('' + findNodeHandle(this.refCanvas));
+
+    if (Platform.OS === 'ios') {
+      const emitter = new NativeEventEmitter(ReactNativeBridge.GCanvasModule);
+      emitter.removeListener('GCanvasReady', this._onIsReady);
+    }
   }
 
   render() {
