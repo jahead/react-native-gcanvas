@@ -17,9 +17,13 @@
     "gcanvas",
     "glsl",
     "gpu",
+    "ios",
     "shader",
     "opengl"
   ],
+  "dependencies": {
+    "prop-types": "^15.5.10"
+  },
   "license": "Apache",
   "bugs": {
     "url": "https://github.com/flyskywhy/react-native-gcanvas/issues"
