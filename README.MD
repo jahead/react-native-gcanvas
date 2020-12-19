@@ -122,7 +122,6 @@ Add below into `ios/Podfile`
 ```javascript
 import React, {Component} from 'react';
 import {
-  requireNativeComponent,
   findNodeHandle,
   NativeModules,
   PixelRatio,
@@ -131,7 +130,11 @@ import {
   View,
 } from 'react-native';
 import {GCanvasView} from '@flyskywhy/react-native-gcanvas';
-import {enable, ReactNativeBridge, Image as GImage} from "@flyskywhy/react-native-gcanvas/packages/gcanvas";
+import {
+  enable,
+  ReactNativeBridge,
+  Image as GImage,
+} from '@flyskywhy/react-native-gcanvas/packages/gcanvas';
 ReactNativeBridge.GCanvasModule = NativeModules.GCanvasModule;
 ReactNativeBridge.Platform = Platform;
 
@@ -140,7 +143,7 @@ export default class App extends Component {
     super(props);
     this.scale = Platform === 'ios' ? 1 : PixelRatio.get();
 
-    // only useful on Android, because on iOS is always true
+    // only useful on Android, because it's always true on iOS
     this.isGReactTextureViewReady = true;
   }
 
@@ -150,6 +153,10 @@ export default class App extends Component {
         this.initCanvas();
       }, 1000);
     }
+
+    setTimeout(() => {
+      this.drawSome();
+    }, 2000);
   }
 
   initCanvas = () => {
@@ -193,7 +200,12 @@ export default class App extends Component {
 
       //rect
       this.ctx.fillStyle = 'green';
-      this.ctx.fillRect(50 * this.scale, 50 * this.scale, 50 * this.scale, 50 * this.scale);
+      this.ctx.fillRect(
+        50 * this.scale,
+        50 * this.scale,
+        50 * this.scale,
+        50 * this.scale,
+      );
 
       this.ctx.fill();
 
@@ -202,14 +214,27 @@ export default class App extends Component {
       //circle
       this.ctx.fillStyle = 'blue';
       this.ctx.moveTo(100 * this.scale, 150 * this.scale);
-      this.ctx.arc(100 * this.scale, 150 * this.scale, 50 * this.scale, 0, Math.PI * 2, true);
+      this.ctx.arc(
+        125 * this.scale,
+        125 * this.scale,
+        25 * this.scale,
+        0,
+        Math.PI * 2,
+        true,
+      );
 
       this.ctx.fill();
 
-      let image = new GImage();
+      let image = Platform.OS === 'web' ? new Image() : new GImage();
       image.onload = () => {
-        this.ctx.drawImage(image, 150 * this.scale, 0);
-      }
+        this.ctx.drawImage(
+          image,
+          70 * this.scale,
+          0,
+          112 * this.scale,
+          37 * this.scale,
+        );
+      };
       image.src = '//gw.alicdn.com/tfs/TB1KwRTlh6I8KJjy0FgXXXXzVXa-225-75.png';
     }
   };
@@ -220,7 +245,12 @@ export default class App extends Component {
         <View style={styles.container}>
           <canvas
             ref={(view) => (this.refCanvas = view)}
-            style={styles.gcanvas}
+            style={
+              {
+                width: 200,
+                height: 300,
+              } /* canvas with react-native-web can't use width and height in styles.gcanvas */
+            }
           />
         </View>
       );
@@ -240,17 +270,16 @@ export default class App extends Component {
 }
 
 const styles = StyleSheet.create({
-  gcanvas: {
-    top: 20,
-    width: 200,
-    height :300,
-    // backgroundColor: '#FF000030', // TextureView doesn't support displaying a background drawable since Android API 24
-  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+  },
+  gcanvas: {
+    width: 200,
+    height: 300,
+    // backgroundColor: '#FF000030', // TextureView doesn't support displaying a background drawable since Android API 24
   },
 });
 ```
