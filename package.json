@@ -1,7 +1,7 @@
 {
   "name": "@flyskywhy/react-native-gcanvas",
   "version": "1.2.5",
-  "description": "GCanvas React-Native version",
+  "description": "A C++ native canvas component based on gpu opengl glsl shader GCanvas",
   "main": "index",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,12 +18,10 @@
     "glsl",
     "gpu",
     "ios",
+    "native",
     "shader",
     "opengl"
   ],
-  "dependencies": {
-    "prop-types": "^15.5.10"
-  },
   "license": "Apache",
   "bugs": {
     "url": "https://github.com/flyskywhy/react-native-gcanvas/issues"
