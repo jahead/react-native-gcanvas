@@ -20,6 +20,7 @@ import com.facebook.imagepipeline.image.CloseableBitmap;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.taobao.gcanvas.adapters.img.IGImageLoader;
 
 /**
@@ -86,9 +87,23 @@ public class GCanvasFrescoImageLoader implements IGImageLoader {
             this.callback = callback;
         }
 
+        private Uri computeUri(Context context) {
+            try {
+                Uri uri = Uri.parse(url);
+                // Verify scheme is set, so that relative uri (used by static resources) are not handled.
+                return uri.getScheme() == null ? computeLocalUri(context) : uri;
+            } catch (Exception e) {
+                return computeLocalUri(context);
+            }
+        }
+
+        private Uri computeLocalUri(Context context) {
+            return ResourceDrawableIdHelper.getInstance().getResourceDrawableUri(context, url);
+        }
+
         @Override
         public void run() {
-            Uri uri = Uri.parse(url);
+            Uri uri = computeUri(context);
 
             ImageRequestBuilder builder = ImageRequestBuilder.newBuilderWithSource(uri);
             builder.setAutoRotateEnabled(false);

@@ -31,6 +31,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     compileOnly "com.android.support:appcompat-v7:${localExtensions.sdks.Support}"
+    compileOnly "com.facebook.react:react-native:+"
     compileOnly "com.facebook.fresco:fresco:${localExtensions.sdks.Fresco}"
     testImplementation "junit:junit:${localExtensions.sdks.JUnit}"
 

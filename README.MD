@@ -137,6 +137,7 @@ import {
 } from '@flyskywhy/react-native-gcanvas/packages/gcanvas';
 ReactNativeBridge.GCanvasModule = NativeModules.GCanvasModule;
 ReactNativeBridge.Platform = Platform;
+import {Asset} from 'expo-asset';
 
 export default class App extends Component {
   constructor(props) {
@@ -183,7 +184,7 @@ export default class App extends Component {
     }
   };
 
-  drawSome = () => {
+  drawSome = async () => {
     // On Android, sometimes this.isGReactTextureViewReady is false e.g.
     // navigate from a canvas page into a drawer item page with
     // react-navigation on Android, the canvas page will be maintain
@@ -225,17 +226,34 @@ export default class App extends Component {
 
       this.ctx.fill();
 
-      let image = Platform.OS === 'web' ? new Image() : new GImage();
-      image.onload = () => {
+      // don't know why imageHttp not worked on Android release, use imageRequire for now
+      // let imageHttp = Platform.OS === 'web' ? new Image() : new GImage();
+      // imageHttp.onload = () => {
+      //   this.ctx.drawImage(
+      //     imageHttp,
+      //     70 * this.scale,
+      //     0,
+      //     112 * this.scale,
+      //     37 * this.scale,
+      //   );
+      // };
+      // imageHttp.src =
+      //   '//gw.alicdn.com/tfs/TB1KwRTlh6I8KJjy0FgXXXXzVXa-225-75.png';
+
+      let imageRequire = Platform.OS === 'web' ? new Image() : new GImage();
+      imageRequire.onload = () => {
         this.ctx.drawImage(
-          image,
-          70 * this.scale,
+          imageRequire,
           0,
-          112 * this.scale,
-          37 * this.scale,
+          100 * this.scale,
+          120 * this.scale,
+          120 * this.scale,
         );
       };
-      image.src = '//gw.alicdn.com/tfs/TB1KwRTlh6I8KJjy0FgXXXXzVXa-225-75.png';
+      let asset = await Asset.fromModule(
+        require('@flyskywhy/react-native-gcanvas/tools/build_website/assets/logo-gcanvas.png'),
+      );
+      imageRequire.src = asset.uri;
     }
   };
 
