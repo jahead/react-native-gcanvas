@@ -141,6 +141,7 @@ ReactNativeBridge.Platform = Platform;
 export default class App extends Component {
   constructor(props) {
     super(props);
+    this.canvas = null;
     this.scale = Platform === 'ios' ? 1 : PixelRatio.get();
 
     // only useful on Android, because it's always true on iOS
@@ -148,27 +149,26 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    if (Platform.OS === 'web') {
-      setTimeout(() => {
-        this.initCanvas();
-      }, 1000);
-    }
-
     setTimeout(() => {
       this.drawSome();
-    }, 2000);
+    }, 1000);
   }
 
   initCanvas = () => {
-    if (Platform.OS === 'web') {
-      let canvas = this.refCanvas;
-      // canvas.width not equal canvas.clientWidth, so have to assign again
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
+    if (this.canvas) {
+      return;
+    }
 
-      this.ctx = canvas.getContext('2d');
+    if (Platform.OS === 'web') {
+      this.canvas = this.refCanvas;
+
+      // canvas.width not equal canvas.clientWidth, so have to assign again
+      this.canvas.width = this.canvas.clientWidth;
+      this.canvas.height = this.canvas.clientHeight;
+
+      this.ctx = this.canvas.getContext('2d');
     } else {
-      let canvas = enable(
+      this.canvas = enable(
         {
           ref: '' + findNodeHandle(this.refCanvas),
           style: {
@@ -179,7 +179,7 @@ export default class App extends Component {
         {bridge: ReactNativeBridge},
       );
 
-      this.ctx = canvas.getContext('2d');
+      this.ctx = this.canvas.getContext('2d');
     }
   };
 
@@ -244,7 +244,10 @@ export default class App extends Component {
       return (
         <View style={styles.container}>
           <canvas
-            ref={(view) => (this.refCanvas = view)}
+            ref={(view) => {
+              this.refCanvas = view;
+              this.initCanvas();
+            }}
             style={
               {
                 width: 200,
