@@ -62,8 +62,8 @@ android {
 
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.alibaba:fastjson:1.1.54.android'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.alibaba:fastjson:1.1.54.android'
 }
 project.ext.id = localExtensions.artifacts.Core
 project.ext.meta.labels = ['Weex', 'ReactNative', 'GPU', 'OpenGL', 'GCanvas', "canvas", 'WebGL', 'Rendering', 'High Performance']
