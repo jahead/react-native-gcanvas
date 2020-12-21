@@ -22,6 +22,9 @@ var CanvasView = Platform.select({
   }),
 });
 
+var defaultWidth = 200;
+var defaultHeight = 300;
+
 export default class GCanvasView extends Component {
   constructor(props) {
     super(props);
@@ -35,8 +38,8 @@ export default class GCanvasView extends Component {
 
   static defaultProps = {
     style: {
-      height: '100%',
-      width: '100%',
+      width: defaultWidth,
+      height: defaultHeight,
     },
   };
 
@@ -59,8 +62,8 @@ export default class GCanvasView extends Component {
       {
         ref: '' + findNodeHandle(this.refCanvasView),
         style: {
-          width: this.props.style.width || '100%',
-          height: this.props.style.height || '100%',
+          width: this.props.style.width || defaultWidth,
+          height: this.props.style.height || defaultHeight,
         },
       },
       {bridge: ReactNativeBridge},
@@ -107,8 +110,8 @@ export default class GCanvasView extends Component {
           style={[
             {...this.props.style},
             {
-              height: this.props.style.height || '100%',
-              width: this.props.style.width || '100%',
+              width: this.props.style.width || defaultWidth,
+              height: this.props.style.height || defaultHeight,
             },
           ]}
         />
