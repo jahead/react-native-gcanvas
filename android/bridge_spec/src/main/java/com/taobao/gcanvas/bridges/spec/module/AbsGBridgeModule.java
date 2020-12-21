@@ -235,7 +235,7 @@ public abstract class AbsGBridgeModule<JSCallback> implements IGBridgeModule<JSC
             url = arrayPara.getString(0);
             imageId = arrayPara.getInt(1);
         } catch (JSONException e) {
-            result.putString("error", "invalid input param. specify an json array which length is 2, and index 0 is url to load, index 1 is image id.");
+            result.putString("error", "invalid input param. error parse preload image data:" + e.getMessage());
             GLog.d(TAG, "error parse preload image data:" + e.getMessage());
             invokeCallback(callback, result);
             return;
@@ -243,7 +243,7 @@ public abstract class AbsGBridgeModule<JSCallback> implements IGBridgeModule<JSC
 
 
         if (TextUtils.isEmpty(url)) {
-            result.putString("error", "invalid input param. specify an json array which length is 2, and index 0 is url to load, index 1 is image id.");
+            result.putString("error", "invalid input param. url is empty.");
             return;
         }
         try {
@@ -322,7 +322,7 @@ public abstract class AbsGBridgeModule<JSCallback> implements IGBridgeModule<JSC
 
                     @Override
                     public void onFail(Object error) {
-                        resultMap.putString("error", "bitmap load failed");
+                        resultMap.putString("error", (String)error);
                         try {
                             ArrayList<JSCallback> callbackList = mCallbacks.remove(urlFinal);
                             if (null != callbackList) {

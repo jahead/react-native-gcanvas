@@ -127,6 +127,8 @@ import {
   PixelRatio,
   Platform,
   StyleSheet,
+  Text,
+  TouchableHighlight,
   View,
 } from 'react-native';
 import {GCanvasView} from '@flyskywhy/react-native-gcanvas';
@@ -144,15 +146,12 @@ export default class App extends Component {
     super(props);
     this.canvas = null;
     this.scale = Platform === 'ios' ? 1 : PixelRatio.get();
+    this.state = {
+      debugInfo: 'Click to draw some on canvas',
+    };
 
     // only useful on Android, because it's always true on iOS
     this.isGReactTextureViewReady = true;
-  }
-
-  componentDidMount() {
-    setTimeout(() => {
-      this.drawSome();
-    }, 1000);
   }
 
   initCanvas = () => {
@@ -226,19 +225,29 @@ export default class App extends Component {
 
       this.ctx.fill();
 
-      // don't know why imageHttp not worked on Android release, use imageRequire for now
-      // let imageHttp = Platform.OS === 'web' ? new Image() : new GImage();
-      // imageHttp.onload = () => {
-      //   this.ctx.drawImage(
-      //     imageHttp,
-      //     70 * this.scale,
-      //     0,
-      //     112 * this.scale,
-      //     37 * this.scale,
-      //   );
-      // };
+      let imageHttp = Platform.OS === 'web' ? new Image() : new GImage();
+      imageHttp.onload = () => {
+        this.ctx.drawImage(
+          imageHttp,
+          70 * this.scale,
+          0,
+          112 * this.scale,
+          37 * this.scale,
+        );
+      };
+      imageHttp.onerror = (error) => {
+        this.setState({
+          debugInfo: error.message,
+        });
+      };
       // imageHttp.src =
       //   '//gw.alicdn.com/tfs/TB1KwRTlh6I8KJjy0FgXXXXzVXa-225-75.png';
+      // if use `//` above, will be convert to `http:` in `packages/gcanvas/src/env/image.js`,
+      // then in Android release mode, will cause error:
+      // `CLEARTEXT communication to gw.alicdn.com not permitted by network security policy`,
+      // so use `https://` below
+      imageHttp.src =
+        'https://gw.alicdn.com/tfs/TB1KwRTlh6I8KJjy0FgXXXXzVXa-225-75.png';
 
       let imageRequire = Platform.OS === 'web' ? new Image() : new GImage();
       imageRequire.onload = () => {
@@ -249,6 +258,11 @@ export default class App extends Component {
           120 * this.scale,
           120 * this.scale,
         );
+      };
+      imageRequire.onerror = (error) => {
+        this.setState({
+          debugInfo: error.message,
+        });
       };
       let asset = await Asset.fromModule(
         require('@flyskywhy/react-native-gcanvas/tools/build_website/assets/logo-gcanvas.png'),
@@ -261,6 +275,9 @@ export default class App extends Component {
     if (Platform.OS === 'web') {
       return (
         <View style={styles.container}>
+          <TouchableHighlight onPress={this.drawSome}>
+            <Text>{this.state.debugInfo}</Text>
+          </TouchableHighlight>
           <canvas
             ref={(view) => {
               this.refCanvas = view;
@@ -278,6 +295,9 @@ export default class App extends Component {
     } else {
       return (
         <View style={styles.container}>
+          <TouchableHighlight onPress={this.drawSome}>
+            <Text>{this.state.debugInfo}</Text>
+          </TouchableHighlight>
           <GCanvasView
             ref={(view) => (this.refCanvas = view)}
             onLayout={this.initCanvas}

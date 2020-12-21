@@ -46,7 +46,7 @@ class GImage {
         data = JSON.parse(data);
       }
       if (data.error) {
-        var evt = { type: 'error', target: this };
+        var evt = { type: 'error', target: this, message: data.error };
         this.onerror(evt);
       } else {
         this.complete = true;
