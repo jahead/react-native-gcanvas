@@ -129,7 +129,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(extendCallNative:(NSDictionary*)dict)
 #pragma mark - GCVImageLoaderProtocol
 - (void)loadImage:(NSURL*)url completed:(GCVLoadImageCompletion)completion{
     NSURLRequest *requst = [NSURLRequest requestWithURL:url];
-    [self.bridge.imageLoader loadImageWithURLRequest:requst callback:^(NSError *error, UIImage *image) {
+    [[self.bridge moduleForClass:[RCTImageLoader class]] loadImageWithURLRequest:requst callback:^(NSError *error, UIImage *image) {
         completion(image, error, !error, url);
     }];
 }
@@ -145,7 +145,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(extendCallNative:(NSDictionary*)dict)
 {
     NSNumber *reactTag = [NSNumber numberWithInteger: [componentId integerValue]];
     RCTUIManager *uiManager = self.bridge.uiManager;
-    
+
     __block UIView *view = nil;
     dispatch_sync(dispatch_get_main_queue(), ^{
         view = [uiManager viewForReactTag:reactTag];
