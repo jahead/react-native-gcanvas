@@ -145,7 +145,7 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.canvas = null;
-    this.scale = Platform === 'ios' ? 1 : PixelRatio.get();
+    this.scale = Platform.OS === 'ios' ? 1 : PixelRatio.get();
     this.state = {
       debugInfo: 'Click to draw some on canvas',
     };
