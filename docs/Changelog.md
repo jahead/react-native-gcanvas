@@ -3,6 +3,14 @@
 All notable changes of this project will be documented in.
 
 
+## [1.2.7] - 2020-12-21
+
+### Changed
+
+* React Native GCanvas Component
+	* feat: support drawImage() from require('some.png') on Android, iOS and Web
+
+
 ## [1.2.5] - 2020-12-18
 
 ### Changed
