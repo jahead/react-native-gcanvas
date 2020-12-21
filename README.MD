@@ -122,8 +122,6 @@ Add below into `ios/Podfile`
 ```javascript
 import React, {Component} from 'react';
 import {
-  findNodeHandle,
-  NativeModules,
   PixelRatio,
   Platform,
   StyleSheet,
@@ -131,14 +129,7 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import {GCanvasView} from '@flyskywhy/react-native-gcanvas';
-import {
-  enable,
-  ReactNativeBridge,
-  Image as GImage,
-} from '@flyskywhy/react-native-gcanvas/packages/gcanvas';
-ReactNativeBridge.GCanvasModule = NativeModules.GCanvasModule;
-ReactNativeBridge.Platform = Platform;
+import {GCanvasView, GImage} from '@flyskywhy/react-native-gcanvas';
 import {Asset} from 'expo-asset';
 
 export default class App extends Component {
@@ -154,33 +145,18 @@ export default class App extends Component {
     this.isGReactTextureViewReady = true;
   }
 
-  initCanvas = () => {
+  initCanvas = (canvas) => {
     if (this.canvas) {
       return;
     }
 
+    this.canvas = canvas;
     if (Platform.OS === 'web') {
-      this.canvas = this.refCanvas;
-
       // canvas.width not equal canvas.clientWidth, so have to assign again
       this.canvas.width = this.canvas.clientWidth;
       this.canvas.height = this.canvas.clientHeight;
-
-      this.ctx = this.canvas.getContext('2d');
-    } else {
-      this.canvas = enable(
-        {
-          ref: '' + findNodeHandle(this.refCanvas),
-          style: {
-            width: styles.gcanvas.width,
-            height: styles.gcanvas.height,
-          },
-        },
-        {bridge: ReactNativeBridge},
-      );
-
-      this.ctx = this.canvas.getContext('2d');
     }
+    this.ctx = this.canvas.getContext('2d');
   };
 
   drawSome = async () => {
@@ -279,10 +255,7 @@ export default class App extends Component {
             <Text>{this.state.debugInfo}</Text>
           </TouchableHighlight>
           <canvas
-            ref={(view) => {
-              this.refCanvas = view;
-              this.initCanvas();
-            }}
+            ref={this.initCanvas}
             style={
               {
                 width: 200,
@@ -299,8 +272,7 @@ export default class App extends Component {
             <Text>{this.state.debugInfo}</Text>
           </TouchableHighlight>
           <GCanvasView
-            ref={(view) => (this.refCanvas = view)}
-            onLayout={this.initCanvas}
+            onCanvasCreate={this.initCanvas}
             onIsReady={(value) => (this.isGReactTextureViewReady = value)}
             style={styles.gcanvas}
           />
