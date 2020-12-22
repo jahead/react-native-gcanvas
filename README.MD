@@ -69,7 +69,7 @@ Ref to [Experiments with High Performance Animation in React Native](https://eng
 So for now (2020.12), `@flyskywhy/react-native-gcanvas` is the best choice, at least on Android (performance on iOS is lower than setNativeProps).
 
 ### canvas projects ported from React to React Native
-* [react-native-particles-bg](https://github.com/flyskywhy/react-native-particles-bg) ported from [particles-bg](https://github.com/lindelof/particles-bg) which based on [Proton](https://github.com/drawcall/Proton). You can also compare it with [react-native-particles-webgl](https://github.com/flyskywhy/react-native-particles-webgl) which based on memory leaking [react-three-fiber](https://github.com/pmndrs/react-three-fiber).
+* [react-native-particles-bg](https://github.com/flyskywhy/react-native-particles-bg) just ported one file to [Support react-native](https://github.com/flyskywhy/react-native-particles-bg/commit/637ab13) from [particles-bg](https://github.com/lindelof/particles-bg) which based on [Proton](https://github.com/drawcall/Proton). You can also compare it with [react-native-particles-webgl](https://github.com/flyskywhy/react-native-particles-webgl) which based on memory leaking [react-three-fiber](https://github.com/pmndrs/react-three-fiber).
 
 
 ## Getting Started

@@ -3,6 +3,16 @@
 All notable changes of this project will be documented in.
 
 
+## [2.0.0] - 2020-12-22
+
+### Changed
+
+* React Native GCanvas Component
+	* Small break! No need this.scale as described in example of previous README.md, more elegant now:D and thus [react-native-particles-bg](https://github.com/flyskywhy/react-native-particles-bg) present same behavior on Andrid, iOS and Web.
+	* fix: resolve the bug in mImpl.setDevicePixelRatio, then Android has the same x y scale with iOS and Web, so can simplify the example too
+	* refactor: add onCanvasCreate prop and hide enable() into GCanvasView, let initCanvas() simple in example
+
+
 ## [1.2.7] - 2020-12-21
 
 ### Changed
