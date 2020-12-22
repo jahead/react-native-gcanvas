@@ -138,7 +138,7 @@ export default class App extends Component {
     this.canvas = null;
     this.scale = Platform.OS === 'ios' ? 1 : PixelRatio.get();
     this.state = {
-      debugInfo: 'Click to draw some on canvas',
+      debugInfo: 'Click me to draw some on canvas',
     };
 
     // only useful on Android, because it's always true on iOS
@@ -167,6 +167,7 @@ export default class App extends Component {
     // this drawSome() in some loop, it's wasting CPU and GPU,
     // if you don't care about such wasting, you can delete
     // this.isGReactTextureViewReady and related onIsReady.
+
     if (this.ctx && this.isGReactTextureViewReady) {
       this.ctx.beginPath();
 
@@ -248,12 +249,12 @@ export default class App extends Component {
   };
 
   render() {
-    if (Platform.OS === 'web') {
-      return (
-        <View style={styles.container}>
-          <TouchableHighlight onPress={this.drawSome}>
-            <Text>{this.state.debugInfo}</Text>
-          </TouchableHighlight>
+    return (
+      <View style={styles.container}>
+        <TouchableHighlight onPress={this.drawSome}>
+          <Text style={styles.welcome}>{this.state.debugInfo}</Text>
+        </TouchableHighlight>
+        {Platform.OS === 'web' ? (
           <canvas
             ref={this.initCanvas}
             style={
@@ -263,22 +264,15 @@ export default class App extends Component {
               } /* canvas with react-native-web can't use width and height in styles.gcanvas */
             }
           />
-        </View>
-      );
-    } else {
-      return (
-        <View style={styles.container}>
-          <TouchableHighlight onPress={this.drawSome}>
-            <Text>{this.state.debugInfo}</Text>
-          </TouchableHighlight>
+        ) : (
           <GCanvasView
             onCanvasCreate={this.initCanvas}
             onIsReady={(value) => (this.isGReactTextureViewReady = value)}
             style={styles.gcanvas}
           />
-        </View>
-      );
-    }
+        )}
+      </View>
+    );
   }
 }
 
@@ -293,6 +287,11 @@ const styles = StyleSheet.create({
     width: 200,
     height: 300,
     // backgroundColor: '#FF000030', // TextureView doesn't support displaying a background drawable since Android API 24
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    marginVertical: 20,
   },
 });
 ```
