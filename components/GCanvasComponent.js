@@ -22,25 +22,16 @@ var CanvasView = Platform.select({
   }),
 });
 
-var defaultWidth = 200;
-var defaultHeight = 300;
-
 export default class GCanvasView extends Component {
   constructor(props) {
     super(props);
+    this.refCanvasView = null;
     this.canvas = null;
   }
 
   static propTypes = {
     // isOffscreen: PropTypes.bool,
     ...View.propTypes,
-  };
-
-  static defaultProps = {
-    style: {
-      width: defaultWidth,
-      height: defaultHeight,
-    },
   };
 
   _onIsReady = (event) => {
@@ -51,19 +42,18 @@ export default class GCanvasView extends Component {
     }
   };
 
-  _onCanvasCreate = (view) => {
-    if (this.canvas) {
+  _onLayout = (event) => {
+    if (this.refCanvasView === null) {
+      this._onLayout(event);
       return;
     }
-
-    this.refCanvasView = view;
 
     this.canvas = enable(
       {
         ref: '' + findNodeHandle(this.refCanvasView),
         style: {
-          width: this.props.style.width || defaultWidth,
-          height: this.props.style.height || defaultHeight,
+          width: event.nativeEvent.layout.width,
+          height: event.nativeEvent.layout.height,
         },
       },
       {bridge: ReactNativeBridge},
@@ -105,15 +95,9 @@ export default class GCanvasView extends Component {
       return (
         <CanvasView
           {...this.props}
-          ref={this._onCanvasCreate}
+          ref={(view) => (this.refCanvasView = view)}
+          onLayout={this._onLayout}
           onChange={this._onIsReady}
-          style={[
-            {...this.props.style},
-            {
-              width: this.props.style.width || defaultWidth,
-              height: this.props.style.height || defaultHeight,
-            },
-          ]}
         />
       );
     }
