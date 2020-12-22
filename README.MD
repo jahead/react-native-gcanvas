@@ -122,7 +122,6 @@ Add below into `ios/Podfile`
 ```javascript
 import React, {Component} from 'react';
 import {
-  PixelRatio,
   Platform,
   StyleSheet,
   Text,
@@ -136,7 +135,6 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.canvas = null;
-    this.scale = Platform.OS === 'ios' ? 1 : PixelRatio.get();
     this.state = {
       debugInfo: 'Click me to draw some on canvas',
     };
@@ -173,16 +171,11 @@ export default class App extends Component {
 
       //rect
       this.ctx.fillStyle = 'red';
-      this.ctx.fillRect(0, 0, 50 * this.scale, 50 * this.scale);
+      this.ctx.fillRect(0, 0, 50, 50);
 
       //rect
       this.ctx.fillStyle = 'green';
-      this.ctx.fillRect(
-        50 * this.scale,
-        50 * this.scale,
-        50 * this.scale,
-        50 * this.scale,
-      );
+      this.ctx.fillRect(50, 50, 50, 50);
 
       this.ctx.fill();
 
@@ -190,27 +183,14 @@ export default class App extends Component {
 
       //circle
       this.ctx.fillStyle = 'blue';
-      this.ctx.moveTo(100 * this.scale, 150 * this.scale);
-      this.ctx.arc(
-        125 * this.scale,
-        125 * this.scale,
-        25 * this.scale,
-        0,
-        Math.PI * 2,
-        true,
-      );
+      this.ctx.moveTo(100, 150);
+      this.ctx.arc(125, 125, 25, 0, Math.PI * 2, true);
 
       this.ctx.fill();
 
       let imageHttp = Platform.OS === 'web' ? new Image() : new GImage();
       imageHttp.onload = () => {
-        this.ctx.drawImage(
-          imageHttp,
-          70 * this.scale,
-          0,
-          112 * this.scale,
-          37 * this.scale,
-        );
+        this.ctx.drawImage(imageHttp, 70, 0, 112, 37);
       };
       imageHttp.onerror = (error) => {
         this.setState({
@@ -228,13 +208,7 @@ export default class App extends Component {
 
       let imageRequire = Platform.OS === 'web' ? new Image() : new GImage();
       imageRequire.onload = () => {
-        this.ctx.drawImage(
-          imageRequire,
-          0,
-          100 * this.scale,
-          120 * this.scale,
-          120 * this.scale,
-        );
+        this.ctx.drawImage(imageRequire, 0, 100, 120, 120);
       };
       imageRequire.onerror = (error) => {
         this.setState({

@@ -418,9 +418,9 @@ JNIEXPORT void JNICALL Java_com_taobao_gcanvas_GCanvasJNI_setDevicePixelRatio(
     LOG_D("Canvas JNI::setDevicePixelRatio");
     char *canvasId = jstringToString(je, contextId);
 
-    LOG_D("Canvas JNI::setDevicePixelRatio");
     GRenderer *render = GManager::getSingleton()->findRenderer(canvasId);
     if (render) {
+        LOG_D("Canvas JNI::setDevicePixelRatio %f", (const float) ratio);
         render->setDevicePixelRatio((const float) ratio);
     }
     free(canvasId);

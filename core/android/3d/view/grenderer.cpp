@@ -335,7 +335,7 @@ void GRenderer::requestCreateCanvas(const std::string contextid) {
     mContextId = contextid;
 
     if (!m_createCanvas) {
-        LOG_D("not create canvas create");
+        LOG_D("haven't created the canvas, creating...");
         if (!mProxy) {
             mProxy = new GcanvasWeexAndroid(mContextId, this);
             mProxy->CreateContext();
@@ -347,7 +347,7 @@ void GRenderer::requestCreateCanvas(const std::string contextid) {
         }
         pthread_cond_signal(&m_cond);
     } else {
-        LOG_D("already create the canvas");
+        LOG_D("already created the canvas");
     }
 }
 

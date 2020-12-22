@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -254,7 +255,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         public void disable(String canvasId) {
             GReactTextureView textureView = mViews.get(canvasId);
             if (null == textureView) {
-                GLog.w(TAG, "can not find canvas with id ===> " + canvasId);
+                GLog.w(TAG, "disable() can not find canvas with id ===> " + canvasId);
                 return;
             }
             textureView.manuallyDestroy();
@@ -264,7 +265,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         public void setContextType(String canvasId, ContextType type) {
             GReactTextureView textureView = mViews.get(canvasId);
             if (null == textureView) {
-                GLog.w(TAG, "can not find canvas with id ===> " + canvasId);
+                GLog.w(TAG, "setContextType() can not find canvas with id ===> " + canvasId);
                 return;
             }
             GCanvasJNI.setContextType(textureView.getCanvasKey(), type.value());
@@ -272,14 +273,19 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
 
         @Override
         public void setDevicePixelRatio(String canvasId, double ratio) {
-            GCanvasJNI.setDevicePixelRatio(canvasId, ratio);
+            GReactTextureView textureView = mViews.get(canvasId);
+            if (null == textureView) {
+                GLog.w(TAG, "setDevicePixelRatio() can not find canvas with id ===> " + canvasId);
+                return;
+            }
+            GCanvasJNI.setDevicePixelRatio(textureView.getCanvasKey(), ratio);
         }
 
         @Override
         public void render(String canvasId, String cmd) {
             GReactTextureView textureView = mViews.get(canvasId);
             if (null == textureView) {
-                GLog.w(TAG, "can not find canvas with id ===> " + canvasId);
+                GLog.w(TAG, "render() can not find canvas with id ===> " + canvasId);
                 return;
             }
             GCanvasJNI.render(textureView.getCanvasKey(), cmd);
@@ -449,7 +455,14 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         Display display = ctx.getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        double devicePixelRatio = size.x * 1.0 / size.y;
+        // double devicePixelRatio = size.x * 1.0 / size.y;
+// 12-22 13:31:42.302: I/GReactModule(23246): enable size Point(1080, 2163)
+// 12-22 13:31:42.302: I/GReactModule(23246): enable devicePixelRatio 0.49930651872399445
+// devicePixelRatio is weird to use by x/y above, so use density below
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        display.getMetrics(displayMetrics);
+        double devicePixelRatio = displayMetrics.density;
 
         GLog.d(TAG, "enable size " + size.toString());
         GLog.d(TAG, "enable devicePixelRatio " + devicePixelRatio);
