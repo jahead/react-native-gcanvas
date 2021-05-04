@@ -42,6 +42,11 @@ There may be different way in bridges. But you bridge must support export asynch
 * Implement `IGBridgeModule` interface. The interface should build bridge between GCanvas C++ rendering engine and your Javascript runtime environment. Check comments of the interface for more details. You can extend from an abstract class named 'AbsGBridgeModule'. We strongly recommend implements your bridge by composite implementation.
 * Implement interfaces with prefix `IJSCallbackXXX`. These interfaces are used for data communicating between Javascript and native.
 * Inherit from `GTextureView`. This stage is optional, depending on how your runtime communicates between native and Javascript, but an OpenGL-renderable view is necessary.
+* Export method to Javascript in your custom bridge
+   For export method, `ReactNative` supply the method.
+  * ReactNative
+    `@ReactMethod(isBlockingSynchronousMethod = true)` , synchronous method
+    `@ReactMethod`,  asynchornous method
 
 ### Javascript
 About writing the javascript part, you can refer to[Custom Javascript Bridge](./docs/Guide_JS_Use.md).

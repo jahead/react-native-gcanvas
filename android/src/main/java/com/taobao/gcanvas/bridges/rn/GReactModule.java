@@ -376,7 +376,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
 
-    @ReactMethod
+    @ReactMethod(isBlockingSynchronousMethod = true)
     public String enable(ReadableMap args) {
         if (null == args) {
             return Boolean.FALSE.toString();
