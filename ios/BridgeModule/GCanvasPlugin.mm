@@ -57,21 +57,24 @@
     if (self){
         self.renderCommandArray = [[NSMutableArray alloc] init];
         self.textureDict = NSMutableDictionary.dictionary;
-        
+
         self.gcanvasInited = NO;
         self.componentId = componentId;
-        
+
         gcanvas::GCanvasManager* manager = gcanvas::GCanvasManager::GetManager();
         std::string key = [componentId UTF8String];
 
         self.gcanvas = manager->NewCanvasWeex(key);
         self.context = self.gcanvas->GetGCanvasContext();
-                
-    #ifdef DEBUG
-        SetLogLevel(LOG_LEVEL_DEBUG);
-    #else
-        SetLogLevel(LOG_LEVEL_INFO);
-    #endif
+
+    // comment SetLogLevel below to
+    // fix https://github.com/flyskywhy/react-native-gcanvas/issues/13 by let
+    // SetLogLevel on iOS to be same behavior as Android
+    // #ifdef DEBUG
+    //     SetLogLevel(LOG_LEVEL_DEBUG);
+    // #else
+    //     SetLogLevel(LOG_LEVEL_INFO);
+    // #endif
     }
     return self;
 }
@@ -90,7 +93,7 @@
 
 - (void)setClearColor:(UIColor*)color{
     if( !self.gcanvas ) return;
-    
+
     if( color ){
         CGFloat r, g, b, a;
         BOOL ret = [color getRed:&r green:&g blue:&b alpha:&a];
@@ -121,7 +124,7 @@
 
 - (void)execCommands{
     if( !self.gcanvas || !self.gcanvasInited ) return;
-    
+
     @synchronized (self) {
         if(self.renderCommandArray.count == 0){
             return;
@@ -141,7 +144,7 @@
 - (void)removeGCanvas{
     gcanvas::GCanvasManager* manager = gcanvas::GCanvasManager::GetManager();
     manager->RemoveCanvas([self.componentId UTF8String]);
-    
+
     @synchronized(self){
         [self.textureDict enumerateKeysAndObjectsUsingBlock:^(id  key, id value, BOOL * _Nonnull stop) {
             GLuint tid = (GLuint)[value integerValue];
@@ -152,13 +155,13 @@
         [self.textureDict removeAllObjects];
         self.textureDict = nil;
     }
-    
+
     self.gcanvas = nil;
 }
 
 - (GLuint)getTextureId:(NSUInteger)aid{
     if( !self.gcanvas ) return 0;
-    
+
     @synchronized(self){
         GLuint tid = (GLuint)([self.textureDict[@(aid)] integerValue]);
         return tid;
@@ -167,7 +170,7 @@
 
 - (void)addTextureId:(NSUInteger)tid withAppId:(NSUInteger)aid width:(NSUInteger)width height:(NSUInteger)height offscreen:(BOOL)offscreen{
     if( !self.gcanvas ) return;
-    
+
     self.gcanvas->AddTexture((int)aid, (int)tid, (int)width, (int)height);
     if( offscreen ){
         self.gcanvas->AddOfflineTexture((int)aid, (int)tid);
@@ -193,9 +196,9 @@
 
 - (void)setContextType:(GCVContextType)contextType{
     if( !self.gcanvas ) return;
-    
+
     self.gcanvas->SetContextType((GCVContextTypeWebGL == contextType ) ? GCVContextTypeWebGL : GCVContextType2D);
-    
+
     //register function for GFont and WebGL texImage2D && texSubImage2D.
     if( self.gcanvas->GetContextType() != 0 ){
         self.context->SetGWebGLTxtImage2DFunc(iOS_GCanvas_GWebGLTxtImage2D);
@@ -257,27 +260,27 @@ void iOS_GCanvas_GWebGLTxtImage2D(GLenum target, GLint level, GLenum internalfor
                                   GLenum format, GLenum type,  const char *src){
     NSString *imageStr = [[NSString alloc] initWithUTF8String:src];
     GCVImageCache *imageCache = [[GCVCommon sharedInstance] fetchLoadImage:imageStr];
-    
+
     void (^glTexImage2DBlock)(GCVImageCache*) = ^(GCVImageCache* cache){
         LOG_D("width=%f, height=%f, image=%p", imageCache.width, imageCache.height, imageCache.image);
-        
+
         GLint width = imageCache.width;
         GLint height = imageCache.height;
-        
+
         CGRect rect = CGRectMake(0, 0, width, height);
         CGBitmapInfo info =  kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big;
         NSMutableData *pixelData = [NSMutableData dataWithLength:width*height*4];
-        
+
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
         CGContextRef context = CGBitmapContextCreate(pixelData.mutableBytes, width, height, 8, 4 * width, colorSpace, info);
         CGColorSpaceRelease(colorSpace);
         CGContextClearRect(context, rect);
         CGContextDrawImage(context, rect, imageCache.image.CGImage);
         CGContextRelease(context);
-        
+
         glTexImage2D(target, level, internalformat, width, height, 0, format, type, pixelData.bytes);
     };
-    
+
     if( imageCache ) {
         glTexImage2DBlock(imageCache);
     } else {
@@ -306,13 +309,13 @@ void iOS_GCanvas_GWebGLTxtSubImage2D(GLenum target, GLint level, GLint xoffset, 
                                      GLenum format, GLenum type,  const char *src){
     NSString *imageStr = [[NSString alloc] initWithUTF8String:src];
     GCVImageCache *imageCache = [[GCVCommon sharedInstance] fetchLoadImage:imageStr];
-    
+
     void (^glTexSubImage2DBlock)(GCVImageCache*) = ^(GCVImageCache* cache){
         LOG_D("width=%f, height=%f, image=%p", imageCache.width, imageCache.height, imageCache.image);
-        
+
         GLint width = imageCache.width;
         GLint height = imageCache.height;
-        
+
         CGRect rect = CGRectMake(0, 0, width, height);
         CGBitmapInfo info =  kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big;
         NSMutableData *pixelData = [NSMutableData dataWithLength:width*height*4];
@@ -323,7 +326,7 @@ void iOS_GCanvas_GWebGLTxtSubImage2D(GLenum target, GLint level, GLint xoffset, 
         CGContextClearRect(context, rect);
         CGContextDrawImage(context, rect, imageCache.image.CGImage);
         CGContextRelease(context);
-        
+
         glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixelData.bytes);
     };
 
