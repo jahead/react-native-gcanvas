@@ -1,7 +1,7 @@
 {
   "name": "@flyskywhy/react-native-gcanvas",
   "version": "2.0.1",
-  "description": "A C++ native canvas component based on gpu opengl glsl shader GCanvas",
+  "description": "A C++ native canvas 2D/WebGL component based on gpu opengl glsl shader GCanvas",
   "main": "index",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,6 +11,8 @@
     "url": "git+https://github.com/flyskywhy/react-native-gcanvas.git"
   },
   "keywords": [
+    "2d",
+    "3d",
     "android",
     "react-native",
     "canvas",
@@ -20,7 +22,8 @@
     "ios",
     "native",
     "shader",
-    "opengl"
+    "opengl",
+    "webgl"
   ],
   "license": "Apache",
   "bugs": {

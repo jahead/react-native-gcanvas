@@ -1494,14 +1494,14 @@ std::string GCanvasWeex::canvasProc(int op, int sync, std::string args) {
 }
 
 std::string GCanvasWeex::webglProc(int op, int sync, std::string args) {
-    LOG_E("webglProc start.");
+    LOG_D("webglProc start.");
     if (args.c_str() == nullptr || args.length() == 0 ||
         !strcmp(args.c_str(), "")) {
         return nullptr;
     }
     const char *commands = args.c_str();
     executeWebGLCommands(commands, (int) args.length());
-    LOG_E("webglProc finished.");
+    LOG_D("webglProc finished.");
     return "";
 }
 

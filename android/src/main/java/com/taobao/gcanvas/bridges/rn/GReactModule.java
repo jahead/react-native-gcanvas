@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -18,6 +19,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.taobao.gcanvas.GCanvasJNI;
 import com.taobao.gcanvas.adapters.img.impl.fresco.GCanvasFrescoImageLoader;
 import com.taobao.gcanvas.bridges.rn.bridge.RNJSCallbackArray;
@@ -288,7 +290,17 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
                 GLog.w(TAG, "render() can not find canvas with id ===> " + canvasId);
                 return;
             }
-            GCanvasJNI.render(textureView.getCanvasKey(), cmd);
+            GCanvasJNI.render(textureView.getCanvasKey(), cmd, 0x20000001);
+        }
+
+        @Override
+        public String extendCallNative(String canvasId, String cmd, int type) {
+            GReactTextureView textureView = mViews.get(canvasId);
+            if (null == textureView) {
+                GLog.w(TAG, "extendCallNative() can not find canvas with id ===> " + canvasId);
+                return "";
+            }
+            return GCanvasJNI.render(textureView.getCanvasKey(), cmd, type);
         }
 
         @Override
@@ -368,6 +380,19 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
 
         mImpl.render(canvasId, cmd);
     }
+
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public WritableMap extendCallNative(ReadableMap args) {
+        String canvasId = args.getString("contextId");
+        int type = args.getInt("type");
+        String cmd = args.getString("args");
+
+        WritableMap result = Arguments.createMap();
+        result.putString("result", mImpl.extendCallNative(canvasId, cmd, type));
+        return result;
+    }
+
 
     @ReactMethod
     public void setLogLevel(int level) {

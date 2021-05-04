@@ -5,13 +5,11 @@
 [![npm licence](http://img.shields.io/npm/l/@flyskywhy/react-native-gcanvas.svg?style=flat-square)](https://npmjs.org/package/@flyskywhy/react-native-gcanvas "View this project on npm")
 [![Platform](https://img.shields.io/badge/platform-ios%20%7C%20android-989898.svg?style=flat-square)](https://npmjs.org/package/@flyskywhy/react-native-gcanvas "View this project on npm")
 
-`@flyskywhy/react-native-gcanvas` is a C++ native canvas component based on gpu opengl glsl shader [GCanvas](https://alibaba.github.io/GCanvas/) which is a lightweight cross-platform graphics rendering engine for mobile devices developed by Alibaba. It is written with C++ based on OpenGL ES, so it can provide high performance 2D/WebGL rendering capabilities for JavaScript runtime. It also has browser-like canvas APIs, so it's very convenient and flexiable for use, especially for web developers.
+`@flyskywhy/react-native-gcanvas` is a C++ native canvas 2D/WebGL component based on gpu opengl glsl shader [GCanvas](https://alibaba.github.io/GCanvas/) which is a lightweight cross-platform graphics rendering engine for mobile devices developed by Alibaba. It is written with C++ based on OpenGL ES, so it can provide high performance 2D/WebGL rendering capabilities for JavaScript runtime. It also has browser-like canvas APIs, so it's very convenient and flexiable for use, especially for web developers.
 
 Supported operating systems are Android 4.1+ (API 16) and iOS 9.0+.
 
 Since Alibaba [feat: delete weex bridge & reactive bridge](https://github.com/alibaba/GCanvas/commit/1bbee40a16c0c5da58698e2892ba33f836eedb70), here comes this `@flyskywhy/react-native-gcanvas` package.
-
-`@flyskywhy/react-native-gcanvas` only support render2d canvas as described in `Java_com_taobao_gcanvas_GCanvasJNI_render()` of `core/android/GCanvasJNI.cpp`.
 
 - [Performance Test Result](#performance-test-result)
 - [Getting Started](#getting-started)
@@ -119,6 +117,9 @@ Add below into `ios/Podfile`
 
 
 ## Example As Usage
+3d webgl examples see [webgl_demo](webgl_demo).
+
+2d canvas example see below.
 ```javascript
 import React, {Component} from 'react';
 import {

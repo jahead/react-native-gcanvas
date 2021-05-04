@@ -304,27 +304,21 @@ JNIEXPORT void JNICALL Java_com_taobao_gcanvas_GCanvasJNI_removeTexture(
     }
 }
 
-JNIEXPORT void JNICALL Java_com_taobao_gcanvas_GCanvasJNI_render(
-        JNIEnv *je, jclass jc, jstring contextId, jstring renderCommands) {
+JNIEXPORT jstring JNICALL Java_com_taobao_gcanvas_GCanvasJNI_render(
+        JNIEnv *je, jclass jc, jstring contextId, jstring renderCommands, jint type) {
     GCanvasManager *theManager = GCanvasManager::GetManager();
     char *canvasId = jstringToString(je, contextId);
     GCanvasWeex *theCanvas = (GCanvasWeex *) theManager->GetCanvas(canvasId);
     free(canvasId);
+    jstring jResult = je->NewStringUTF("");
     if (theCanvas) {
         const char *rc = je->GetStringUTFChars(renderCommands, 0);
         LOG_D("Java_com_taobao_gcanvas_GCanvasJNI_render, cmd=%s", rc);
         int length = je->GetStringUTFLength(renderCommands);
         if (0 != length) {
-            // Since `docs/Guide_Custom_GCanvas_Bridge.md` said
-            // `extendCallNative` is iOS only, and `getContext('webgl')`
-            // against `packages/gcanvas/src/env/canvas.js` will
-            // invoke `render()` thus `extendCallNative()` in
-            // `packages/gcanvas/src/bridge/react-native.js`, so
-            // 0x20000001 (means CANVAS) is better than
-            // 0x60000001 (means WEBGL) to be fed into `QueueProc()`
-            // in `core/src/GCanvasWeex.cpp`.
-            const char *result = theCanvas->CallNative(0x20000001, rc);
+            const char *result = theCanvas->CallNative(type, rc);
             if (result != nullptr && strlen(result) != 0) {
+                jResult = je->NewStringUTF(result);
                 delete result;
             }
             je->ReleaseStringUTFChars(renderCommands, rc);
@@ -333,6 +327,7 @@ JNIEXPORT void JNICALL Java_com_taobao_gcanvas_GCanvasJNI_render(
         }
         executeCallbacks(je, contextId);
     }
+    return jResult;
 }
 
 JNIEXPORT void JNICALL Java_com_taobao_gcanvas_GCanvasJNI_surfaceChanged(

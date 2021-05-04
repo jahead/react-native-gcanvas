@@ -12,6 +12,33 @@ let isDebugging = false;
 
 let isComboDisabled = false;
 
+const logCommand = (function() {
+  const methodQuery = [];
+  Object.keys(GLmethod).forEach(key => {
+    methodQuery[GLmethod[key]] = key;
+  });
+  const queryMethod = (id) => {
+    return methodQuery[parseInt(id)] || 'NotFoundMethod';
+  };
+  const logCommand = (id, cmds) => {
+    const mId = cmds.split(',')[0];
+    const mName = queryMethod(mId);
+    console.log(`=== callNative - componentId:${id}; method: ${mName}; cmds: ${cmds}`);
+  };
+  return logCommand;
+})();
+
+function joinArray(arr, sep) {
+  let res = '';
+  for (let i = 0; i < arr.length; i++) {
+    if (i !== 0) {
+      res += sep;
+    }
+    res += arr[i];
+  }
+  return res;
+}
+
 const commandsCache = {};
 
 const GBridge = {
@@ -41,10 +68,15 @@ const GBridge = {
     GBridge.GCanvasModule.setContextType(context_type, componentId);
   },
 
+  callReset: function(componentId) {
+    GBridge.GCanvasModule.resetComponent && GBridge.GCanvasModule.resetComponent(componentId);
+  },
+
   render: function(componentId) {
     return GBridge.GCanvasModule.extendCallNative({
       contextId: componentId,
-      type: 0x60000001
+      type: 0x60000001,
+      args: '',
     });
   },
 
@@ -57,8 +89,44 @@ const GBridge = {
     GBridge.GCanvasModule.render(commands, componentId);
   },
 
-  flushNative: function(componentId) { },
-  callNative: function(componentId, cmdArgs, cache) { },
+  flushNative: function(componentId) {
+    const cmdArgs = joinArray(commandsCache[componentId], ';');
+    commandsCache[componentId] = [];
+
+    if (isDebugging) {
+      console.log('>>> >>> flush native ===');
+      console.log('>>> commands: ' + cmdArgs);
+    }
+
+    const result = GBridge.GCanvasModule.extendCallNative({
+      contextId: componentId,
+      type: 0x60000001,
+      args: cmdArgs,
+    });
+
+    const res = result && result.result;
+
+    if (isDebugging) {
+      console.log('>>> result: ' + res);
+    }
+
+    return res;
+  },
+
+  callNative: function(componentId, cmdArgs, cache) {
+    if (isDebugging) {
+      logCommand(componentId, cmdArgs);
+    }
+
+    commandsCache[componentId].push(cmdArgs);
+
+    if (!cache || isComboDisabled) {
+      return GBridge.flushNative(componentId);
+    } else {
+      return undefined;
+    }
+  },
+
 
   texImage2D(componentId, ...args) {
     if (isReactNativeIOS()) {

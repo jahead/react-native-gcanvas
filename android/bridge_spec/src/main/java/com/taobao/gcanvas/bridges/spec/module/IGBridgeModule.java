@@ -122,9 +122,18 @@ public interface IGBridgeModule<JSCallback> {
     void setDevicePixelRatio(String canvasId, double ratio);
 
     /**
-     * Send render command to specified canvas.
+     * Send render command to specified canvas 2D.
      * @param cmd
      * @param canvasId
      */
     void render(String cmd, String canvasId);
+
+    /**
+     * Send render command to specified canvas WebGL.
+     * @param cmd
+     * @param canvasId
+     * @param type
+     * @return String result
+     */
+    String extendCallNative(String cmd, String canvasId, int type);
 }

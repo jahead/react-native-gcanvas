@@ -229,10 +229,6 @@ void GRenderer::renderLoop() {
             pthread_cond_wait(&m_cond, &m_mutex);
         }
 
-        if (mProxy != nullptr) {
-            mProxy->finishProc();
-        }
-
         if (m_viewportchanged) {
             if (!m_initialized) {
                 bool initResult = initialize();
@@ -290,6 +286,10 @@ void GRenderer::renderLoop() {
                 }
                 m_refresh = false;
             }
+        }
+
+        if (mProxy != nullptr) {
+            mProxy->finishProc();
         }
 
         pthread_mutex_unlock(&m_mutex);

@@ -56,7 +56,10 @@ export default class GCanvasView extends Component {
           height: event.nativeEvent.layout.height,
         },
       },
-      {bridge: ReactNativeBridge},
+      {
+        bridge: ReactNativeBridge,
+        disableAutoSwap: true,
+      },
     );
 
     if (this.props.onCanvasCreate) {

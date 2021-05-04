@@ -55,12 +55,12 @@ About writing the javascript part, you can refer to[Custom Javascript Bridge](./
 | Method                           | Async/Sync | Android/iOS  | Comments                                 |
 | -------------------------------- | ---------- | ------------ | ---------------------------------------- |
 | enable(args)                     | Sync       | Both         | Build relationships between gcanvas.js and native view |
-| render(cmd, componentId)         | Async      | Both         | Execute render command                   |
+| render(cmd, componentId)         | Async      | Both         | Execute render 2d command                |
+| extendCallNative(args)           | Sync       | Both         | Execute render 3d command                |
 | preLoadImage(data, callback)     | Async      | Both         | Preload image with callback              |
 | bindImageTexture(data, callback) | Async      | Both         | Bind image to an OpenGL Texture with callback |
 | setContextType                   | Async      | Both         | Set GCanvas Context Type, 0-2d, 1-WebGL  |
 | setLogLevel                      | Async      | Both         | Set Native Log Level                     |
 | resetComponent                   | Async      | iOS only     | call the method while view disappear     |
-| extendCallNative                 | Sync       | iOS only     | method                                   |
 | texImage2D                       | Sync       | Android only | convert image to texture, used for WebGL |
 | texSubImage2D                    | Sync       | Android only | convert image to sub-texture, used for WebGL |
