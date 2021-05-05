@@ -76,7 +76,7 @@ const GBridge = {
     return GBridge.GCanvasModule.extendCallNative({
       contextId: componentId,
       type: 0x60000001,
-      args: '',
+      args: '365', // 365 is a nonexistent webgl command, just to display graphics on Android
     });
   },
 
@@ -100,7 +100,7 @@ const GBridge = {
 
     const result = GBridge.GCanvasModule.extendCallNative({
       contextId: componentId,
-      type: isReactNativeIOS() ? 0x60000000 : 0x60000001,
+      type: 0x60000000,
       args: cmdArgs,
     });
 
