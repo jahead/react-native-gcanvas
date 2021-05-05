@@ -115,6 +115,15 @@ Add below into `ios/Podfile`
     cd YOUR_PROJECT/ios
     pod install
 
+#### Web
+When I use react-native-web, I also use react-app-rewired as described in my blog:
+
+* CN [安装 react-native-web 并配以 react-app-rewired](https://github.com/flyskywhy/g/blob/master/i%E4%B8%BB%E8%A7%82%E7%9A%84%E4%BD%93%E9%AA%8C%E6%96%B9%E5%BC%8F/t%E5%BF%AB%E4%B9%90%E7%9A%84%E4%BD%93%E9%AA%8C/%E7%94%B5%E4%BF%A1/Tool/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/JavaScript/React%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3.md#rn--060-%E7%9A%84%E5%AE%89%E8%A3%85-react-native-web)
+
+* EN [Install react-native-web with react-app-rewired](https://github.com/reactrondev/react-native-web-swiper/issues/41#issuecomment-685207381)
+
+With react-app-rewired, my react-native-web@0.15.0 and RN 0.63+ without expo project works fine, you can try it.
+
 
 ## Example As Usage
 3d webgl examples see [webgl_demo](webgl_demo).

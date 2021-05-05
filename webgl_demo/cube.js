@@ -252,6 +252,7 @@ export default class App extends Component {
 
     setInterval(draw, 16);
   };
+
   render() {
     return (
       <View style={styles.container}>
