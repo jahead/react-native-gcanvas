@@ -1,11 +1,11 @@
 import GLmethod from '../context/webgl/GLmethod';
 
 const isReactNativeIOS = () => {
-  GBridge.Platform.OS === 'ios';
+  return GBridge.Platform.OS === 'ios';
 };
 
 const isReactNativeAndroid = () => {
-  GBridge.Platform.OS === 'android';
+  return GBridge.Platform.OS === 'android';
 };
 
 let isDebugging = false;
@@ -100,7 +100,7 @@ const GBridge = {
 
     const result = GBridge.GCanvasModule.extendCallNative({
       contextId: componentId,
-      type: 0x60000001,
+      type: isReactNativeIOS() ? 0x60000000 : 0x60000001,
       args: cmdArgs,
     });
 

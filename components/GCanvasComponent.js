@@ -58,7 +58,7 @@ export default class GCanvasView extends Component {
       },
       {
         bridge: ReactNativeBridge,
-        disableAutoSwap: true,
+        disableAutoSwap: Platform.OS === 'ios' ? false : true,
       },
     );
 
