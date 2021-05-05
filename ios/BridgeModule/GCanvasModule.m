@@ -459,9 +459,12 @@ static NSMutableDictionary  *_staticModuleExistDict;
  */
 - (void)refreshPlugin:(GCanvasPlugin*)plugin withComponent:(id<GCanvasViewProtocol>)component{
     CGFloat devicePixelRatio = 1.0;
-    if( plugin.contextType == GCVContextType2D ){
+//    if( plugin.contextType == GCVContextType2D ){
+        // To let iOS has the same x y scale with Android and Web against same JS code
         devicePixelRatio = component.devicePixelRatio;
-    }
+//    }
+
+    GCVLOG_METHOD(@"enable devicePixelRatio %f", devicePixelRatio);
     [plugin setDevicePixelRatio:devicePixelRatio];
     
     CGRect compFrame = component.componetFrame;
