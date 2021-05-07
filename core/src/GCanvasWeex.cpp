@@ -1465,7 +1465,7 @@ int GCanvasWeex::getCmdType(int type) {
 }
 
 int GCanvasWeex::getSyncAttrib(int type) {
-    return (type >> 29) && 0x1;
+    return (type >> 29) & 0x1;
 }
 
 int GCanvasWeex::getOpType(int type) {
