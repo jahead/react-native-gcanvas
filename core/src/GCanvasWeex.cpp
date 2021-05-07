@@ -1622,7 +1622,9 @@ void GCanvasWeex::QueueProc(std::queue<struct GCanvasCmd *> *queue) {
         }
         queue->pop();
 
-        delete p;
+        if (p != nullptr) {
+            delete p;
+        }
 
         if (sync == SYNC) {
             setSyncFlag();
