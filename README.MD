@@ -128,7 +128,12 @@ With react-app-rewired, my react-native-web@0.15.0 and RN 0.63+ without expo pro
 ## Example As Usage
 3d webgl examples see [webgl_demo](webgl_demo).
 
+<img src="https://raw.githubusercontent.com/flyskywhy/react-native-gcanvas/master/assets/webgl_cube.gif" width="480">
+
 2d canvas example see below.
+
+<img src="https://raw.githubusercontent.com/flyskywhy/react-native-gcanvas/master/assets/canvas.gif" width="480">
+
 ```javascript
 import React, {Component} from 'react';
 import {
