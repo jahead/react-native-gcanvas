@@ -1,6 +1,32 @@
-# Chnagelog
+# Changelog
 
 All notable changes of this project will be documented in.
+
+
+## [2.1.0] - 2021-05-08
+
+### Changed
+
+* React Native GCanvas Component
+	* feat: can render 3d webgl on Android and iOS now
+	* fix: resolve the bug in refreshPlugin(), then iOS has the same x y scale with Android and Web against same JS code
+	* fix: `A/libc(6413): Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 6684 (JNISurfaceTextu)` by
+
+        /c/programs/android-sdk/ndk/20.0.5594570/toolchains/aarch64-linux-android-4.9/prebuilt/windows-x86_64/bin/aarch64-linux-android-addr2line.exe -e react-native-gcanvas/android/gcanvas_library/build/intermediates/cmake/debug/obj/arm64-v8a/libgcanvas.so 0000000000087abc
+
+    ref to the related log:
+
+        A/DEBUG(10049):       #03 pc 0000000000087abc  /data/app/com.sunlay.light-pqSaddcROPi9EDeUpEbxWw==/lib/arm64/libgcanvas.so (BuildId: 916bb745ddfe7df39f27c57400b0196947e866dc)
+
+
+
+## [2.0.1] - 2021-05-04
+
+### Changed
+
+* React Native GCanvas Component
+	* fix: #12 `Blank screen Android`
+	* fix: #13 `why "0" shown?`
 
 
 ## [2.0.0] - 2020-12-22
