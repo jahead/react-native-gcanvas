@@ -126,11 +126,14 @@ With react-app-rewired, my react-native-web@0.15.0 and RN 0.63+ without expo pro
 
 
 ## Example As Usage
-3d webgl examples see [webgl_demo](webgl_demo).
+### 3D webgl
+3D webgl examples see [webgl_demo](webgl_demo).
+
+Here is the result of [webgl_demo/cube.js](webgl_demo/cube.js).
 
 <img src="https://raw.githubusercontent.com/flyskywhy/react-native-gcanvas/master/assets/webgl_cube.gif" width="480">
 
-2d canvas example see below.
+### 2D canvas
 
 <img src="https://raw.githubusercontent.com/flyskywhy/react-native-gcanvas/master/assets/canvas.gif" width="480">
 
