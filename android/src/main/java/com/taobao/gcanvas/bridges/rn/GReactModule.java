@@ -519,7 +519,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
                 addCacheCommand(refId, new TexImage2DCmd(refId, target, level, internalformat, format, type, path));
                 return;
             }
-            mImpl.texImage2D(refId, target, level, internalformat, format, type, path);
+            mImpl.texImage2D(textureView.getCanvasKey(), target, level, internalformat, format, type, path);
         }
     }
 
@@ -532,7 +532,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
                 addCacheCommand(refId, new TexSubImage2DCmd(refId, target, level, xoffset, yoffset, format, type, path));
                 return;
             }
-            mImpl.texSubImage2D(refId, target, level, xoffset, yoffset, format, type, path);
+            mImpl.texSubImage2D(textureView.getCanvasKey(), target, level, xoffset, yoffset, format, type, path);
         }
     }
 
