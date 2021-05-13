@@ -129,6 +129,8 @@ With react-app-rewired, my react-native-web@0.15.0 and RN 0.63+ without expo pro
 ### 3D webgl
 3D webgl examples see [webgl_demo](webgl_demo).
 
+issue: not support `gl.UNPACK_FLIP_Y_WEBGL` in [webgl_demo/texture.js](webgl_demo/texture.js).
+
 Here is the result of [webgl_demo/cube.js](webgl_demo/cube.js).
 
 <img src="https://raw.githubusercontent.com/flyskywhy/react-native-gcanvas/master/assets/webgl_cube.gif" width="480">

@@ -52,7 +52,7 @@ export default class App extends Component {
   // ref to https://github.com/flyskywhy/react-native-gcanvas/blob/f01fa6917c4a4938bf9b1bb8cab2358f93a7b4b4/examples/WeexGCanvasExample/examples/webgl/texture.vue
   loadImage = (url, callback) => {
     let image = Platform.OS === 'web' ? new Image() : new GImage();
-    image.crossOrigin = true;
+    image.crossOrigin = true; // need this if image in not on same web site where APP runs
     image.onload = function () {
       callback(image);
     };
