@@ -42,17 +42,13 @@ With 800 circles backgroundColor generate and render continually
 
     setNativeProps        UI: 60 fps       JS: 15 fps (smooth for human eyes)
     react-native-gcanvas  UI: 20 fps       JS: 59 fps (stuck for human eyes)
-
-    // if render2d sync by dispatch_main_sync_safe with execCommandById() of ios/BridgeModule/GCanvasModule.m
-    react-native-gcanvas  UI: 40 fps       JS: 58 fps (very stuck for human eyes)
+    react-native-gcanvas in release mode              (smooth for human eyes)
 
 With 1400 circles backgroundColor generate and render continually
 
     setNativeProps        UI: 59 fps       JS: 7 fps  (smooth for human eyes)
     react-native-gcanvas  UI: 10 fps       JS: 58 fps (stuck for human eyes)
-
-    // if render2d sync by dispatch_main_sync_safe with execCommandById() of ios/BridgeModule/GCanvasModule.m
-    react-native-gcanvas  UI: 40 fps       JS: 15 fps (very very stuck for human eyes)
+    react-native-gcanvas in release mode              (smooth for human eyes)
 
 
 ## Convenient With Browser-like canvas APIs
@@ -64,7 +60,7 @@ With 1400 circles backgroundColor generate and render continually
 
 Ref to [Experiments with High Performance Animation in React Native](https://engineering.salesforce.com/experiments-with-high-performance-animation-in-react-native-80a0cb7052b0), it use many ways include `setNativeProps` and [React Native NanoVG](https://github.com/robclouth/react-native-art-nanovg). Maybe `nanovg` can deal with the performance problem, but for now (2020.12) there is no React Native canvas component using  `nanovg` to let many React components developed by browser-like canvas APIs be easily ported to React Native.
 
-So for now (2020.12), `@flyskywhy/react-native-gcanvas` is the best choice, at least on Android (performance on iOS is lower than setNativeProps).
+So for now (2020.12), `@flyskywhy/react-native-gcanvas` is the best choice.
 
 ### canvas projects ported from React to React Native
 * [react-native-particles-bg](https://github.com/flyskywhy/react-native-particles-bg) just ported one file to [Support react-native](https://github.com/flyskywhy/react-native-particles-bg/commit/637ab13) from [particles-bg](https://github.com/lindelof/particles-bg) which based on [Proton](https://github.com/drawcall/Proton). You can also compare it with [react-native-particles-webgl](https://github.com/flyskywhy/react-native-particles-webgl) which based on memory leaking [react-three-fiber](https://github.com/pmndrs/react-three-fiber).
