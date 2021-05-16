@@ -3,6 +3,14 @@
 All notable changes of this project will be documented in.
 
 
+## [2.1.2] - 2021-05-16
+
+### Changed
+
+* React Native GCanvas Component
+	* fix: a bug will more and more outer-sync between drawing on JS and displaying on iOS
+
+
 ## [2.1.0] - 2021-05-08
 
 ### Changed
