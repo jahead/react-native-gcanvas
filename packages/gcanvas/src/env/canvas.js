@@ -50,7 +50,7 @@ export default class GCanvas {
         GCanvas.GBridge.render2d(this.id, commands);
         this._needRender = false;
       };
-      setInterval(render, 16);
+      setInterval(render, 16); // 16ms is just enough for drawInRect as described with `execCommands` in `ios/BridgeModule/GCanvasPlugin.mm`
 
       GCanvas.GBridge.callSetContextType(this.id, 0);
     } else {

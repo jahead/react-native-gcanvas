@@ -126,14 +126,31 @@
     if( !self.gcanvas || !self.gcanvasInited ) return;
 
     @synchronized (self) {
-        if(self.renderCommandArray.count == 0){
+        int count = (int)self.renderCommandArray.count;
+        if (count == 0) {
             return;
         }
+#if 0
+//        if (count > 3) { // use this for not too much frameskip
+//            count  = 3;
+//        }
         NSString* cmd = self.renderCommandArray[0];
+        NSMutableIndexSet *indexes = [NSMutableIndexSet indexSetWithIndex:0];
+        for (int i = 1; i < count; i++) {
+            cmd = [cmd stringByAppendingString:self.renderCommandArray[i]];
+            [indexes addIndex:i];
+       }
         int cmdLen = (int)strlen(cmd.UTF8String);
-        GCVLOG_METHOD(@"execCommands, len:%d, command=%@", cmdLen, cmd);
+        GCVLOG_METHOD(@"execCommands, frameskip:%d, len:%d, command=%@", count - 1, cmdLen, cmd);
         self.gcanvas->Render(cmd.UTF8String, cmdLen);
-        [self.renderCommandArray removeObjectAtIndex:0];
+        [self.renderCommandArray removeObjectsAtIndexes:indexes];
+#else // only exec last cmd comes from last 16ms with `setInterval(render, 16)` in `packages/gcanvas/src/env/canvas.js`, is enough for one drawInRect
+        NSString* cmd = self.renderCommandArray[count - 1];
+        int cmdLen = (int)strlen(cmd.UTF8String);
+        GCVLOG_METHOD(@"execCommands, frameskip:%d, len:%d, command=%@", count - 1, cmdLen, cmd);
+        self.gcanvas->Render(cmd.UTF8String, cmdLen);
+        [self.renderCommandArray removeAllObjects];
+#endif
     }
 }
 
