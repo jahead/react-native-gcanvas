@@ -125,7 +125,7 @@ With react-app-rewired, my react-native-web@0.15.0 and RN 0.63+ without expo pro
 ### 3D webgl
 3D webgl examples see [webgl_demo](webgl_demo).
 
-issue: not support `gl.UNPACK_FLIP_Y_WEBGL` in [webgl_demo/texture.js](webgl_demo/texture.js).
+`gl.UNPACK_FLIP_Y_WEBGL` is not support in [webgl_demo/texture.js](webgl_demo/texture.js), and will not be supported ref to [y-orientation for texImage2D from HTML elements](https://www.khronos.org/webgl/public-mailing-list/public_webgl/1212/msg00022.php).
 
 Here is the result of [webgl_demo/cube.js](webgl_demo/cube.js).
 
