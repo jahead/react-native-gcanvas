@@ -2,10 +2,12 @@ package com.taobao.gcanvas.bridges.rn;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -34,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -502,6 +505,33 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         }
 
         mImpl.setContextType(refId, type);
+    }
+
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String toDataURL(String refId, String mimeType, int quality) {
+        if (TextUtils.isEmpty(refId)) {
+            return "";
+        }
+
+        GReactTextureView textureView = mViews.get(refId);
+        if (null == textureView) {
+            GLog.w(TAG, "toDataURL can not find canvas with id ===> " + refId);
+            return "";
+        }
+
+        Bitmap bmp = textureView.getBitmap();
+        Bitmap.CompressFormat format = Bitmap.CompressFormat.PNG;
+        String base64Str = "data:image/png;base64,";
+        if (mimeType.equals("image/jpeg")) {
+            format = Bitmap.CompressFormat.JPEG;
+            base64Str = "data:image/jpeg;base64,";
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bmp.compress(format, quality, baos);
+        byte[] byteArray = baos.toByteArray();
+
+        return base64Str + Base64.encodeToString(byteArray, Base64.NO_WRAP);
     }
 
 
