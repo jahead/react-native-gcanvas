@@ -358,6 +358,36 @@ static NSMutableDictionary  *_staticModuleExistDict;
     }
 }
 
+- (NSString*)toDataURL:(NSString*)componentId mimeType:(NSString*)mimeType quality:(CGFloat)quality {
+    GCanvasObject *gcanvasInst = self.gcanvasObjectDict[componentId];
+    if( !gcanvasInst ){
+        return @"";
+    }
+
+    if (gcanvasInst.component) {
+        __block UIImage *image;
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            UIGraphicsBeginImageContextWithOptions(gcanvasInst.component.glkview.bounds.size, NO, [UIScreen mainScreen].scale);
+            [gcanvasInst.component.glkview drawViewHierarchyInRect:gcanvasInst.component.glkview.frame afterScreenUpdates:YES];
+            image = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+        });
+
+        NSData *data;
+        NSString *base64Str = @"data:image/png;base64,";
+        if ([mimeType isEqualToString:@"image/jpeg"]) {
+            data = UIImageJPEGRepresentation(image, quality);
+            base64Str = @"data:image/jpeg;base64,";
+        } else {
+            data = UIImagePNGRepresentation(image);
+        }
+
+        return [base64Str stringByAppendingString:[data base64EncodedStringWithOptions:0]];
+    } else {
+        return @"";
+    }
+}
+
 /**
  * Export JS method  set log level
  * @param   level  loglevel 0-debug,1-info,2-warn,3-error

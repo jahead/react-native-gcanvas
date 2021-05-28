@@ -108,6 +108,11 @@ RCT_EXPORT_METHOD(setContextType:(NSUInteger)type componentId:(NSString*)compone
     [self.gcanvasModule setContextType:type componentId:componentId];
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(toDataURL:(NSString*)componentId mimeType:(NSString*)mimeType quality:(CGFloat)quality)
+{
+    return [self.gcanvasModule toDataURL:componentId mimeType:mimeType quality:quality];
+}
+
 //set loglevel
 RCT_EXPORT_METHOD(setLogLevel:(NSUInteger)level)
 {

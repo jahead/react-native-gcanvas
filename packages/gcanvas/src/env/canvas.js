@@ -61,9 +61,8 @@ export default class GCanvas {
   }
 
   toDataURL(type = 'image/png', encoderOptions = 0.92) { // default value comes from https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toDataURL
-    let quality = parseInt(encoderOptions * 100, 10);
-    quality = quality < 0 ? 0 : quality;
-    quality = quality > 100 ? 100 : quality;
+    let quality = encoderOptions < 0.0 ? 0.0 : encoderOptions;
+    quality = quality > 1.0 ? 1.0 : quality;
 
     return GCanvas.GBridge.callToDataURL(this.id, type, quality);
   }

@@ -509,7 +509,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
 
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    public String toDataURL(String refId, String mimeType, int quality) {
+    public String toDataURL(String refId, String mimeType, float quality) {
         if (TextUtils.isEmpty(refId)) {
             return "";
         }
@@ -528,7 +528,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
             base64Str = "data:image/jpeg;base64,";
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(format, quality, baos);
+        bmp.compress(format, (int)(quality * 100), baos);
         byte[] byteArray = baos.toByteArray();
 
         return base64Str + Base64.encodeToString(byteArray, Base64.NO_WRAP);

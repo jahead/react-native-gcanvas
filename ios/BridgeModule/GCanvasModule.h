@@ -99,6 +99,8 @@ typedef void (^GCanvasModuleCallback)(id result);
  */
 - (void)setContextType:(NSUInteger)type componentId:(NSString*)componentId;
 
+- (NSString*)toDataURL:(NSString*)componentId mimeType:(NSString*)mimeType quality:(CGFloat)quality;
+
 /**
  * Export JS method  set log level
  * @param   level  loglevel 0-debug,1-info,2-warn,3-error
