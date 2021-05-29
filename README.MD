@@ -297,20 +297,6 @@ const styles = StyleSheet.create({
 });
 ```
 
-## Alibaba Distribution
-### GCanvas
-
-* iOS [GCanvas](https://cocoapods.org/pods/GCanvas) [![CocoaPods Version](https://badge.fury.io/co/GCanvas.svg)](https://badge.fury.io/co/GCanvas)
-
-* Android com.taobao.gcanvas:core:1.1.0(publishing)
-
-### GCanvas Weex Component
-
-* iOS [WeexGcanvas](https://cocoapods.org/pods/WeexGcanvas) [![CocoaPods Version](https://badge.fury.io/co/WeexGcanvas.svg)](https://badge.fury.io/co/GCanvas)
-
-* Android com.taobao.gcanvas.bridges:weex-brigde 1.1.0 (publishing)
-
-
 ## Features
 - Cross-platform, support popular iOS and Android.
 - High performance, accelerate graphic draw by OpenGL ES.
@@ -327,8 +313,6 @@ See the [Introduction to GCanvas](https://alibaba.github.io/GCanvas/docs/Develop
 Follow [Weex Setup Guide](https://alibaba.github.io/GCanvas/docs/Integrate%20GCanvas%20on%20Weex.html) to integrate GCanvas on Weex.
 
 ### JavaScript
-Try our [Playground](https://alibaba.github.io/GCanvas/playground.html).
-
 GCanvas has browser-like canvas APIs, so almost all of the APIs are exactly same as HTML5 canvas. At this moment, we have already supported 90% of 2D APIs and 99% of WebGL APIs. You can find out those informations in [2D APIs](https://alibaba.github.io/GCanvas/docs/Graphics%202D.html) and [WebGL APIs](https://alibaba.github.io/GCanvas/docs/WebGL.html).
 
 
@@ -356,6 +340,13 @@ Please read [CONTRIBUTING](./docs/Contributing.md) for details on our code of co
 
 * GCanvas Open Source Team
 * Li Zheng <flyskywhy@gmail.com>
+
+## Donate
+To support my work, please consider donate. 🍻
+
+- 💸 ETH: 0xd02fa2738dcbba988904b5a9ef123f7a957dbb3e
+
+<img src="https://raw.githubusercontent.com/flyskywhy/flyskywhy/main/assets/alipay_weixin.png" width="500">
 
 ## License
 

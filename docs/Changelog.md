@@ -3,6 +3,14 @@
 All notable changes of this project will be documented in.
 
 
+## [2.2.0] - 2021-05-29
+
+### Changed
+
+* React Native GCanvas Component
+	* feat: add toDataURL() on Android and iOS
+
+
 ## [2.1.2] - 2021-05-16
 
 ### Changed
