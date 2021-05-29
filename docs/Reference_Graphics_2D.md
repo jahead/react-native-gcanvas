@@ -29,7 +29,7 @@ Legend
 | addColorStop()           | Method                  | Implemented   |
 | isPointInPath()          | Method                  | *Empty*       |
 | createEvent()            | Method                  | **Undefined** |
-| toDataURL()              | Method                  | **Undefined** |
+| toDataURL()              | Method                  | Implemented   |
 | lineCap                  | Attribute getter/setter | Implemented   |
 | lineJoin                 | Attribute getter/setter | Implemented   |
 | lineWidth                | Attribute getter/setter | Implemented   |

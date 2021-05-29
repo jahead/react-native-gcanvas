@@ -253,17 +253,20 @@ export default class App extends Component {
     setInterval(draw, 16);
   };
 
+  takePicture = () => {
+    if (this.canvas) {
+      const data = this.canvas.toDataURL('image/jpeg', 0.77);
+      console.warn(data);
+    }
+  };
+
   render() {
     return (
       <View style={styles.container}>
         <TouchableHighlight onPress={this.drawSome}>
           <Text style={styles.welcome}>{this.state.debugInfo}</Text>
         </TouchableHighlight>
-        <View
-          style={{
-            backgroundColor:
-              'black',
-          }}>
+        <View style={{backgroundColor: 'black'}}>
           {Platform.OS === 'web' ? (
             <canvas
               ref={this.initCanvas}
@@ -282,6 +285,9 @@ export default class App extends Component {
             />
           )}
         </View>
+        <TouchableHighlight onPress={this.takePicture}>
+          <Text style={styles.welcome}>Click me toDataURL('image/jpeg', 0.77)</Text>
+        </TouchableHighlight>
       </View>
     );
   }

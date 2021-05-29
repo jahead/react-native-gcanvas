@@ -205,6 +205,7 @@ export default class App extends Component {
       this.ctx.fill();
 
       let imageHttp = Platform.OS === 'web' ? new Image() : new GImage();
+      imageHttp.crossOrigin = true; // need this to solve `Uncaught DOMException: Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported.` on Web
       imageHttp.onload = () => {
         this.ctx.drawImage(imageHttp, 70, 0, 112, 37);
       };
@@ -238,6 +239,13 @@ export default class App extends Component {
     }
   };
 
+  takePicture = () => {
+    if (this.canvas) {
+      const data = this.canvas.toDataURL();
+      console.warn(data);
+    }
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -261,6 +269,9 @@ export default class App extends Component {
             style={styles.gcanvas}
           />
         )}
+        <TouchableHighlight onPress={this.takePicture}>
+          <Text style={styles.welcome}>Click me toDataURL()</Text>
+        </TouchableHighlight>
       </View>
     );
   }
