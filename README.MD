@@ -346,7 +346,7 @@ To support my work, please consider donate.
 
 - ETH: 0xd02fa2738dcbba988904b5a9ef123f7a957dbb3e
 
-<img src="https://raw.githubusercontent.com/flyskywhy/flyskywhy/main/assets/alipay_weixin.png" width="500">
+- <img src="https://raw.githubusercontent.com/flyskywhy/flyskywhy/main/assets/alipay_weixin.png" width="500">
 
 ## License
 
