@@ -32,9 +32,7 @@ export function enable(el, { bridge, debug, disableAutoSwap, disableComboCommand
     GBridge.callEnableDisableCombo();
   }
 
-  var canvas = new GCanvas(el.ref, { disableAutoSwap });
-  canvas.width = el.style.width;
-  canvas.height = el.style.height;
+  var canvas = new GCanvas(el.ref, {disableAutoSwap, style: el.style});
 
   return canvas;
-};
+}

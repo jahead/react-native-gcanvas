@@ -1,94 +1,50 @@
+import Element from '@flyskywhy/react-native-browser-polyfill/src/DOM/Element';
+import {defineEventAttribute} from 'event-target-shim';
+
 let id = 1;
 
-const noop = function() { };
-
-class GImage {
+class GImage extends Element {
   static GBridge = null;
 
   constructor() {
+    super('img');
     this._id = id++;
-    this._width = 0;
-    this._height = 0;
+    this.width = 0;
+    this.height = 0;
     this._src = undefined;
-    this._onload = noop;
-    this._onerror = noop;
     this.complete = false;
-  }
-
-  get width() {
-    return this._width;
-  }
-  set width(v) {
-    this._width = v;
-  }
-
-  get height() {
-    return this._height;
-  }
-
-  set height(v) {
-    this._height = v;
   }
 
   get src() {
     return this._src;
   }
 
-  set src(v) {
-    if (v.startsWith('//')) {
-      v = 'http:' + v;
+  set src(value) {
+    if (value.startsWith('//')) {
+      value = 'http:' + value;
     }
 
-    this._src = v;
+    this._src = value;
 
     GImage.GBridge.perloadImage([this._src, this._id], (data) => {
       if (typeof data === 'string') {
         data = JSON.parse(data);
       }
       if (data.error) {
-        var evt = { type: 'error', target: this, message: data.error };
-        this.onerror(evt);
+        var evt = {type: 'error', target: this, message: data.error};
+        this.dispatchEvent(evt);
       } else {
         this.complete = true;
         this.width = typeof data.width === 'number' ? data.width : 0;
         this.height = typeof data.height === 'number' ? data.height : 0;
-        var evt = { type: 'load', target: this };
-        this.onload(evt);
+        var evt = {type: 'load', target: this};
+        this.dispatchEvent(evt);
       }
     });
   }
-
-  addEventListener(name, listener) {
-    if (name === 'load') {
-      this.onload = listener;
-    } else if (name === 'error') {
-      this.onerror = listener;
-    }
-  }
-
-  removeEventListener(name, listener) {
-    if (name === 'load') {
-      this.onload = noop;
-    } else if (name === 'error') {
-      this.onerror = noop;
-    }
-  }
-
-  get onload() {
-    return this._onload;
-  }
-
-  set onload(v) {
-    this._onload = v;
-  }
-
-  get onerror() {
-    return this._onerror;
-  }
-
-  set onerror(v) {
-    this._onerror = v;
-  }
 }
+
+defineEventAttribute(GImage.prototype, 'onload');
+defineEventAttribute(GImage.prototype, 'error');
 
 export default GImage;

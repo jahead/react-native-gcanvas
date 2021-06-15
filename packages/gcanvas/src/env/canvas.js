@@ -1,14 +1,18 @@
+import Element from '@flyskywhy/react-native-browser-polyfill/src/DOM/Element';
 import GContext2D from '../context/2d/RenderingContext';
 import GContextWebGL from '../context/webgl/RenderingContext';
 
-export default class GCanvas {
+export default class GCanvas extends Element {
   static GBridge = null;
 
   id = null;
+  width = 100;
+  height = 150;
 
   _needRender = true;
 
-  constructor(id, { disableAutoSwap }) {
+  constructor(id, {disableAutoSwap, style}) {
+    super('canvas');
     this.id = id;
 
     this._disableAutoSwap = disableAutoSwap;
@@ -17,6 +21,9 @@ export default class GCanvas {
         GCanvas.GBridge.render(this.id);
       };
     }
+
+    this.width = style.width;
+    this.height = style.height;
   }
 
   getContext(type) {
@@ -60,7 +67,8 @@ export default class GCanvas {
     return context;
   }
 
-  toDataURL(type = 'image/png', encoderOptions = 0.92) { // default value comes from https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toDataURL
+  // default 0.92 comes from https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toDataURL
+  toDataURL(type = 'image/png', encoderOptions = 0.92) {
     let quality = encoderOptions < 0.0 ? 0.0 : encoderOptions;
     quality = quality > 1.0 ? 1.0 : quality;
 

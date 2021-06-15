@@ -3,12 +3,14 @@ import React, {Component} from 'react';
 import {
   NativeEventEmitter,
   NativeModules,
+  PanResponder,
   Platform,
   Text,
   View,
   findNodeHandle,
   requireNativeComponent,
 } from 'react-native';
+import '@flyskywhy/react-native-browser-polyfill';
 import {enable, disable, ReactNativeBridge} from '../packages/gcanvas';
 ReactNativeBridge.GCanvasModule = NativeModules.GCanvasModule;
 ReactNativeBridge.Platform = Platform;
@@ -27,6 +29,34 @@ export default class GCanvasView extends Component {
     super(props);
     this.refCanvasView = null;
     this.canvas = null;
+
+    let panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => false,
+      onPanResponderGrant: (event) => {
+        let eventShim = {...event.nativeEvent, type: 'mousedown'};
+        this.canvas.dispatchEvent(eventShim);
+        window.dispatchEvent(eventShim);
+      },
+      onPanResponderMove: (event, gestureState) => {
+        let eventShim = {...event.nativeEvent, type: 'mousemove'};
+        this.canvas.dispatchEvent(eventShim);
+
+        // as `node_modules/zdog/js/dragger.js` use window.addEventListener not element.addEventListener on mousemove
+        window.dispatchEvent(eventShim);
+      },
+      onPanResponderRelease: (event, gestureState) => {
+        let eventShim = {...event.nativeEvent, type: 'mouseup'};
+        this.canvas.dispatchEvent(eventShim);
+        window.dispatchEvent(eventShim);
+      },
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderTerminate: () => false,
+    });
+
+    this.state = {
+      panResponder,
+    };
   }
 
   static propTypes = {
@@ -43,6 +73,16 @@ export default class GCanvasView extends Component {
   };
 
   _onLayout = (event) => {
+    // When onLayout is invoked again (e.g. change phone orientation), if assign
+    // `this.canvas` again, that also means `this` in dispatchEvent() of
+    // `event-target-shim/dist/event-target-shim.js` changed, thus dispatchEvent()
+    // can do nothing and cause `node_modules/zdog/js/dragger.js` can't be moved
+    // by finger anymore.
+    // So let `this.canvas` be assigned here only once.
+    if (this.canvas !== null) {
+      return;
+    }
+
     if (this.refCanvasView === null) {
       this._onLayout(event);
       return;
@@ -68,6 +108,8 @@ export default class GCanvasView extends Component {
     // ReactNativeBridge.GCanvasModule.setLogLevel(0); // 0 means DEBUG
 
     if (Platform.OS === 'ios') {
+      // while always true in _onIsReady(), here is just to suppress warning
+      // on iOS Sending `GCanvasReady` with no listeners registered.
       const emitter = new NativeEventEmitter(ReactNativeBridge.GCanvasModule);
       emitter.addListener('GCanvasReady', this._onIsReady);
     }
@@ -95,6 +137,7 @@ export default class GCanvasView extends Component {
       return (
         <CanvasView
           {...this.props}
+          {...this.state.panResponder.panHandlers}
           ref={(view) => (this.refCanvasView = view)}
           onLayout={this._onLayout}
           onChange={this._onIsReady}
