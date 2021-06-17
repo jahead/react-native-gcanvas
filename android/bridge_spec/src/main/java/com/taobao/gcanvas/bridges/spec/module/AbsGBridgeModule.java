@@ -93,7 +93,7 @@ public abstract class AbsGBridgeModule<JSCallback> implements IGBridgeModule<JSC
                 if (src.startsWith("data:image")) {
                     Bitmap bmp = handleBase64Texture(src.substring(src.indexOf("base64,") + "base64,".length()));
                     if (bmp != null) {
-                        GCanvasJNI.bindTexture(canvasId, bmp, 0, GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE);
+                        GCanvasJNI.bindTexture(canvasId, bmp, id, GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE);
                     } else {
                         GLog.d("decode base64 texture failed,bitmap is null.");
                     }
