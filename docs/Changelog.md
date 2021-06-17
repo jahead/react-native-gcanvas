@@ -3,6 +3,15 @@
 All notable changes of this project will be documented in.
 
 
+## [2.3.0] - 2021-06-17 Congratulations to China on the successful launch of crew to our Tiangong space station
+
+### Changed
+
+* React Native GCanvas Component
+	* feat: use @flyskywhy/react-native-browser-polyfill to support window.Element to directly render `zdog` and support mousemove in `zdog`
+	* fix: a bug can't drawImage when the image.src.startsWith('data:')
+
+
 ## [2.2.0] - 2021-05-29
 
 ### Changed

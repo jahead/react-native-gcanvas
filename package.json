@@ -1,6 +1,6 @@
 {
   "name": "@flyskywhy/react-native-gcanvas",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "A C++ native canvas 2D/WebGL component based on gpu opengl glsl shader GCanvas",
   "main": "index",
   "scripts": {
@@ -25,6 +25,10 @@
     "opengl",
     "webgl"
   ],
+  "dependencies": {
+    "@flyskywhy/react-native-browser-polyfill": "^1.0.0"
+  },
+  "private": false,
   "funding": [{
     "type": "individual",
     "url": "https://Alipay/flyskywhy@gmail.com"
