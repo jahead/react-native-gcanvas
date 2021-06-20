@@ -63,7 +63,9 @@ Ref to [Experiments with High Performance Animation in React Native](https://eng
 So for now (2020.12), `@flyskywhy/react-native-gcanvas` is the best choice.
 
 ### canvas projects ported from React to React Native
-* [react-native-particles-bg](https://github.com/flyskywhy/react-native-particles-bg) just ported one file to [Support react-native](https://github.com/flyskywhy/react-native-particles-bg/commit/637ab13) from [particles-bg](https://github.com/lindelof/particles-bg) which based on [Proton](https://github.com/drawcall/Proton). You can also compare it with [react-native-particles-webgl](https://github.com/flyskywhy/react-native-particles-webgl) which based on memory leaking [react-three-fiber](https://github.com/pmndrs/react-three-fiber).
+* [react-native-particles-bg](https://github.com/flyskywhy/react-native-particles-bg) just ported one file to [Support react-native](https://github.com/flyskywhy/react-native-particles-bg/commit/637ab13) from [particles-bg](https://github.com/lindelof/particles-bg) which based on [Proton](https://github.com/drawcall/Proton). You can also compare it with [react-native-particles-webgl](https://github.com/flyskywhy/react-native-particles-webgl) which based on memory leaking [react-three-fiber](https://github.com/pmndrs/react-three-fiber). Here is a result in my APP PlayLights.
+
+<img src="https://raw.githubusercontent.com/flyskywhy/react-native-gcanvas/master/assets/PlayLightsAbout.gif" width="480">
 
 * [zdog](https://github.com/metafizzy/zdog) actually no need modify any code of itself as described in [@flyskywhy/react-native-browser-polyfill](https://github.com/flyskywhy/react-native-browser-polyfill), and here is a result.
 
