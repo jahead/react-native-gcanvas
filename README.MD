@@ -73,12 +73,12 @@ So for now (2020.12), `@flyskywhy/react-native-gcanvas` is the best choice.
 
 ## Getting Started
 ### react-native
-Support RN >= 0.60
+Only support RN >= `0.62` as described in [android/gcanvas_library/build.gradle](android/gcanvas_library/build.gradle)
 
     npm install @flyskywhy/react-native-gcanvas --save
 
 #### Android
-Add below into `android/settings.gradle`
+Add below into `/android/settings.gradle`
 ```
 include ':android:gcanvas_library'
 project(':android:gcanvas_library').projectDir = new File(rootProject.projectDir, '../node_modules/@flyskywhy/react-native-gcanvas/android/gcanvas_library')
@@ -90,7 +90,7 @@ include ':android:adapters:bridge_adapter'
 project(':android:adapters:bridge_adapter').projectDir = new File(rootProject.projectDir, '../node_modules/@flyskywhy/react-native-gcanvas/android/adapters/bridge_adapter')
 ```
 
-Add below into `react-native.config.js`
+Add below into `/react-native.config.js`
 ```
 const path = require('path');
 
@@ -109,7 +109,7 @@ module.exports = {
 
 #### iOS
 
-Add below into `ios/Podfile`
+Add below into `/ios/Podfile`
 ```
   pod "GCanvas", :path => "../node_modules/@flyskywhy/react-native-gcanvas/GCanvas.podspec"
 ```
