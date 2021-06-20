@@ -26,7 +26,7 @@
     "webgl"
   ],
   "dependencies": {
-    "@flyskywhy/react-native-browser-polyfill": "^1.0.0"
+    "@flyskywhy/react-native-browser-polyfill": "^1.0.1"
   },
   "private": false,
   "funding": [{
