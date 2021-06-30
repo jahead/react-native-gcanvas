@@ -496,13 +496,15 @@ static NSMutableDictionary  *_staticModuleExistDict;
 
     GCVLOG_METHOD(@"enable devicePixelRatio %f", devicePixelRatio);
     [plugin setDevicePixelRatio:devicePixelRatio];
-    
-    CGRect compFrame = component.componetFrame;
-    CGRect gcanvasFrame = CGRectMake(compFrame.origin.x, compFrame.origin.y,
-                                     compFrame.size.width*devicePixelRatio,
-                                     compFrame.size.height*devicePixelRatio);
-    [plugin setClearColor:component.glkview.backgroundColor];
-    [plugin setFrame:gcanvasFrame];
+
+    dispatch_main_sync_safe(^{
+        CGRect compFrame = component.componetFrame;
+        CGRect gcanvasFrame = CGRectMake(compFrame.origin.x, compFrame.origin.y,
+                                         compFrame.size.width*devicePixelRatio,
+                                         compFrame.size.height*devicePixelRatio);
+        [plugin setClearColor:component.glkview.backgroundColor];
+        [plugin setFrame:gcanvasFrame];
+    });
 }
 
 #pragma mark - GLKViewDelegate
