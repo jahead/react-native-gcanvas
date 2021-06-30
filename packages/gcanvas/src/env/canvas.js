@@ -2,6 +2,10 @@ import Element from '@flyskywhy/react-native-browser-polyfill/src/DOM/Element';
 import GContext2D from '../context/2d/RenderingContext';
 import GContextWebGL from '../context/webgl/RenderingContext';
 
+function sleepMs(ms) {
+  for (var start = new Date(); new Date() - start <= ms; ) {}
+}
+
 export default class GCanvas extends Element {
   static GBridge = null;
 
@@ -53,6 +57,12 @@ export default class GCanvas extends Element {
 
         setInterval(render, 16);
       }
+
+      // On Android, need `sleepMs()` by `for(;;)` to wait enough (or wait until m_requestInitialize be true?) to
+      // let `mProxy->SetClearColor` be invoked in renderLoop() of core/android/3d/view/grenderer.cpp
+      // at the very first, otherwise can't `gl.clearColor` right away on canvas.getContext('webgl')
+      // like https://github.com/flyskywhy/react-native-gcanvas/issues/24
+      sleepMs(100);
     } else if (type.match(/2d/i)) {
       context = new GContext2D(this);
 
