@@ -34,6 +34,8 @@ export default class GCanvas extends Element {
 
       context.componentId = this.id;
 
+      GCanvas.GBridge.callSetContextType(this.id, 1); // 0 for 2d; 1 for webgl
+
       if (!this._disableAutoSwap) {
         const render = () => {
           if (this._needRender) {
@@ -41,10 +43,16 @@ export default class GCanvas extends Element {
             this._needRender = false;
           }
         };
+
+        // On iOS, need run `GCanvas.GBridge.callSetContextType(this.id, 1);`
+        // above then run `GCanvas.GBridge.render(this.id);` below to
+        // let `plugin setClearColor` be invoked in refreshPlugin() of ios/BridgeModule/GCanvasModule.m
+        // at the very first, otherwise can't `gl.clearColor` right away on canvas.getContext('webgl')
+        // like https://github.com/flyskywhy/react-native-gcanvas/issues/24
+        GCanvas.GBridge.render(this.id);
+
         setInterval(render, 16);
       }
-
-      GCanvas.GBridge.callSetContextType(this.id, 1); // 0 for 2d; 1 for webgl
     } else if (type.match(/2d/i)) {
       context = new GContext2D(this);
 
