@@ -621,8 +621,12 @@ static NSMutableDictionary  *_staticModuleExistDict;
                 }
             }
         //#endif
-            
-            [plugin addCommands:args];
+
+            // 365 is a nonexistent webgl command comes from packages/gcanvas/src/bridge/react-native.js
+            if( ![args isEqualToString:@"365"] ){
+                [plugin addCommands:args];
+            }
+
             [plugin execCommands];
             
             NSString *ret = [plugin getSyncResult];

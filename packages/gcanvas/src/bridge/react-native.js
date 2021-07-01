@@ -80,7 +80,7 @@ const GBridge = {
     return GBridge.GCanvasModule.extendCallNative({
       contextId: componentId,
       type: 0x60000001,
-      args: '365', // 365 is a nonexistent webgl command, just to display graphics on Android
+      args: '365', // 365 is a nonexistent webgl command, but need it to display graphics on react-native-gcanvas
     });
   },
 
