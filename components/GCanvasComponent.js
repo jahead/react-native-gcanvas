@@ -55,13 +55,25 @@ export default class GCanvasView extends Component {
     });
 
     this.state = {
-      panResponder,
+      panResponder: {},
     };
+
+    if (props.isGestureResponsible) {
+      this.state.panResponder = panResponder;
+    }
   }
 
   static propTypes = {
     // isOffscreen: PropTypes.bool,
     ...View.propTypes,
+  };
+
+  static defaultProps = {
+    // Indicate whether response for gesture inside canvas,
+    // so that PanResponder outside GCanvasView can be useable
+    // when isGestureResponsible is false.
+    // Default is true, so that zdog can be "mousemove".
+    isGestureResponsible: true,
   };
 
   _onIsReady = (event) => {

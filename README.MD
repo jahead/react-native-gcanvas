@@ -276,6 +276,7 @@ export default class App extends Component {
           <GCanvasView
             onCanvasCreate={this.initCanvas}
             onIsReady={(value) => (this.isGReactTextureViewReady = value)}
+            isGestureResponsible={true /* Here is just for example, you can remove this line because default is true */}
             style={styles.gcanvas}
           />
         )}
