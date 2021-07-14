@@ -3,6 +3,22 @@
 All notable changes of this project will be documented in.
 
 
+## [2.3.5] - 2021-07-14
+
+### Changed
+
+* React Native GCanvas Component
+	* fix: `java.lang.ClassCastException: com.facebook.react.views.view.ReactViewGroup cannot be cast to com.taobao.gcanvas.bridges.rn.GReactTextureView`
+
+
+## [2.3.4] - 2021-07-08
+
+### Changed
+
+* React Native GCanvas Component
+	* fix: let PanResponder outside GCanvasView can be useable
+
+
 ## [2.3.0] - 2021-06-17 Congratulations to China on the successful launch of crew to our Tiangong space station
 
 ### Changed
