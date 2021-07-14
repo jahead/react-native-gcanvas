@@ -225,7 +225,20 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
                             view = mViews.get(refId);
                         } else {
                             View v = activity.findViewById(viewTag);
-                            view = (GReactTextureView) v;
+
+                            try {
+                                view = (GReactTextureView) v;
+                            } catch (Exception e) {
+                                // Sometimes(when RELOAD js of react-native) cause
+                                // `java.lang.ClassCastException: com.facebook.react.views.view.ReactViewGroup cannot be cast to com.taobao.gcanvas.bridges.rn.GReactTextureView`
+                                // and crash the APP, then found catch Exception
+                                // and just return here is OK.
+
+                                // System.out.println(e);
+                                GLog.e(TAG, Log.getStackTraceString(e));
+                                return;
+                            }
+
                             if (null != view && view.isReady()) {
                                 mViews.put(refId, view);
                             } else {
