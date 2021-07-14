@@ -237,7 +237,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
                         if (null != view && mCacheCmdList.containsKey(refId) && view.isReady()) {
                             ArrayList<IReactCacheCmd> cmdList = mCacheCmdList.remove(refId);
                             for (IReactCacheCmd cmd : cmdList) {
-                                Log.d("test", "execute command ===> " + cmd.getClass().getSimpleName());
+                                GLog.d(TAG, "execute command ===> " + cmd.getClass().getSimpleName());
                                 cmd.execute();
                             }
                             return;

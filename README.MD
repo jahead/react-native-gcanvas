@@ -107,7 +107,7 @@ module.exports = {
 };
 ```
 
-Sometimes will meet compile error `java.io.FileNotFoundException: SOME_PATH/.externalNativeBuild/cmake/SOME_PATH/android_gradle_build.json (The system cannot find the file specified)` after upgrade this pacakge by `npm install`, can solve it by [add ` --rerun-tasks` to your gradlew command](https://stackoverflow.com/a/68126063/6318705) like
+Sometimes will meet compile error `java.io.FileNotFoundException: SOME_PATH/.cxx/cmake/SOME_PATH/android_gradle_build.json (The system cannot find the file specified)` after upgrade this pacakge by `npm install`, can solve it by [add ` --rerun-tasks` to your gradlew command](https://stackoverflow.com/a/68126063/6318705) once like
 
     ./android/gradlew assembleDebug --rerun-tasks -p ./android/
 
