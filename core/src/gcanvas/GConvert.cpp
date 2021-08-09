@@ -392,10 +392,10 @@ namespace gcanvas {
         }
 
         int length = (int) strlen(value);
-        char str[] = "ffffff";
 
         // #f0f format
         if (length == 4) {
+            char str[] = "ffffff";
             str[0] = str[1] = value[3];
             str[2] = str[3] = value[2];
             str[4] = str[5] = value[1];
@@ -406,6 +406,7 @@ namespace gcanvas {
         }
             // #ff00ff format
         else if (length == 7) {
+            char str[] = "ffffff";
             str[0] = value[5];
             str[1] = value[6];
             str[2] = value[3];
@@ -416,6 +417,22 @@ namespace gcanvas {
                     (unsigned int) (0x00000000 | strtol(str, nullptr, 16));
             c.rgba = {(hex & 0xff) / 255.0f, ((hex & 0xffff) >> 8) / 255.0f,
                       (hex >> 16) / 255.0f, 1.0};
+        }
+            // #ff00ff00 format
+        else if (length == 9) {
+            char str[] = "ffffffff";
+            str[0] = value[1];
+            str[1] = value[2];
+            str[2] = value[3];
+            str[3] = value[4];
+            str[4] = value[5];
+            str[5] = value[6];
+            str[6] = value[7];
+            str[7] = value[8];
+            unsigned int hex =
+                    (unsigned int) (0x00000000 | strtol(str, nullptr, 16));
+            c.rgba = {(hex >> 24) / 255.0f, ((hex & 0xff0000) >> 16) / 255.0f,
+                      ((hex & 0xff00) >> 8) / 255.0f, (hex & 0xff) / 255.0f};
         }
             // assume rgb(255,0,255) or rgba(255,0,255,0.5) format
         else {

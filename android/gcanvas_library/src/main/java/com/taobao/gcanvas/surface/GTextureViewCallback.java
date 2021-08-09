@@ -33,7 +33,7 @@ import java.util.ArrayList;
 
 public class GTextureViewCallback implements TextureView.SurfaceTextureListener {
     private final String mKey;
-    private String mBackgroundColor = "#ffffff";
+    private String mBackgroundColor = "#00000000";  // "#00000000" match [UIColor clearColor] in ios/RCTGCanvasView.m
     private Surface mSurface;
     private TextureView mTextureview;
 
