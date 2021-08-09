@@ -7,7 +7,6 @@ version = "1.2.0"
 android {
     compileSdkVersion localExtensions.sdks.CompileSDK
     buildToolsVersion localExtensions.sdks.BuildTool
-    publishNonDefault true
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
