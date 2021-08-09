@@ -3,6 +3,14 @@
 All notable changes of this project will be documented in.
 
 
+## [2.3.6] - 2021-08-09
+
+### Changed
+
+* React Native GCanvas Component
+	* fix: a bug that Android `ctx.clearRect()` with `white`, it should be `transparent` like iOS
+
+
 ## [2.3.5] - 2021-07-14
 
 ### Changed
