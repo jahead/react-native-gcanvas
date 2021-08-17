@@ -72,7 +72,9 @@ export default class GCanvas extends Element {
         const commands = context._drawCommands;
         context._drawCommands = '';
 
-        GCanvas.GBridge.render2d(this.id, commands);
+        if (commands !== '') {
+          GCanvas.GBridge.render2d(this.id, commands);
+        }
         this._needRender = false;
       };
       setInterval(render, 16); // 16ms is just enough for drawInRect as described with `execCommands` in `ios/BridgeModule/GCanvasPlugin.mm`
