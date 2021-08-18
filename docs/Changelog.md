@@ -3,6 +3,14 @@
 All notable changes of this project will be documented in.
 
 
+## [2.3.7] - 2021-08-17
+
+### Changed
+
+* React Native GCanvas Component
+	* fix: on iOS #25 "Poor performance on drawing multiple lines" caused by invoking render2d() implicitly per 16ms with empty commands when not drawing
+
+
 ## [2.3.6] - 2021-08-09
 
 ### Changed
