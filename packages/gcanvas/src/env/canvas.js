@@ -1,6 +1,7 @@
 import Element from '@flyskywhy/react-native-browser-polyfill/src/DOM/Element';
 import GContext2D from '../context/2d/RenderingContext';
 import GContextWebGL from '../context/webgl/RenderingContext';
+import {PixelRatio} from 'react-native';
 
 function sleepMs(ms) {
   for (var start = new Date(); new Date() - start <= ms; ) {}
@@ -10,6 +11,8 @@ export default class GCanvas extends Element {
   static GBridge = null;
 
   id = null;
+  clientWidth = 100;
+  clientHeight = 150;
   width = 100;
   height = 150;
 
@@ -26,6 +29,8 @@ export default class GCanvas extends Element {
       };
     }
 
+    this.clientWidth = style.width;
+    this.clientHeight = style.height;
     this.width = style.width;
     this.height = style.height;
   }
@@ -35,6 +40,9 @@ export default class GCanvas extends Element {
 
     if (type.match(/webgl/i)) {
       context = new GContextWebGL(this);
+
+      context.drawingBufferWidth = this.clientWidth * PixelRatio.get();
+      context.drawingBufferHeight = this.clientHeight * PixelRatio.get();
 
       context.componentId = this.id;
 
