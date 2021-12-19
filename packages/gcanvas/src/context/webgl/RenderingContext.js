@@ -33,6 +33,9 @@ const processArray = (array, checkArrayType = false) => {
       type = 'Uint32Array';
     } else if (array instanceof Float32Array) {
       type = 'Float32Array';
+    } else if (array instanceof ArrayBuffer) {
+      let uint8Array = new Uint8Array(array);
+      return 1 + ',' + btoa(joinArray(uint8Array, ','));
     } else {
       throw new Error('Check array type failed. Array type is ' + typeof array);
     }
