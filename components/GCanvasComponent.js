@@ -8,21 +8,12 @@ import {
   Text,
   View,
   findNodeHandle,
-  requireNativeComponent,
 } from 'react-native';
 import '@flyskywhy/react-native-browser-polyfill';
+import CanvasView from './CanvasView';
 import {enable, disable, ReactNativeBridge} from '../packages/gcanvas';
 ReactNativeBridge.GCanvasModule = NativeModules.GCanvasModule;
 ReactNativeBridge.Platform = Platform;
-
-var CanvasView = Platform.select({
-  ios: requireNativeComponent('RCTGCanvasView', null, {
-    nativeOnly: {onChange: true},
-  }),
-  android: requireNativeComponent('GCanvasView', null, {
-    nativeOnly: {onChange: true},
-  }),
-});
 
 export default class GCanvasView extends Component {
   constructor(props) {
