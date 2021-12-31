@@ -1599,6 +1599,11 @@ void GCanvasWeex::QueueProc(std::queue<struct GCanvasCmd *> *queue) {
     }
     if (!queue->empty()) {
         struct GCanvasCmd *p = reinterpret_cast<struct GCanvasCmd *>(queue->front());
+        if (p == nullptr) {
+            // found once when reload JS, maybe need more test
+            LOG_E("QueueProc: why p is nullptr?");
+            return;
+        }
         int type = p->type;
         int cmd = getCmdType(type);
         int op = getOpType(type);
