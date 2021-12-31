@@ -37,6 +37,10 @@ export default class GCanvasView extends Component {
         let eventShim = {...event.nativeEvent, type: 'mousedown'};
         this.canvas.dispatchEvent(eventShim);
         window.dispatchEvent(eventShim);
+
+        let mouseEvent = this.eventTouch2Mouse(event.nativeEvent);
+        mouseEvent.type = 'mousedown';
+        props.onMouseDown && props.onMouseDown(mouseEvent);
       },
       onPanResponderMove: (event, gestureState) => {
         let eventShim = {...event.nativeEvent, type: 'mousemove'};
@@ -44,11 +48,19 @@ export default class GCanvasView extends Component {
 
         // as `node_modules/zdog/js/dragger.js` use window.addEventListener not element.addEventListener on mousemove
         window.dispatchEvent(eventShim);
+
+        let mouseEvent = this.eventTouch2Mouse(event.nativeEvent);
+        mouseEvent.type = 'mousedown';
+        props.onMouseMove && props.onMouseMove(mouseEvent);
       },
       onPanResponderRelease: (event, gestureState) => {
         let eventShim = {...event.nativeEvent, type: 'mouseup'};
         this.canvas.dispatchEvent(eventShim);
         window.dispatchEvent(eventShim);
+
+        let mouseEvent = this.eventTouch2Mouse(event.nativeEvent);
+        mouseEvent.type = 'mousedown';
+        props.onMouseUp && props.onMouseUp(mouseEvent);
       },
       onPanResponderTerminationRequest: () => false,
       onPanResponderTerminate: () => false,
@@ -75,6 +87,30 @@ export default class GCanvasView extends Component {
     // Default is true, so that zdog can be "mousemove".
     isGestureResponsible: true,
   };
+
+  eventTouch2Mouse = (nativeEvent) => {
+    if (nativeEvent.type) {
+      // real mouse event have `type` but touch not
+      // TODO: test with real mouse
+      return {...nativeEvent};
+    } else {
+      return {
+        altKey: false,
+        button: 0,
+        buttons: 1,
+        clientX: nativeEvent.locationX,
+        clientY: nativeEvent.locationY,
+        ctrlKey: false,
+        isTrusted: true,
+        metaKey: false,
+        pageX: nativeEvent.pageX,
+        pageY: nativeEvent.pageY,
+        shiftKey: false,
+        target: this.canvas,
+        timeStamp: nativeEvent.timestamp,
+      }
+    }
+  }
 
   _onIsReady = (event) => {
     if (this.props.onIsReady) {
