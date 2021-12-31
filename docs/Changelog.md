@@ -3,6 +3,25 @@
 All notable changes of this project will be documented in.
 
 
+## [2.3.9] - 2022-01-12
+
+### Changed
+
+* React Native GCanvas Component
+	* feat: support onMouseDown onMouseMove onMouseUp
+	* feat: support getImageData() on Android, support createImageData() putImageData()
+	* fix: waitUtilTimeout() sometimes be interrupted by signal thus cause return immediately
+	* fix: getImageData() on Android sometimes get '', test by adjusting color use `Lightener` icon tool in https://github.com/flyskywhy/PixelShapeRN
+
+
+## [2.3.8] - 2021-12-19
+
+### Changed
+
+* React Native GCanvas Component
+	* feat: support 9 args in texImage2D() on Android
+
+
 ## [2.3.7] - 2021-08-17
 
 ### Changed
