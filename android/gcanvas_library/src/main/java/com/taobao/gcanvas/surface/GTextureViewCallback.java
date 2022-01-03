@@ -80,7 +80,11 @@ public class GTextureViewCallback implements TextureView.SurfaceTextureListener 
         if (mSurface == null) {
             mSurface = new Surface(surface);
         }
-        onSurfaceChanged(this.mKey, mSurface, 0, width, height, mBackgroundColor);
+        // onSurfaceTextureAvailable is sometimes called with 0 size texture
+        // and immediately followed by onSurfaceTextureSizeChanged with actual size
+        if (width != 0 && height != 0) {
+           resetGlViewport(width, height);
+        }
         GCanvasJNI.refreshArguments(mKey);
         if (GCanvasJNI.sendEvent(mKey)) {
             if (mTextureview instanceof GTextureView) {
@@ -103,13 +107,16 @@ public class GTextureViewCallback implements TextureView.SurfaceTextureListener 
             mSurface = new Surface(surface);
         }
 
-        onSurfaceChanged(this.mKey, mSurface, 0, width, height, mBackgroundColor);
-
         if (null != mDelegateLists) {
             for (TextureView.SurfaceTextureListener listener : mDelegateLists) {
                 listener.onSurfaceTextureSizeChanged(surface, width, height);
             }
         }
+    }
+
+    public void resetGlViewport(int width, int height) {
+        GLog.d("resetGlViewport width:" + width + " height:" + height);
+        onSurfaceChanged(this.mKey, mSurface, 0, width, height, mBackgroundColor);
     }
 
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {

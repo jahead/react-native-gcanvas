@@ -11,10 +11,10 @@ export default class GCanvas extends Element {
   static GBridge = null;
 
   id = null;
-  clientWidth = 100;
-  clientHeight = 150;
-  width = 100;
-  height = 150;
+  _clientWidth = 100;
+  _clientHeight = 150;
+  _width = 100;
+  _height = 150;
 
   _needRender = true;
 
@@ -29,10 +29,44 @@ export default class GCanvas extends Element {
       };
     }
 
-    this.clientWidth = style.width;
-    this.clientHeight = style.height;
-    this.width = style.width;
-    this.height = style.height;
+    this._clientWidth = style.width;
+    this._clientHeight = style.height;
+    this._width = style.width;
+    this._height = style.height;
+  }
+
+  get clientWidth() {
+    return this._clientWidth;
+  }
+
+  get clientHeight() {
+    return this._clientHeight;
+  }
+
+  set clientWidth(value) {
+    this._clientWidth = value;
+  }
+
+  set clientHeight(value) {
+    this._clientHeight = value;
+  }
+
+  get width() {
+    return this._width;
+  }
+
+  set width(value) {
+    this._width = value;
+    GCanvas.GBridge.callResetGlViewport(this.id, this._width, this._height);
+  }
+
+  get height() {
+    return this._height;
+  }
+
+  set height(value) {
+    this._height = value;
+    GCanvas.GBridge.callResetGlViewport(this.id, this._width, this._height);
   }
 
   getContext(type) {
@@ -41,8 +75,8 @@ export default class GCanvas extends Element {
     if (type.match(/webgl/i)) {
       context = new GContextWebGL(this);
 
-      context.drawingBufferWidth = this.clientWidth * PixelRatio.get();
-      context.drawingBufferHeight = this.clientHeight * PixelRatio.get();
+      context.drawingBufferWidth = this._clientWidth * PixelRatio.get();
+      context.drawingBufferHeight = this._clientHeight * PixelRatio.get();
 
       context.componentId = this.id;
 

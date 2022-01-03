@@ -112,6 +112,9 @@ export default class GCanvasView extends Component {
   };
 
   _onLayout = (event) => {
+    let {width, height} = event.nativeEvent.layout;
+    let ref = '' + findNodeHandle(this.refCanvasView);
+
     // When onLayout is invoked again (e.g. change phone orientation), if assign
     // `this.canvas` again, that also means `this` in dispatchEvent() of
     // `event-target-shim/dist/event-target-shim.js` changed, thus dispatchEvent()
@@ -119,6 +122,13 @@ export default class GCanvasView extends Component {
     // by finger anymore.
     // So let `this.canvas` be assigned here only once.
     if (this.canvas !== null) {
+      if (this.canvas.clientWidth !== width || this.canvas.clientHeight !== height)
+        this.canvas.clientWidth = width;
+        this.canvas.clientHeight = height;
+        if (this.props.onCanvasResize) {
+          // APP can `this.canvas.width = width` in onCanvasResize()
+          this.props.onCanvasResize({width, height});
+        }
       return;
     }
 
@@ -129,10 +139,10 @@ export default class GCanvasView extends Component {
 
     this.canvas = enable(
       {
-        ref: '' + findNodeHandle(this.refCanvasView),
+        ref,
         style: {
-          width: event.nativeEvent.layout.width,
-          height: event.nativeEvent.layout.height,
+          width,
+          height,
         },
       },
       {bridge: ReactNativeBridge},

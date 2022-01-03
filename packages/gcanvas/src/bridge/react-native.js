@@ -68,6 +68,10 @@ const GBridge = {
     GBridge.GCanvasModule.setContextType(context_type, componentId);
   },
 
+  callResetGlViewport: function(componentId, width, height) {
+    GBridge.GCanvasModule.resetGlViewport && GBridge.GCanvasModule.resetGlViewport(componentId, width, height);
+  },
+
   callToDataURL: function(componentId, mimeType, quality) {
     return GBridge.GCanvasModule.toDataURL(componentId, mimeType, quality);
   },

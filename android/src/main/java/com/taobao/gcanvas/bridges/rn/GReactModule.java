@@ -303,6 +303,16 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         }
 
         @Override
+        public void resetGlViewport(String canvasId, int width, int height) {
+            GReactTextureView textureView = mViews.get(canvasId);
+            if (null == textureView) {
+                GLog.w(TAG, "resetGlViewport() can not find canvas with id ===> " + canvasId);
+                return;
+            }
+            textureView.mCallback.resetGlViewport(width, height);
+        }
+
+        @Override
         public void render(String canvasId, String cmd) {
             GReactTextureView textureView = mViews.get(canvasId);
             if (null == textureView) {
@@ -523,6 +533,20 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         mImpl.setContextType(refId, type);
     }
 
+    @ReactMethod
+    public void resetGlViewport(String refId, int with, int height) {
+        if (TextUtils.isEmpty(refId)) {
+            return;
+        }
+
+        GReactTextureView textureView = mViews.get(refId);
+        if (null == textureView) {
+            GLog.w(TAG, "resetGlViewport can not find canvas with id ===> " + refId);
+            return;
+        }
+
+        mImpl.resetGlViewport(refId, with, height);
+    }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String toDataURL(String refId, String mimeType, float quality) {

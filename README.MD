@@ -168,6 +168,20 @@ export default class App extends Component {
     this.isGReactTextureViewReady = true;
   }
 
+  componentDidMount() {
+    if (Platform.OS === 'web') {
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          if (entry.target.id === 'canvasExample') {
+            let {width, height} = entry.contentRect;
+            this.onCanvasResize({width, height});
+          }
+        }
+      });
+      resizeObserver.observe(document.getElementById('canvasExample'));
+    }
+  }
+
   initCanvas = (canvas) => {
     if (this.canvas) {
       return;
@@ -180,6 +194,12 @@ export default class App extends Component {
       this.canvas.height = this.canvas.clientHeight;
     }
     this.ctx = this.canvas.getContext('2d');
+  };
+
+  onCanvasResize = ({width, height}) => {
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.drawSome();
   };
 
   drawSome = async () => {
@@ -195,6 +215,8 @@ export default class App extends Component {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       this.ctx.beginPath();
+      this.ctx.fillStyle = 'grey';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
       //rect
       this.ctx.fillStyle = 'red';
@@ -266,16 +288,18 @@ export default class App extends Component {
         </TouchableHighlight>
         {Platform.OS === 'web' ? (
           <canvas
+            id={'canvasExample'}
             ref={this.initCanvas}
             style={
               {
-                width: 200,
-                height: 300,
+                flex: 1,
+                width: '100%',
               } /* canvas with react-native-web can't use width and height in styles.gcanvas */
             }
           />
         ) : (
           <GCanvasView
+            onCanvasResize={this.onCanvasResize}
             onCanvasCreate={this.initCanvas}
             onIsReady={(value) => (this.isGReactTextureViewReady = value)}
             isGestureResponsible={true /* Here is just for example, you can remove this line because default is true */}
@@ -298,8 +322,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   gcanvas: {
-    width: 200,
-    height: 300,
+    flex: 1,
+    width: '100%',
     // backgroundColor: '#FF000030', // TextureView doesn't support displaying a background drawable since Android API 24
   },
   welcome: {

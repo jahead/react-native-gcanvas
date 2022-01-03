@@ -14,7 +14,7 @@ import com.taobao.gcanvas.util.GLog;
  */
 
 public class GTextureView extends TextureView {
-    private GTextureViewCallback mCallback;
+    public GTextureViewCallback mCallback;
 
     public GTextureView(Context context, String id) {
         super(context);
