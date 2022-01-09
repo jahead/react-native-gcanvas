@@ -533,7 +533,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         mImpl.setContextType(refId, type);
     }
 
-    @ReactMethod
+    @ReactMethod(isBlockingSynchronousMethod = true)
     public void resetGlViewport(String refId, int with, int height) {
         if (TextUtils.isEmpty(refId)) {
             return;
