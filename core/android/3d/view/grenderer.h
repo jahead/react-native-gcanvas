@@ -35,6 +35,8 @@ public:
 
     bool initialize();
 
+    void reInitialize();
+
     void signalUpGLthread();
 
     void setRefreshFlag(bool refresh);
@@ -53,6 +55,8 @@ public:
                        int format, int type);
 
     void surfaceDestroy();
+
+    void contextExit();
 
     void surfaceExit();
 

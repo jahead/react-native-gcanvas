@@ -126,6 +126,8 @@ public:
 
     virtual void CreateContext();
 
+    virtual void ReCreateContext();
+
     virtual void Clear();
 
 

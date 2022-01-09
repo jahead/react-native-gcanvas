@@ -51,6 +51,11 @@ void GCanvasWeex::CreateContext() {
     mCanvasContext->mContextId = this->mContextId;
 }
 
+void GCanvasWeex::ReCreateContext() {
+    delete mCanvasContext;
+    CreateContext();
+}
+
 void GCanvasWeex::Clear() {
     LOG_D("GCanvasWeex::DoContextLost start.");
     // No need to clean up GL memory with glDeleteBuffers or glDeleteTextures.

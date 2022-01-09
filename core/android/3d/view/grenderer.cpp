@@ -138,6 +138,12 @@ bool GRenderer::initialize() {
     return true;
 }
 
+void GRenderer::reInitialize() {
+    surfaceExit();
+    contextExit();
+    initialize();
+}
+
 void GRenderer::start() {
     m_requestExit = false;
     pthread_create(&m_thread_id, 0, threadStartCallback, this);
@@ -182,6 +188,10 @@ void GRenderer::destroy() {
         delete p;
     }
 
+    contextExit();
+}
+
+void GRenderer::contextExit() {
     LOG_D("context destroy in thread.");
 
     if (m_egl_context != EGL_NO_CONTEXT && m_egl_display != EGL_NO_DISPLAY) {
@@ -237,6 +247,14 @@ void GRenderer::renderLoop() {
                     break;
                 }
                 if (mProxy) mProxy->setContextLost(false);
+            } else {
+                // need this, otherwise:
+                // 2d: will need 2nd ctx draw something to display right canvas size
+                // webgl: previous 3d object will display on somewhere
+                reInitialize();
+
+                mProxy->ReCreateContext();
+                mProxy->SetContextType(m_context_type);
             }
 
             mProxy->OnSurfaceChanged(0, 0, m_width, m_height);

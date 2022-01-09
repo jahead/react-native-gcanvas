@@ -69,22 +69,6 @@ Java_com_taobao_gcanvas_surface_GTextureViewCallback_onSurfaceChanged(JNIEnv *en
     if (!render) {
         LOG_D("onSurfaceChanged new render : %s", str_chars);
         render = GManager::getSingleton()->newRenderer(cxx_string);
-    } else {
-        if (render->m_width != width || render->m_height != height) {
-            float ratio = render->m_device_pixel_ratio;
-            int type = render->m_context_type;
-
-            LOG_D("onSurfaceChanged remove render : %s", str_chars);
-            GManager::getSingleton()->removeRenderer(cxx_string);
-            LOG_D("onSurfaceChanged new render : %s", str_chars);
-            render = GManager::getSingleton()->newRenderer(cxx_string);
-
-            render->m_device_pixel_ratio = ratio;
-            render->m_context_type = type;
-            LOG_D("request create canvas start");
-            render->requestCreateCanvas(cxx_string);
-            LOG_D("request create canvas end");
-        }
     }
 
     if (render) {

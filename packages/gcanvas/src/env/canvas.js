@@ -57,7 +57,7 @@ export default class GCanvas extends Element {
 
   set width(value) {
     this._width = value;
-    GCanvas.GBridge.callResetGlViewport(this.id, this._width, this._height);
+    GCanvas.GBridge.callResetGlViewport(this.id, this._width * PixelRatio.get(), this._height * PixelRatio.get());
   }
 
   get height() {
@@ -66,7 +66,7 @@ export default class GCanvas extends Element {
 
   set height(value) {
     this._height = value;
-    GCanvas.GBridge.callResetGlViewport(this.id, this._width, this._height);
+    GCanvas.GBridge.callResetGlViewport(this.id, this._width * PixelRatio.get(), this._height * PixelRatio.get());
   }
 
   getContext(type) {
