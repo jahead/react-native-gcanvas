@@ -93,7 +93,20 @@ const GBridge = {
     GBridge.GCanvasModule.render(commands, componentId);
   },
 
-  flushNative: function(componentId) {
+  render2dResult: function(componentId, commands) {
+    if (isDebugging) {
+      console.log('>>> >>> render2dResult ===');
+      console.log('>>> commands: ' + commands);
+    }
+
+    // to prevent return '' from render2d() above, need set
+    // @ReactMethod(isBlockingSynchronousMethod = true)
+    // on render() of
+    // android/src/main/java/com/taobao/gcanvas/bridges/rn/GReactModule.java
+    return GBridge.callNative(componentId, commands, false, 0x20000001);
+  },
+
+  flushNative: function(componentId, type) {
     const cmdArgs = joinArray(commandsCache[componentId], ';');
     commandsCache[componentId] = [];
 
@@ -104,7 +117,7 @@ const GBridge = {
 
     const result = GBridge.GCanvasModule.extendCallNative({
       contextId: componentId,
-      type: 0x60000000,
+      type: type || 0x60000000,
       args: cmdArgs,
     });
 
@@ -117,7 +130,7 @@ const GBridge = {
     return res;
   },
 
-  callNative: function(componentId, cmdArgs, cache) {
+  callNative: function(componentId, cmdArgs, cache, type) {
     if (isDebugging) {
       logCommand(componentId, cmdArgs);
     }
@@ -125,7 +138,7 @@ const GBridge = {
     commandsCache[componentId].push(cmdArgs);
 
     if (!cache || isComboDisabled) {
-      return GBridge.flushNative(componentId);
+      return GBridge.flushNative(componentId, type);
     } else {
       return undefined;
     }

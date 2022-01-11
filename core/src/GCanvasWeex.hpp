@@ -119,7 +119,7 @@ struct ClipStruct
 class GCanvasWeex : public GCanvas
 {
 public:
-    
+
      GCanvasWeex(std::string contextId, const GCanvasConfig& config);
 
     virtual ~GCanvasWeex();
@@ -127,15 +127,15 @@ public:
     virtual void CreateContext();
 
     virtual void Clear();
-    
-    
+
+
     //call context API
     void SetClearColor(const GColorRGBA &c);
     void SetDevicePixelRatio(const float ratio);
-    
+
     int GetContextType();
     void SetContextType(int contextType);
-    
+
     GTexture *GetFboTexture();
 
     //Weex 2D
@@ -146,22 +146,23 @@ public:
 #ifdef IOS
      void AddOfflineTexture(int textureGroupId, int glID);
 #endif
-    
+
      void GetAllParameter(std::string &ret);
-    
+
 #ifdef ANDROID
      void AddCallback(const char *callbackID, const char *result, bool isError);
      Callback *GetNextCallback();
      void PopCallbacks();
 #endif
-    
+
      void DrawImage(int textureId, float sx, float sy, float sw, float sh,
                             float dx, float dy, float dw, float dh);
 
      void GetImageData(int x, int y, int w, int h, bool base64Encode,
                                std::string &pixelsData);
-     void PutImageData(const char *imageData, int dataLength, float dx, float dy,
-                               float sw, float sh, float dw, float dh);
+     void PutImageData(const char *imageData, int dataLength, float tw, float th,
+                               float sx, float sy, float sw, float sh,
+                               float dx, float dy, float dw, float dh);
 
      void RemoveTexture(int id);
      void Render(const char *renderCommands, int length);
@@ -171,7 +172,7 @@ public:
                                   const std::string &pattern, bool isStroke=false);
      void UsePatternRenderPipeline(int textureListId, const std::string &pattern,
                                   bool isStroke=false);
-    
+
     //Weex WebGL
      void setSyncResult(std::string result);
 #ifdef ANDROID
@@ -201,17 +202,17 @@ public:
      void texSubImage2D(struct BitmapCmd cmd);
      void setContextLost(bool lost);
 #endif
-    
-    
-    
-    
-        
+
+
+
+
+
 protected:
     //GCanvas Weex API
     void drawFBO(std::string fboName, GCompositeOperation compositeOp = COMPOSITE_OP_SOURCE_OVER,
                  float sx = 0, float sy = 0, float sw = 1, float sh = 1, float dx = 0, float dy = 0,
                  float dw = 1, float dh = 1);
-    
+
      void calculateFPS();
      void execute2dCommands(const char *renderCommands, int length);
      int executeWebGLCommands(const char *&cmd, int length);
@@ -247,7 +248,7 @@ protected:
                                                const char *commands);
      const Texture *getTextureWithOneImage(int id);
      float fastFloat(const char *str) { return (float) atof(str); }
-    
+
     enum
     {
         IDENTITY,  // rt
@@ -273,7 +274,7 @@ protected:
     enum {
         OP_RENDER,
     };
-    
+
 public:
     int mFrames;
     float mFps;
@@ -293,12 +294,12 @@ public:
     std::queue<struct BitmapCmd *> mBitmapQueue;
 #endif
 
-    
+
 protected:
 #ifdef IOS
     std::map< int, int > mOfflineTextures;
 #endif
-    
+
 };
 
 

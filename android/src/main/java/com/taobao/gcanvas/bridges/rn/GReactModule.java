@@ -309,7 +309,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
                 GLog.w(TAG, "render() can not find canvas with id ===> " + canvasId);
                 return;
             }
-            GCanvasJNI.render(textureView.getCanvasKey(), cmd, 0x20000001);
+            GCanvasJNI.render(textureView.getCanvasKey(), cmd, 0x00000001);
         }
 
         @Override
@@ -384,7 +384,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
 
-    @ReactMethod
+    @ReactMethod(isBlockingSynchronousMethod = true)
     public void render(String cmd, String canvasId) {
         if (TextUtils.isEmpty(canvasId) || TextUtils.isEmpty(cmd)) {
             return;

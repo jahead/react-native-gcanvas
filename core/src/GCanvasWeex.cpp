@@ -419,11 +419,14 @@ void
 GCanvasWeex::PutImageData(
         const char *imageData,
         int dataLength,
-        float
-        dx,
-        float dy,
+        float tw,
+        float th,
+        float sx,
+        float sy,
         float sw,
         float sh,
+        float dx,
+        float dy,
         float dw,
         float dh) {
     LOG_D("[PutImageData] xy=(%f, %f), src_wh=(%f, %f), dest_wh=(%f, %f)",
@@ -445,10 +448,10 @@ GCanvasWeex::PutImageData(
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sw, sh, 0, GL_RGBA,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA,
                  GL_UNSIGNED_BYTE, pixels);
 
-    mCanvasContext->DoDrawImage(sw, sh, glID, 0, 0, sw, sh, dx, dy, dw, dh);
+    mCanvasContext->DoDrawImage(tw, th, glID, sx, sy, sw, sh, dx, dy, dw, dh);
     if (!mContextLost) glDeleteTextures(1, (const GLuint *) (&glID));
 }
 
@@ -1387,8 +1390,8 @@ void GCanvasWeex::execute2dCommands(const char *renderCommands, int length) {
             case 'P': // PutImageData
             {
                 p++;
-                float tokens[6] = {0, 0, 0, 0, 0, 0};
-                p = parseTokens(p, tokens, 6);
+                float tokens[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                p = parseTokens(p, tokens, 10);
                 const char *begin_pos = p;
 
                 while (*p && *p != ';') {
@@ -1398,7 +1401,8 @@ void GCanvasWeex::execute2dCommands(const char *renderCommands, int length) {
                 LOG_D("[executeRenderCommands] data_len:%d", data_len);
 
                 PutImageData(begin_pos, data_len, tokens[0], tokens[1],
-                             tokens[2], tokens[3], tokens[4], tokens[5]);
+                             tokens[2], tokens[3], tokens[4], tokens[5],
+                             tokens[6], tokens[7], tokens[8], tokens[9]);
 
                 if (*p == ';') ++p;
                 break;

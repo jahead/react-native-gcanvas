@@ -1,3 +1,7 @@
+import ImageData from '@canvas/image-data/index';
+import {PixelRatio} from 'react-native';
+import base64 from 'base64-js';
+// import resizeImageData from 'resize-image-data';
 import FillStylePattern from './FillStylePattern';
 import FillStyleLinearGradient from './FillStyleLinearGradient';
 import FillStyleRadialGradient from './FillStyleRadialGradient';
@@ -37,8 +41,13 @@ export default class CanvasRenderingContext2D {
   // _imageMap = new GHashMap();
   // _textureMap = new GHashMap();
 
-  constructor() {
+  constructor(canvas) {
+    this._canvas = canvas;
     this.className = 'CanvasRenderingContext2D';
+  }
+
+  get canvas() {
+    return this._canvas;
   }
 
   set fillStyle(value) {
@@ -319,7 +328,7 @@ export default class CanvasRenderingContext2D {
     this._drawCommands = this._drawCommands.concat('j' + value + ';');
   }
 
-    getLineDash() { 
+    getLineDash() {
         return this._lineDash;
     }
 
@@ -522,5 +531,91 @@ export default class CanvasRenderingContext2D {
     }
     CanvasRenderingContext2D.GBridge.bindImageTexture(this.componentId, image.src, image._id);
     this._drawCommands += drawImageCommands();
+  }
+
+  createImageData(widthOrImagedata, height) {
+    if (arguments.length === 2) {
+      return new ImageData(widthOrImagedata, height);
+    } else {
+      return new ImageData(widthOrImagedata.width, widthOrImagedata.height);
+    }
+  }
+
+  getImageData(sx, sy, sw, sh) {
+    let devicePixelRatio = PixelRatio.get();
+    let x = sx * devicePixelRatio;
+    let y = sy * devicePixelRatio;
+    let w = sw * devicePixelRatio;
+    let h = sh * devicePixelRatio;
+    if ((sx + sw) > this.canvas.clientWidth) {
+        x = 0;
+        w = this.canvas.clientWidth * devicePixelRatio;
+    }
+    if ((sy + sh) > this.canvas.clientHeight) {
+        y = 0;
+        h = this.canvas.clientHeight * devicePixelRatio;
+    }
+    const base64Data = CanvasRenderingContext2D.GBridge.render2dResult(
+      this.componentId,
+      'R' + x + ',' + y + ',' + w + ',' + h
+    );
+
+    let imageData = new ImageData(new Uint8ClampedArray(base64.toByteArray(base64Data)), w, h);
+    return imageData;
+
+    // resizeImageData will cause APP stuck, so return above,
+    // and to match putImageData() below.
+    // let width = Math.round(imageData.width / devicePixelRatio);
+    // width = width < 1 ? 1 : width;
+    // let height = Math.round(imageData.height / devicePixelRatio);
+    // height = height < 1 ? 1 : height;
+    // let smallImageData = resizeImageData(imageData, width, height);
+    // return smallImageData;
+  }
+
+  putImageData(imageData, x, y, dirtyX, dirtyY, dirtyWidth, dirtyHeight) {
+    // resizeImageData will cause APP stuck, so use imageData as
+    // bigImageData and let devicePixelRatio be 1,
+    // and to match getImageData() above.
+    // if imageData here is not comes from getImageData() above,
+    // developer should resize himself if PixelRatio.get() is not 1.
+    let devicePixelRatio = 1;
+    let bigImageData = imageData;
+
+    // resizeImageData will cause APP stuck, so use above.
+    // let devicePixelRatio = PixelRatio.get();
+    // let width = Math.round(imageData.width * devicePixelRatio);
+    // let height = Math.round(imageData.height * devicePixelRatio);
+    // let bigImageData = resizeImageData(imageData, width, height);
+
+    const base64Data = base64.fromByteArray(bigImageData.data);
+    let tw = bigImageData.width; // textureWidth
+    let th = bigImageData.height;
+
+    let sx, sy, sw, sh;
+
+    if (arguments.length === 3) {
+      sx = 0;
+      sy = 0;
+      sw = tw; // sourceWidth to be put in textureWidth
+      sh = th;
+    } else {
+      sx = dirtyX * devicePixelRatio;
+      sy = dirtyY * devicePixelRatio;
+      sw = Math.min(dirtyWidth * devicePixelRatio, tw);
+      sh = Math.min(dirtyHeight * devicePixelRatio, th);
+
+      // dirtyWidth in https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/putImageData
+      // means the width of the (src) image data, and
+      // dw in PutImageData() of @flyskywhy/react-native-gcanvas/core/src/GCanvasWeex.cpp
+      // means destWidth to be put in gl buffer
+    }
+
+    let dx = x * devicePixelRatio + sx;
+    let dy = y * devicePixelRatio + sy;
+    let dw = sw; // destWidth to be put in gl buffer
+    let dh = sh;
+    this._drawCommands = this._drawCommands.concat('P' + base64Data + ',' + tw + ',' + th+ ','
+          + sx + ',' + sy + ',' + sw + ',' + sh + ',' + dx + ',' + dy + ',' + dw + ',' + dh + ';');
   }
 }
