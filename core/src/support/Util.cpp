@@ -72,22 +72,39 @@ void waitUtilTimeout(sem_t *sem,uint ms){
     sem_wait(sem);
 #else
     int ret;
-    struct timeval now;
+    struct timeval pre;
+    struct timeval out;
     struct timespec outtime;
 
-    gettimeofday(&now, NULL);
-    timeraddMS(&now, ms);
-    outtime.tv_sec = now.tv_sec;
-    outtime.tv_nsec = now.tv_usec * 1000;
-    ret = sem_timedwait(sem,&outtime);
+    gettimeofday(&pre, NULL);
+    gettimeofday(&out, NULL);
+    timeraddMS(&out, ms);
+    outtime.tv_sec = out.tv_sec;
+    outtime.tv_nsec = out.tv_usec * 1000;
+
+    while ((ret = sem_timedwait(sem,&outtime)) == -1 && errno == EINTR) {
+        // Restart if sem_timedwait() is interrupted by signal from
+        // some system call somewhere else
+        continue;
+    }
+
     if (ret == -1)
     {
-        gettimeofday(&now, NULL);
-        LOG_D("wait time out,sec=%d,usec=%d\n",now.tv_sec,now.tv_usec);
-    }
-    else
-    {
-        gettimeofday(&now, NULL);
+        if (errno == ETIMEDOUT)
+        {
+            struct timeval now;
+            gettimeofday(&now, NULL);
+            LOG_E("wait time pre: sec=%d,usec=%d\n",pre.tv_sec,pre.tv_usec);
+            LOG_E("wait time out: sec=%d,usec=%d\n",out.tv_sec,out.tv_usec);
+            LOG_E("wait time now: sec=%d,usec=%d\n",now.tv_sec,now.tv_usec);
+            LOG_E("wait time out, and if sem_post(&mSyncSem) later thus will \
+                cause next waitUtilTimeout() return immediately, so maybe \
+                need increase GCANVAS_TIMEOUT\n");
+        }
+        else
+        {
+            LOG_E("wait time sem_timedwait() wrong params\n");
+        }
     }
 #endif
 }
