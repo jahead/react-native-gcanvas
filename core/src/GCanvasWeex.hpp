@@ -287,6 +287,7 @@ public:
 
 #ifdef ANDROID
     DynArray<Callback *> mCallbacks;
+    sem_t mCallNative;
     sem_t mSyncSem;
     bool mSync = false;
     bool mExit = false;

@@ -33,6 +33,7 @@ GCanvasWeex::GCanvasWeex(std::string contextId, const GCanvasConfig &config) :
     mContextLost = false;
     mResult = "";
 #ifdef ANDROID
+    sem_init(&mCallNative, 0, 1);
     sem_init(&mSyncSem, 0, 0);
 #endif
 }
@@ -1536,13 +1537,18 @@ const char *GCanvasWeex::CallNative(int type, const std::string &args) {
         return "";
     }
 
-    mResult = "";
-
     int sync = getSyncAttrib(type);
 
     struct GCanvasCmd *p = new struct GCanvasCmd();
     p->type = type;
     p->args = args;
+
+    // if (sync == SYNC) {
+    //     while (!mCmdQueue.empty()) {} // TODO: remove this line if webgl also don't need this
+    // }
+    sem_wait(&mCallNative);
+
+    mResult = "";
 
     mCmdQueue.push(p);
 
@@ -1556,13 +1562,16 @@ const char *GCanvasWeex::CallNative(int type, const std::string &args) {
         if (mResult.length() > 0) {
             char *resultChar = new char[mResult.length() + 1];
             strcpy(resultChar, mResult.c_str());
+            sem_post(&mCallNative);
             return resultChar;
         } else {
             LOG_D("return empty string");
+            sem_post(&mCallNative);
             return "";
         }
     }
 
+    sem_post(&mCallNative);
     return nullptr;
 }
 

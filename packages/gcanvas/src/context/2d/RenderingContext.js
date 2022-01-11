@@ -555,10 +555,18 @@ export default class CanvasRenderingContext2D {
         y = 0;
         h = this.canvas.clientHeight * devicePixelRatio;
     }
-    const base64Data = CanvasRenderingContext2D.GBridge.render2dResult(
+    let base64Data = CanvasRenderingContext2D.GBridge.render2dResult(
       this.componentId,
       'R' + x + ',' + y + ',' + w + ',' + h
     );
+
+    while (base64Data === '') {
+      console.warn('getImageData: not good to be here, should refactor source code somewhere');
+      base64Data = CanvasRenderingContext2D.GBridge.render2dResult(
+          this.componentId,
+          'R' + x + ',' + y + ',' + w + ',' + h
+        );
+    }
 
     let imageData = new ImageData(new Uint8ClampedArray(base64.toByteArray(base64Data)), w, h);
     return imageData;
