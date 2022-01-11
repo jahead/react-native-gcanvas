@@ -99,10 +99,6 @@ const GBridge = {
       console.log('>>> commands: ' + commands);
     }
 
-    // to prevent return '' from render2d() above, need set
-    // @ReactMethod(isBlockingSynchronousMethod = true)
-    // on render() of
-    // android/src/main/java/com/taobao/gcanvas/bridges/rn/GReactModule.java
     return GBridge.callNative(componentId, commands, false, 0x20000001);
   },
 

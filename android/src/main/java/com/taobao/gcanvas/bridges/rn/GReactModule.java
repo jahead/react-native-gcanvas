@@ -384,7 +384,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
+    @ReactMethod
     public void render(String cmd, String canvasId) {
         if (TextUtils.isEmpty(canvasId) || TextUtils.isEmpty(cmd)) {
             return;
