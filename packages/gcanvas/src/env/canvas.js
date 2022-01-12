@@ -11,6 +11,7 @@ export default class GCanvas extends Element {
   static GBridge = null;
 
   id = null;
+  _context = null;
   _clientWidth = 100;
   _clientHeight = 150;
   _width = 100;
@@ -56,6 +57,9 @@ export default class GCanvas extends Element {
   }
 
   set width(value) {
+    if (this._context && this._context.className === 'CanvasRenderingContext2D') {
+      this._context.clearRect(0, 0, this._width, this._height);
+    }
     this._width = value;
     GCanvas.GBridge.callResetGlViewport(this.id, this._width * PixelRatio.get(), this._height * PixelRatio.get());
   }
@@ -65,6 +69,9 @@ export default class GCanvas extends Element {
   }
 
   set height(value) {
+    if (this._context && this._context.className === 'CanvasRenderingContext2D') {
+      this._context.clearRect(0, 0, this._width, this._height);
+    }
     this._height = value;
     GCanvas.GBridge.callResetGlViewport(this.id, this._width * PixelRatio.get(), this._height * PixelRatio.get());
   }
@@ -126,6 +133,7 @@ export default class GCanvas extends Element {
       throw new Error('not supported context ' + type);
     }
 
+    this._context = context;
     return context;
   }
 
