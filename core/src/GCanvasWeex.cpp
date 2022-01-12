@@ -420,19 +420,16 @@ void
 GCanvasWeex::PutImageData(
         const char *imageData,
         int dataLength,
-        float tw,
-        float th,
-        float sx,
-        float sy,
-        float sw,
-        float sh,
-        float dx,
-        float dy,
-        float dw,
-        float dh) {
-    LOG_D("[PutImageData] xy=(%f, %f), src_wh=(%f, %f), dest_wh=(%f, %f)",
-
-          dx, dy, sw, sh, dw, dh);
+        int tw,
+        int th,
+        int x,
+        int y,
+        int sx,
+        int sy,
+        int sw,
+        int sh) {
+    LOG_D("[PutImageData] xy=(%d, %d), src_wh=(%d, %d), texture_wh=(%d, %d)",
+          x, y, sw, sh, tw, tw);
 
     std::string &pixels_data = mTempStr;
     if ((unsigned int) dataLength > pixels_data.length())
@@ -442,18 +439,7 @@ GCanvasWeex::PutImageData(
 
     gcanvas::Base64DecodeBuf(reinterpret_cast<char *>(pixels), imageData, dataLength);
 
-    GLuint glID;
-    glGenTextures(1, &glID);
-    glBindTexture(GL_TEXTURE_2D, glID);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA,
-                 GL_UNSIGNED_BYTE, pixels);
-
-    mCanvasContext->DoDrawImage(tw, th, glID, sx, sy, sw, sh, dx, dy, dw, dh);
-    if (!mContextLost) glDeleteTextures(1, (const GLuint *) (&glID));
+    mCanvasContext->PutImageData(pixels, tw, th, x, y, sx, sy, sw, sh);
 }
 
 void
@@ -465,34 +451,10 @@ GCanvasWeex::GetImageData(int
                           base64Encode,
                           std::string &pixelsData) {
     LOG_D("GCanvas.cpp::getImageData begin... xy=(%d, %d), wh=(%d, %d)", x,
-
-          y, w, h);
-
-    // bounds check the parameters
-    // get the dimensions of the current viewport
-    int results[4];
-    glGetIntegerv(GL_VIEWPORT, results);
-
-    if (x < 0) x = 0;
-    if (y < 0) y = 0;
-    if (-1 == w) w = results[2];
-    if (-1 == h) h = results[3];
-    if ((x + w) > results[2]) {
-        x = 0;
-        w = results[2];
-    }
-    if ((y + h) > results[3]) {
-        y = 0;
-        h = results[3];
-    }
-
-    // flip y axis to be in openGL lower left origin
-    y = results[3] - y - h;
-    LOG_D("GCanvas.cpp::getImageData bounds... xy=(%d, %d), wh=(%d, %d)", x,
           y, w, h);
 
     // use glGetPixels to get the bits from the current frame buffer
-    // Make the BYTE array, factor of 3 because it's RBG.
+    // Make the BYTE array, factor of 4 because it's RGBA.
     int buf_size = 4 * w * h;
     std::string *ptr_data = NULL;
     if (base64Encode) {
@@ -506,9 +468,7 @@ GCanvasWeex::GetImageData(int
 
     unsigned char *pixels = (unsigned char *) ptr_data->c_str();
 
-    glFinish();
-    glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-    gcanvas::FlipPixel(pixels, w, h);
+    mCanvasContext->GetImageData(x, y, w, h, pixels);
 
     if (base64Encode) {
         pixelsData.resize(gcanvas::Base64EncodeLen(buf_size));
@@ -1391,19 +1351,21 @@ void GCanvasWeex::execute2dCommands(const char *renderCommands, int length) {
             case 'P': // PutImageData
             {
                 p++;
-                float tokens[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-                p = parseTokens(p, tokens, 10);
                 const char *begin_pos = p;
 
-                while (*p && *p != ';') {
+                while (*p && *p != ',') {
                     ++p;
                 }
                 int data_len = static_cast<int>(p - begin_pos);
                 LOG_D("[executeRenderCommands] data_len:%d", data_len);
 
+                p++;
+                float tokens[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+                p = parseTokens(p, tokens, 8);
+
                 PutImageData(begin_pos, data_len, tokens[0], tokens[1],
                              tokens[2], tokens[3], tokens[4], tokens[5],
-                             tokens[6], tokens[7], tokens[8], tokens[9]);
+                             tokens[6], tokens[7]);
 
                 if (*p == ';') ++p;
                 break;

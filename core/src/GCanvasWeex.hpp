@@ -160,9 +160,8 @@ public:
 
      void GetImageData(int x, int y, int w, int h, bool base64Encode,
                                std::string &pixelsData);
-     void PutImageData(const char *imageData, int dataLength, float tw, float th,
-                               float sx, float sy, float sw, float sh,
-                               float dx, float dy, float dw, float dh);
+     void PutImageData(const char *imageData, int dataLength, int tw, int th,
+                               int x, int y, int sx, int sy, int sw, int sh);
 
      void RemoveTexture(int id);
      void Render(const char *renderCommands, int length);
