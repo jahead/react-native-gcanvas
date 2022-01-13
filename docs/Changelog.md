@@ -3,6 +3,14 @@
 All notable changes of this project will be documented in.
 
 
+## [2.3.10] - 2022-01-13
+
+### Changed
+
+* React Native GCanvas Component
+	* fix: context was scaled when `Canvas resize` #32 fixed by `this.canvas.width = width; this.canvas.height = height;` to match the same solution on Web <canvas/> , `onCanvasResize` usage can ref to README.md diff of commit 8225a74
+
+
 ## [2.3.9] - 2022-01-12
 
 ### Changed

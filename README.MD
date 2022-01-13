@@ -150,7 +150,7 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TouchableHighlight,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {GCanvasView, GImage} from '@flyskywhy/react-native-gcanvas';
@@ -283,9 +283,9 @@ export default class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <TouchableHighlight onPress={this.drawSome}>
+        <TouchableOpacity onPress={this.drawSome}>
           <Text style={styles.welcome}>{this.state.debugInfo}</Text>
-        </TouchableHighlight>
+        </TouchableOpacity>
         {Platform.OS === 'web' ? (
           <canvas
             id={'canvasExample'}
@@ -306,9 +306,9 @@ export default class App extends Component {
             style={styles.gcanvas}
           />
         )}
-        <TouchableHighlight onPress={this.takePicture}>
+        <TouchableOpacity onPress={this.takePicture}>
           <Text style={styles.welcome}>Click me toDataURL()</Text>
-        </TouchableHighlight>
+        </TouchableOpacity>
       </View>
     );
   }

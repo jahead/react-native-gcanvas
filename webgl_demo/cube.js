@@ -3,7 +3,7 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TouchableHighlight,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {GCanvasView} from '@flyskywhy/react-native-gcanvas';
@@ -20,6 +20,20 @@ export default class App extends Component {
     this.isGReactTextureViewReady = true;
   }
 
+  componentDidMount() {
+    if (Platform.OS === 'web') {
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          if (entry.target.id === 'canvasExample') {
+            let {width, height} = entry.contentRect;
+            this.onCanvasResize({width, height});
+          }
+        }
+      });
+      resizeObserver.observe(document.getElementById('canvasExample'));
+    }
+  }
+
   initCanvas = (canvas) => {
     if (this.canvas) {
       return;
@@ -32,6 +46,14 @@ export default class App extends Component {
       this.canvas.height = this.canvas.clientHeight;
     }
     this.gl = this.canvas.getContext('webgl');
+  };
+
+  onCanvasResize = ({width, height}) => {
+    this.canvas.width = width;
+    this.canvas.height = height;
+
+    this.interval && clearInterval(this.interval);
+    this.drawSome();
   };
 
   drawSome = () => {
@@ -250,7 +272,7 @@ export default class App extends Component {
       gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
     }
 
-    setInterval(draw, 16);
+    this.interval = setInterval(draw, 16);
   };
 
   takePicture = () => {
@@ -263,31 +285,33 @@ export default class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <TouchableHighlight onPress={this.drawSome}>
+        <TouchableOpacity onPress={this.drawSome}>
           <Text style={styles.welcome}>{this.state.debugInfo}</Text>
-        </TouchableHighlight>
+        </TouchableOpacity>
         <View style={{backgroundColor: 'black'}}>
           {Platform.OS === 'web' ? (
             <canvas
+              id={'canvasExample'}
               ref={this.initCanvas}
               style={
                 {
-                  width: 200,
-                  height: 300,
+                  flex: 1,
+                  width: '100%',
                 } /* canvas with react-native-web can't use width and height in styles.gcanvas */
               }
             />
           ) : (
             <GCanvasView
+              onCanvasResize={this.onCanvasResize}
               onCanvasCreate={this.initCanvas}
               onIsReady={(value) => (this.isGReactTextureViewReady = value)}
               style={styles.gcanvas}
             />
           )}
         </View>
-        <TouchableHighlight onPress={this.takePicture}>
+        <TouchableOpacity onPress={this.takePicture}>
           <Text style={styles.welcome}>Click me toDataURL('image/jpeg', 0.77)</Text>
-        </TouchableHighlight>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -301,8 +325,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   gcanvas: {
-    width: 200,
-    height: 300,
+    flex: 1,
+    width: '100%',
     // backgroundColor: '#FF000030', // TextureView doesn't support displaying a background drawable since Android API 24
   },
   welcome: {
