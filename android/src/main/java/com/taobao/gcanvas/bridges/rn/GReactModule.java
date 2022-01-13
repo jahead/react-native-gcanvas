@@ -534,7 +534,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    public void resetGlViewport(String refId, int with, int height) {
+    public void resetGlViewport(String refId, int width, int height) {
         if (TextUtils.isEmpty(refId)) {
             return;
         }
@@ -545,7 +545,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
             return;
         }
 
-        mImpl.resetGlViewport(refId, with, height);
+        mImpl.resetGlViewport(refId, width, height);
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
