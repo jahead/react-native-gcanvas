@@ -79,6 +79,12 @@
     return self;
 }
 
+- (void)reInitContext{
+    self.gcanvasInited = NO;
+    self.gcanvas->ReCreateContext();
+    self.context = self.gcanvas->GetGCanvasContext();
+}
+
 - (void)dealloc{
     [self removeGCanvas];
 }

@@ -69,7 +69,7 @@ const GBridge = {
   },
 
   callResetGlViewport: function(componentId, width, height) {
-    GBridge.GCanvasModule.resetGlViewport && GBridge.GCanvasModule.resetGlViewport(componentId, width, height);
+    GBridge.GCanvasModule.resetGlViewport(componentId, width, height);
   },
 
   callToDataURL: function(componentId, mimeType, quality) {

@@ -358,6 +358,15 @@ static NSMutableDictionary  *_staticModuleExistDict;
     }
 }
 
+- (void)resetGlViewport:(NSString*)componentId width:(NSUInteger)width height:(NSUInteger)height {
+    GCanvasObject *gcanvasInst = self.gcanvasObjectDict[componentId];
+    GCanvasPlugin *plugin = gcanvasInst.plugin;
+    int contextType = plugin.contextType;
+    [plugin reInitContext];
+    [plugin setContextType:contextType];
+    gcanvasInst.component.needChangeEAGLContenxt = YES;
+}
+
 - (NSString*)toDataURL:(NSString*)componentId mimeType:(NSString*)mimeType quality:(CGFloat)quality {
     GCanvasObject *gcanvasInst = self.gcanvasObjectDict[componentId];
     if( !gcanvasInst ){

@@ -47,6 +47,8 @@ typedef GCanvasPlugin* (^FetchPluginBlock)(NSString * componentId);
  */
 - (instancetype)initWithComponentId:(NSString*)componentId;
 
+- (void)reInitContext;
+
 /**
  *  @abstract   set Canvas frame
  *  @param      frame   frame of Canvas
