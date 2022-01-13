@@ -303,13 +303,13 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         }
 
         @Override
-        public void resetGlViewport(String canvasId, int width, int height) {
+        public void resetGlViewport(String canvasId) {
             GReactTextureView textureView = mViews.get(canvasId);
             if (null == textureView) {
                 GLog.w(TAG, "resetGlViewport() can not find canvas with id ===> " + canvasId);
                 return;
             }
-            textureView.mCallback.resetGlViewport(width, height);
+            textureView.mCallback.resetGlViewport();
         }
 
         @Override
@@ -534,7 +534,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    public void resetGlViewport(String refId, int width, int height) {
+    public void resetGlViewport(String refId) {
         if (TextUtils.isEmpty(refId)) {
             return;
         }
@@ -545,7 +545,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
             return;
         }
 
-        mImpl.resetGlViewport(refId, width, height);
+        mImpl.resetGlViewport(refId);
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)

@@ -78,15 +78,15 @@ static NSMutableDictionary  *_staticModuleExistDict;
         EAGLContext *newContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2 sharegroup:_staticFirstContext.sharegroup];
         context = newContext;
     }
-    
+
     if( !_staticModuleExistDict ){
         _staticModuleExistDict = NSMutableDictionary.dictionary;
     }
-    
+
     if( !_staticModuleExistDict[instanceId] ){
         _staticModuleExistDict[instanceId] = @(1);
     }
-    
+
     return context;
 }
 
@@ -119,14 +119,14 @@ static NSMutableDictionary  *_staticModuleExistDict;
     if (!args || !args[@"componentId"] ){
         return @"false";
     }
-    
+
     NSString *componentId = args[@"componentId"];
     GCVLOG_METHOD(@"enable:, componentId=%@", componentId);
-    
+
     if( !self.gcanvasObjectDict ){
         self.gcanvasObjectDict = NSMutableDictionary.dictionary;
         self.enterBackground = NO;
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(onGCanvasCompLoadedNotify:)
                                                      name:kGCanvasCompLoadedNotification
@@ -139,7 +139,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
                                                  selector:@selector(onInstanceWillDestroy:)
                                                      name:kGCanvasDestroyNotification
                                                    object:nil];
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(onDidEnterBackgroundNotify:)
                                                      name:UIApplicationWillResignActiveNotification
@@ -153,17 +153,17 @@ static NSMutableDictionary  *_staticModuleExistDict;
             return [weakSelf gcanvasPluginById:componentId];
         }];
     }
-    
+
     if( self.gcanvasObjectDict[componentId] ){
         return @"true";
     }
-    
+
     GCanvasObject *gcanvasInst = [[GCanvasObject alloc] initWithComponentId:componentId];
     self.gcanvasObjectDict[componentId] = gcanvasInst;
-    
+
     GCanvasPlugin *plugin = [[GCanvasPlugin alloc] initWithComponentId:componentId];
     gcanvasInst.plugin = plugin;
-    
+
     GCVWeakSelf
     id<GCanvasViewProtocol> component = [self.deletage gcanvasComponentById:componentId];
     if( component ){
@@ -174,7 +174,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
             component.glkview.delegate = weakSelf;
         });
         gcanvasInst.component = component;
-        
+
         [plugin setGLKView:component.glkview];
     }
     return @"true";
@@ -187,20 +187,20 @@ static NSMutableDictionary  *_staticModuleExistDict;
  */
 - (void)render:(NSString *)commands componentId:(NSString*)componentId{
     if( self.enterBackground ) return;
-    
+
     GCVLOG_METHOD(@"render:componentId:,commands=%@, componentId=%@", commands, componentId);
-    
+
     GCanvasObject *gcanvasInst = self.gcanvasObjectDict[componentId];
     id<GCanvasViewProtocol> component = gcanvasInst.component;
     GCanvasPlugin *plugin = gcanvasInst.plugin;
     if( !component || !plugin ){
         return;
     }
-    
+
     if( component.isOffscreen ){
         component.glkview.hidden = YES;
     }
-    
+
     [plugin addCommands:commands];
     [self execCommandById:componentId];
 }
@@ -213,7 +213,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
  */
 - (void)resetComponent:(NSString*)componentId{
     GCVLOG_METHOD(@"resetComponent:,componentId=%@", componentId);
-    
+
     [[NSNotificationCenter defaultCenter] postNotificationName:kGCanvasResetNotification
                                                         object:nil
                                                       userInfo:@{@"componentId":componentId}];
@@ -232,21 +232,21 @@ static NSMutableDictionary  *_staticModuleExistDict;
         if( callback ) callback(@{@"error":@"Input Param Error"});
         return;
     }
-    
+
     if( ![GCVCommon sharedInstance].imageLoader ){
         [GCVCommon sharedInstance].imageLoader = self.imageLoader;
     }
-    
+
     if( !self.preloadQueue ){
         self.preloadQueue = dispatch_queue_create("com.taobao.gcanvas.preload", DISPATCH_QUEUE_CONCURRENT);
     }
-    
+
     NSString *src = data[0];
     if( [src hasPrefix:kGCanvasOffScreenPrefix] ){
         if( callback ) callback(@{});
         return;
     }
-    
+
     GCVLOG_METHOD(@"preLoadImage:callback:, src=%@", src);
     dispatch_async(self.preloadQueue , ^{
         NSUInteger jsTextureId = [data[1] integerValue];
@@ -277,7 +277,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
         if( callback ) callback(@{@"error":@"Input Param Error"});
         return;
     }
-    
+
     GCanvasObject *gcanvasInst = self.gcanvasObjectDict[componentId];
     GCanvasPlugin *plugin = gcanvasInst.plugin;
     id<GCanvasViewProtocol> component = gcanvasInst.component;
@@ -285,12 +285,12 @@ static NSMutableDictionary  *_staticModuleExistDict;
         if( callback ) callback(@{});
         return;
     }
-    
+
     NSString *src = data[0];
     NSUInteger jsTextureId = [data[1] integerValue];
-    
+
     GCVLOG_METHOD(@"bindImageTexture:componentId:callback:, src=%@", src);
-    
+
     __block GLuint textureId = [plugin getTextureId:jsTextureId];
     if( textureId == 0 ){
         //check offscreen
@@ -310,14 +310,14 @@ static NSMutableDictionary  *_staticModuleExistDict;
             if( callback ) callback(@{});
             return;
         }
-        
+
         void (^bindImageTextureBlock)(GCVImageCache*) = ^(GCVImageCache* cache){
             dispatch_main_async_safe(^{
                 [EAGLContext setCurrentContext:component.glkview.context];
                 textureId = [GCVCommon bindTexture:cache.image];
                 if( textureId > 0 ){
                     GCVLOG_METHOD(@"==>bindImageTexture success: jsTextureId:%d => texutreId:%d, componentId:%@", jsTextureId, textureId, componentId);
-                    
+
                     [plugin addTextureId:textureId withAppId:jsTextureId
                                    width:cache.width height:cache.height
                                offscreen:NO];
@@ -325,7 +325,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
                 }
             });
         };
-        
+
         GCVImageCache *imageCache = [[GCVCommon sharedInstance] fetchLoadImage:src];
         if( !imageCache ){
             [[GCVCommon sharedInstance] addPreLoadImage:src completion:^(GCVImageCache *imageCache, BOOL fromCache) {
@@ -339,7 +339,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
             bindImageTextureBlock(imageCache);
         }
     }
-    
+
     if( callback ){
         (textureId > 0) ? callback(@{}) : callback(@{@"error":@"Bind Image To Texture Error"});
     }
@@ -358,7 +358,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
     }
 }
 
-- (void)resetGlViewport:(NSString*)componentId width:(NSUInteger)width height:(NSUInteger)height {
+- (void)resetGlViewport:(NSString*)componentId{
     GCanvasObject *gcanvasInst = self.gcanvasObjectDict[componentId];
     GCanvasPlugin *plugin = gcanvasInst.plugin;
     int contextType = plugin.contextType;
@@ -414,7 +414,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
 
 - (void)onGCanvasResetNotify:(NSNotification*)notification{
     NSString *componentId = notification.userInfo[@"componentId"];
-    
+
     //find plugin and component bind with componentId, set needChangeEAGLContenxt and remove render commands
     [self.gcanvasObjectDict enumerateKeysAndObjectsUsingBlock:^(NSString *compId, GCanvasObject *gcanvsInst, BOOL * _Nonnull stop) {
         if ( [componentId isEqualToString:gcanvsInst.componentId] &&  gcanvsInst.component ) {
@@ -438,20 +438,20 @@ static NSMutableDictionary  *_staticModuleExistDict;
     if( ![instanceId isEqualToString:[self.deletage gcanvasModuleInstanceId]] ){
         return;
     }
-    
+
     [self.gcanvasObjectDict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, GCanvasObject* gcanvasInst, BOOL * _Nonnull stop) {
         id<GCanvasViewProtocol> comp = gcanvasInst.component;
         comp.glkview.delegate = nil;
-        
+
         GCanvasPlugin *plugin = gcanvasInst.plugin;
         [plugin removeGCanvas];
     }];
-    
+
     [self.gcanvasObjectDict removeAllObjects];
     self.gcanvasObjectDict = nil;
-    
+
     [[GCVCommon sharedInstance] clearLoadImageDict];
-    
+
     [_staticModuleExistDict removeObjectForKey:instanceId];
     if( _staticModuleExistDict.count == 0 ){
         _staticFirstContext = nil;
@@ -478,7 +478,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
 
 - (void)execCommandById:(NSString*)componentId{
     GCVLOG_METHOD(@"execCommandById:, componentId: %@",componentId);
-    
+
     GCanvasObject *gcanvasInst = self.gcanvasObjectDict[componentId];
     if ( gcanvasInst.component ) {
         GCVWeakSelf
@@ -519,19 +519,19 @@ static NSMutableDictionary  *_staticModuleExistDict;
 #pragma mark - GLKViewDelegate
 - (void)glkView:(GLKView*)view drawInRect:(CGRect)rect{
     GCanvasObject *gcanvasInst = [self gcanvasInstanceByGLKView:view];
-    
+
     id<GCanvasViewProtocol> component = gcanvasInst.component;
     GCanvasPlugin *plugin = gcanvasInst.plugin;
-    
+
     if( !component || !plugin ){
         return;
     }
-    
+
     GCVLOG_METHOD(@"glkView:drawInRect:, componentId:%@, context:%p", component.componentId, component.glkview.context);
-    
+
     //multi GCanvas instance, need change current context while execute render commands
     [EAGLContext setCurrentContext:component.glkview.context];
-    
+
     if ( component.needChangeEAGLContenxt ){
         [self refreshPlugin:plugin withComponent:component];
         if( [self.deletage respondsToSelector:@selector(dispatchGlobalEvent:params:)] ){
@@ -539,7 +539,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
         }
         component.needChangeEAGLContenxt = NO;
     }
-    
+
     [plugin execCommands];
 }
 
@@ -560,13 +560,13 @@ static NSMutableDictionary  *_staticModuleExistDict;
     if( !gcanvasInst ){
         return @{};
     }
-    
+
     //WebGL no need set glkview delegate
     id<GCanvasViewProtocol> component = gcanvasInst.component;
     if( component.glkview.delegate ){
         component.glkview.delegate = nil;
     }
-    
+
     NSDictionary *retDict = [self callGCanvasNative:dict];
     return retDict;
 }
@@ -575,26 +575,26 @@ static NSMutableDictionary  *_staticModuleExistDict;
     NSString *componentId = dict[@"contextId"];
     NSUInteger type = [dict[@"type"] integerValue];
     NSString *args = dict[@"args"];
-    
+
     GCanvasObject *gcanvasInst = self.gcanvasObjectDict[componentId];
-    
+
     id<GCanvasViewProtocol> component = gcanvasInst.component;
     GCanvasPlugin *plugin = gcanvasInst.plugin;
-    
+
     if( !component || !plugin ) return @{};
-    
+
     if ( component.needChangeEAGLContenxt ){
         [EAGLContext setCurrentContext:component.glkview.context];
-        
+
         [self refreshPlugin:plugin withComponent:component];
         component.needChangeEAGLContenxt = NO;
-        
+
         //setNeedsDisplay at first, for WebGL case render only once.
         dispatch_main_sync_safe(^{
             [component.glkview setNeedsDisplay];
         });
     }
-    
+
     /* call native type description
      +-----------------------------------------------------+
      |                   32 bit integer                    |
@@ -637,7 +637,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
             }
 
             [plugin execCommands];
-            
+
             NSString *ret = [plugin getSyncResult];
             if(ret){
                 return @{@"result":ret};

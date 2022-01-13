@@ -99,7 +99,7 @@ typedef void (^GCanvasModuleCallback)(id result);
  */
 - (void)setContextType:(NSUInteger)type componentId:(NSString*)componentId;
 
-- (void)resetGlViewport:(NSString*)componentId width:(NSUInteger)width height:(NSUInteger)height;
+- (void)resetGlViewport:(NSString*)componentId;
 
 - (NSString*)toDataURL:(NSString*)componentId mimeType:(NSString*)mimeType quality:(CGFloat)quality;
 

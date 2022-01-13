@@ -35,6 +35,8 @@ public class GTextureViewCallback implements TextureView.SurfaceTextureListener 
     private final String mKey;
     private String mBackgroundColor = "#00000000";  // "#00000000" match [UIColor clearColor] in ios/RCTGCanvasView.m
     private Surface mSurface;
+    private int mWidth;
+    private int mHeight;
     private TextureView mTextureview;
 
     private ArrayList<TextureView.SurfaceTextureListener> mDelegateLists;
@@ -83,7 +85,9 @@ public class GTextureViewCallback implements TextureView.SurfaceTextureListener 
         // onSurfaceTextureAvailable is sometimes called with 0 size texture
         // and immediately followed by onSurfaceTextureSizeChanged with actual size
         if (width != 0 && height != 0) {
-           resetGlViewport(width, height);
+            mWidth = width;
+            mHeight = height;
+            resetGlViewport();
         }
         GCanvasJNI.refreshArguments(mKey);
         if (GCanvasJNI.sendEvent(mKey)) {
@@ -106,6 +110,10 @@ public class GTextureViewCallback implements TextureView.SurfaceTextureListener 
         if (mSurface == null) {
             mSurface = new Surface(surface);
         }
+        if (width != 0 && height != 0) {
+            mWidth = width;
+            mHeight = height;
+        }
 
         if (null != mDelegateLists) {
             for (TextureView.SurfaceTextureListener listener : mDelegateLists) {
@@ -114,9 +122,9 @@ public class GTextureViewCallback implements TextureView.SurfaceTextureListener 
         }
     }
 
-    public void resetGlViewport(int width, int height) {
-        GLog.d("resetGlViewport width:" + width + " height:" + height);
-        onSurfaceChanged(this.mKey, mSurface, 0, width, height, mBackgroundColor);
+    public void resetGlViewport() {
+        GLog.d("resetGlViewport width:" + mWidth + " height:" + mHeight);
+        onSurfaceChanged(this.mKey, mSurface, 0, mWidth, mHeight, mBackgroundColor);
     }
 
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {

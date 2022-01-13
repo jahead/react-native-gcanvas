@@ -58,10 +58,10 @@ export default class GCanvas extends Element {
 
   set width(value) {
     if (this._context && this._context.className === 'CanvasRenderingContext2D') {
-      this._context.clearRect(0, 0, this._width, this._height);
+      this._context.clearRect(0, 0, this._clientWidth, this._clientHeight);
     }
     this._width = value;
-    GCanvas.GBridge.callResetGlViewport(this.id, this._width * PixelRatio.get(), this._height * PixelRatio.get());
+    GCanvas.GBridge.callResetGlViewport(this.id);
   }
 
   get height() {
@@ -70,10 +70,10 @@ export default class GCanvas extends Element {
 
   set height(value) {
     if (this._context && this._context.className === 'CanvasRenderingContext2D') {
-      this._context.clearRect(0, 0, this._width, this._height);
+      this._context.clearRect(0, 0, this._clientWidth, this._clientHeight);
     }
     this._height = value;
-    GCanvas.GBridge.callResetGlViewport(this.id, this._width * PixelRatio.get(), this._height * PixelRatio.get());
+    GCanvas.GBridge.callResetGlViewport(this.id);
   }
 
   getContext(type) {

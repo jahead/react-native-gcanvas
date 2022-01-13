@@ -108,9 +108,9 @@ RCT_EXPORT_METHOD(setContextType:(NSUInteger)type componentId:(NSString*)compone
     [self.gcanvasModule setContextType:type componentId:componentId];
 }
 
-RCT_EXPORT_METHOD(resetGlViewport:(NSString*)componentId width:(NSUInteger)width height:(NSUInteger)height)
+RCT_EXPORT_METHOD(resetGlViewport:(NSString*)componentId)
 {
-    [self.gcanvasModule resetGlViewport:componentId width:width height:height];
+    [self.gcanvasModule resetGlViewport:componentId];
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(toDataURL:(NSString*)componentId mimeType:(NSString*)mimeType quality:(CGFloat)quality)

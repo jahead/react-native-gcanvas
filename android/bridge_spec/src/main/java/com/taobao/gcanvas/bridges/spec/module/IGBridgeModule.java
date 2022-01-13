@@ -124,7 +124,7 @@ public interface IGBridgeModule<JSCallback> {
      */
     void setDevicePixelRatio(String canvasId, double ratio);
 
-    void resetGlViewport(String canvasId, int width, int height);
+    void resetGlViewport(String canvasId);
 
     /**
      * Send render command to specified canvas 2D.
