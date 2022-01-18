@@ -288,7 +288,7 @@ export default class App extends Component {
         <TouchableOpacity onPress={this.drawSome}>
           <Text style={styles.welcome}>{this.state.debugInfo}</Text>
         </TouchableOpacity>
-        <View style={{backgroundColor: 'black'}}>
+        <View style={[styles.gcanvas, {backgroundColor: 'black'}]}>
           {Platform.OS === 'web' ? (
             <canvas
               id={'canvasExample'}
