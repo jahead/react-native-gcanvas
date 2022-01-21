@@ -17,6 +17,10 @@
 #include "GCanvasManager.h"
 #include "Log.h"
 
+void nsLog(const char *tag, const char *log) {
+    NSLog(@"%s: %s", tag, log);
+}
+
 
 @interface GCanvasPlugin()
 
@@ -54,6 +58,10 @@
 
 - (instancetype)initWithComponentId:(NSString*)componentId{
     self = [super init];
+
+    // to get the log comes from cpp
+    gcanvasSystemLog = nsLog;
+
     if (self){
         self.renderCommandArray = [[NSMutableArray alloc] init];
         self.textureDict = NSMutableDictionary.dictionary;
