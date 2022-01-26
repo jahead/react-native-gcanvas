@@ -451,7 +451,7 @@ export default class WebGLRenderingContext {
   drawElements = function(mode, count, type, offset) {
     WebGLRenderingContext.GBridge.callNative(
       this._canvas.id,
-      GLmethod.drawElements + ',' + mode + ',' + count + ',' + type + ',' + offset + ';'
+      GLmethod.drawElements + ',' + mode + ',' + count + ',' + type + ',' + offset
     );
     this._canvas._needRender = true;
   }
