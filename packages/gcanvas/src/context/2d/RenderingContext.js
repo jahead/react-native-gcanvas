@@ -548,13 +548,13 @@ export default class CanvasRenderingContext2D {
     let y = sy;
     let w = sw;
     let h = sh;
-    if ((sx + sw) > this.canvas.clientWidth) {
-        x = 0;
-        w = this.canvas.clientWidth;
+    if (sx + sw > this.canvas.clientWidth) {
+      x = 0;
+      w = this.canvas.clientWidth;
     }
-    if ((sy + sh) > this.canvas.clientHeight) {
-        y = 0;
-        h = this.canvas.clientHeight;
+    if (sy + sh > this.canvas.clientHeight) {
+      y = 0;
+      h = this.canvas.clientHeight;
     }
 
     let base64Data = CanvasRenderingContext2D.GBridge.callNative(
@@ -566,16 +566,12 @@ export default class CanvasRenderingContext2D {
       'execWithoutDisplay',
     );
 
-    while (base64Data === '') {
+    if (base64Data === '') {
       console.warn('getImageData: not good to be here, should refactor source code somewhere');
-      base64Data = CanvasRenderingContext2D.GBridge.render2dResult(
-          this.componentId,
-          'R' + x + ',' + y + ',' + w + ',' + h
-        );
+      return new ImageData(w, h);
     }
 
-    let imageData = new ImageData(new Uint8ClampedArray(base64.toByteArray(base64Data)), w, h);
-    return imageData;
+    return new ImageData(new Uint8ClampedArray(base64.toByteArray(base64Data)), w, h);
   }
 
   // no need ctx.getImageData(imageData, x * PixelRatio.get(), y * PixelRatio.get())
@@ -602,6 +598,6 @@ export default class CanvasRenderingContext2D {
     }
 
     this._drawCommands = this._drawCommands.concat('P' + base64Data + ',' + tw + ',' + th + ','
-          + x + ',' + y + ',' + sx + ',' + sy + ',' + sw + ',' + sh +';');
+          + x + ',' + y + ',' + sx + ',' + sy + ',' + sw + ',' + sh + ';');
   }
 }
