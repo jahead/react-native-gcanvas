@@ -557,9 +557,13 @@ export default class CanvasRenderingContext2D {
         h = this.canvas.clientHeight;
     }
 
-    let base64Data = CanvasRenderingContext2D.GBridge.render2dResult(
+    let base64Data = CanvasRenderingContext2D.GBridge.callNative(
       this.componentId,
-      'R' + x + ',' + y + ',' + w + ',' + h
+      'R' + x + ',' + y + ',' + w + ',' + h + ';',
+      false,
+      '2d',
+      'sync',
+      'execWithoutDisplay',
     );
 
     while (base64Data === '') {

@@ -114,7 +114,6 @@ static NSMutableDictionary  *_staticModuleExistDict;
     return gcanvasQueue;
 }
 
-#pragma mark - Need Export Context2D Method
 - (NSString*)enable:(NSDictionary *)args{
     if (!args || !args[@"componentId"] ){
         return @"false";
@@ -179,32 +178,8 @@ static NSMutableDictionary  *_staticModuleExistDict;
     }
     return @"true";
 }
-/**
- * Export JS method for context 2D render
- *
- * @param   commands    render commands from js
- * @param   componentId GCanvas component identifier
- */
-- (void)render:(NSString *)commands componentId:(NSString*)componentId{
-    if( self.enterBackground ) return;
 
-    GCVLOG_METHOD(@"render:componentId:,commands=%@, componentId=%@", commands, componentId);
-
-    GCanvasObject *gcanvasInst = self.gcanvasObjectDict[componentId];
-    id<GCanvasViewProtocol> component = gcanvasInst.component;
-    GCanvasPlugin *plugin = gcanvasInst.plugin;
-    if( !component || !plugin ){
-        return;
-    }
-
-    if( component.isOffscreen ){
-        component.glkview.hidden = YES;
-    }
-
-    [plugin addCommands:commands];
-    [self execCommandById:componentId];
-}
-
+#pragma mark - Need Export Context2D Method
 /**
  * Export JS method for reset GCanvas component while disappear
  * [iOS only]
@@ -476,18 +451,81 @@ static NSMutableDictionary  *_staticModuleExistDict;
     return gcanvasInst;
 }
 
-- (void)execCommandById:(NSString*)componentId{
-    GCVLOG_METHOD(@"execCommandById:, componentId: %@",componentId);
-
+- (NSDictionary*)execCommandById:(NSString*)componentId type:(NSUInteger)type{
     GCanvasObject *gcanvasInst = self.gcanvasObjectDict[componentId];
-    if ( gcanvasInst.component ) {
-        GCVWeakSelf
-        dispatch_main_async_safe(^{
-            if( !weakSelf.enterBackground ){
-                [gcanvasInst.component.glkview setNeedsDisplay];
-            }
-        });
+    id<GCanvasViewProtocol> component = gcanvasInst.component;
+    GCanvasPlugin *plugin = gcanvasInst.plugin;
+
+    BOOL isWebgl = (type >> 30 & 0x01) == 1;
+    BOOL isSync = type >> 29 & 0x01; // sync RN method
+    BOOL isExecWithDisplay = type & 0x01; // render per e.g. 16 ms
+
+    if (isWebgl) {
+        // WebGL no need set glkview delegate
+        if (component.glkview.delegate) {
+            // if comes here, drawInRect() will not be invoked after setNeedsDisplay(),
+            // but setNeedsDisplay() is still need be invoked per e.g. 16 ms, otherwise
+            // there will be no new graphics on screen
+            component.glkview.delegate = nil;
+        }
+
+        if (component.needChangeEAGLContenxt) {
+            [EAGLContext setCurrentContext:component.glkview.context];
+
+            [self refreshPlugin:plugin withComponent:component];
+            component.needChangeEAGLContenxt = NO;
+
+            // setNeedsDisplay at first, https://github.com/alibaba/GCanvas said "for WebGL case render only once",
+            // but https://github.com/flyskywhy/react-native-gcanvas found need be invoked per e.g. 16 ms as described
+            // above, so maybe there is something TODO? (to improve performance?)
+            dispatch_main_sync_safe(^{
+                [component.glkview setNeedsDisplay];
+            });
+        }
     }
+
+    if (component.isOffscreen) {
+        component.glkview.hidden = YES;
+    }
+
+    if (isExecWithDisplay) {
+        GCVWeakSelf
+        if (isWebgl) {
+            dispatch_main_sync_safe(^{
+                if( !weakSelf.enterBackground ){
+                    [component.glkview setNeedsDisplay];
+                }
+            });
+        } else {
+            dispatch_main_async_safe(^{
+                if( !weakSelf.enterBackground ){
+                    [component.glkview setNeedsDisplay];
+                }
+            });
+        }
+    } else {
+        // need setCurrentContext() before exec some gl ops,
+        // ref to https://stackoverflow.com/questions/14021682/glgetintegervgl-viewport-rect-returns-gl-invalid-enum-on-ios
+        // and https://stackoverflow.com/questions/13953755/glgenvertexarraysoes-returns-a-zero-vao-on-ios-sometimes
+        // and https://developer.apple.com/forums/thread/29129
+        [EAGLContext setCurrentContext:component.glkview.context];
+        [plugin execCommands];
+    }
+
+    if (isSync) {
+        if (isExecWithDisplay) {
+            GCVLOG_METHOD(@"isSyncWithDisplay, start wait");
+            [plugin waitUtilTimeout];
+        }
+
+        NSString *result = [plugin getSyncResult];
+        GCVLOG_METHOD(@"call native sync result: %@", result);
+        if (result) {
+            return @{@"result":result};
+        }
+    }
+
+    return @{@"result":@""};
 }
 
 /**
@@ -543,108 +581,63 @@ static NSMutableDictionary  *_staticModuleExistDict;
     [plugin execCommands];
 }
 
-#pragma mark - Need Export WebGL Method
-/**
- * JS call native directly just for WebGL
- *
- * @param   dict    input WebGL command
- *          dict[@"contextId"] - GCanvas component identifier
- *          dict[@"type"] - type
- *          dict[@"args"] - WebGL command
- *
- * @return          return execute result
- */
-- (NSDictionary*)extendCallNative:(NSDictionary*)dict{
-    NSString *componentId = dict[@"contextId"];
+#pragma mark - Need Export Async RN Method
+- (void)render:(NSString *)componentId commands:(NSString*)commands type:(NSUInteger)type{
+    if (self.enterBackground) {
+        return;
+    }
+
+    GCVLOG_METHOD(@"render(async RN): componentId=%@, isExecWithDisplay=%d, commands=%@", componentId, type & 0x01, commands);
+
     GCanvasObject *gcanvasInst = self.gcanvasObjectDict[componentId];
-    if( !gcanvasInst ){
-        return @{};
+    if (!gcanvasInst) {
+        return;
     }
-
-    //WebGL no need set glkview delegate
     id<GCanvasViewProtocol> component = gcanvasInst.component;
-    if( component.glkview.delegate ){
-        component.glkview.delegate = nil;
+    GCanvasPlugin *plugin = gcanvasInst.plugin;
+    if( !component || !plugin ){
+        return;
     }
 
-    NSDictionary *retDict = [self callGCanvasNative:dict];
-    return retDict;
+    if( ![commands isEqualToString:@"365"] ){
+        [plugin addCommands:@{
+            @"isSyncWithDisplay": @NO,
+            @"args": commands,
+        }];
+    }
+
+    [self execCommandById:componentId type:type];
 }
 
-- (NSDictionary*)callGCanvasNative:(NSDictionary*)dict{
+#pragma mark - Need Export Sync RN Method
+- (NSDictionary*)extendCallNative:(NSDictionary*)dict{
     NSString *componentId = dict[@"contextId"];
     NSUInteger type = [dict[@"type"] integerValue];
     NSString *args = dict[@"args"];
+    NSDictionary *retDict = @{@"result":@""};
+
+    GCVLOG_METHOD(@"extendCallNative(sync RN): componentId=%@, isExecWithDisplay=%d, commands=%@", componentId, type & 0x01, args);
 
     GCanvasObject *gcanvasInst = self.gcanvasObjectDict[componentId];
-
+    if (!gcanvasInst) {
+        return retDict;
+    }
     id<GCanvasViewProtocol> component = gcanvasInst.component;
     GCanvasPlugin *plugin = gcanvasInst.plugin;
-
-    if( !component || !plugin ) return @{};
-
-    if ( component.needChangeEAGLContenxt ){
-        [EAGLContext setCurrentContext:component.glkview.context];
-
-        [self refreshPlugin:plugin withComponent:component];
-        component.needChangeEAGLContenxt = NO;
-
-        //setNeedsDisplay at first, for WebGL case render only once.
-        dispatch_main_sync_safe(^{
-            [component.glkview setNeedsDisplay];
-        });
+    if (!component || !plugin) {
+        return retDict;
     }
 
-    /* call native type description
-     +-----------------------------------------------------+
-     |                   32 bit integer                    |
-     +-----------------------------------------------------+
-     |    31~30    |     29      |       (28~0)            |
-     | ContextType | Method Type |      OptionType         |
-     +-----------------------------------------------------+
-     |  0x01-WebGL |  0x00-async | 0-defaut,1-WebGL render |
-     |  0x00-2D    |  0x01-sync  | other reserve           |
-     +-----------------------------------------------------+
-     */
-    if( (type >> 30 & 0x01) == 1 ){      //webgl
-        BOOL isSync = type >> 29 & 0x01; //sync
-        if( isSync ){
-            BOOL rendCmd = type & 0x01;  //render per 16 ms
-            if( rendCmd ){
-                dispatch_main_sync_safe(^{
-                    [component.glkview setNeedsDisplay];
-                });
-                return @{};
-            }
-        //#ifdef DEBUG
-            else{
-                NSRange range = [args rangeOfString:@","];
-                if (range.location != NSNotFound) {
-                    NSString *indexStr = [args substringToIndex:range.location];
-                    NSUInteger index = [indexStr integerValue];
-                    if (index == 136) {
-                        dispatch_main_sync_safe(^{
-                            [component.glkview setNeedsDisplay];
-                        });
-                    }
-                }
-            }
-        //#endif
-
-            // 365 is a nonexistent webgl command comes from packages/gcanvas/src/bridge/react-native.js
-            if( ![args isEqualToString:@"365"] ){
-                [plugin addCommands:args];
-            }
-
-            [plugin execCommands];
-
-            NSString *ret = [plugin getSyncResult];
-            if(ret){
-                return @{@"result":ret};
-            }
-        }
+    if (![args isEqualToString:@"365"]) {
+        BOOL isExecWithDisplay = type & 0x01;
+        [plugin addCommands:@{
+            @"isSyncWithDisplay": isExecWithDisplay ? @YES : @NO,
+            @"args": args,
+        }];
     }
-    return @{};
+
+    retDict = [self execCommandById:componentId type:type];
+    return retDict;
 }
 
 @end

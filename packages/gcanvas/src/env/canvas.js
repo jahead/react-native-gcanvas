@@ -92,7 +92,14 @@ export default class GCanvas extends Element {
       if (!this._disableAutoSwap) {
         const render = () => {
           if (this._needRender) {
-            GCanvas.GBridge.render(this.id);
+            GCanvas.GBridge.callNative(
+              this.id,
+              '365',
+              false,
+              'webgl',
+              'sync',
+              'execWithDisplay',
+            );
             this._needRender = false;
           }
         };
@@ -102,7 +109,14 @@ export default class GCanvas extends Element {
         // let `plugin setClearColor` be invoked in refreshPlugin() of ios/BridgeModule/GCanvasModule.m
         // at the very first, otherwise can't `gl.clearColor` right away on canvas.getContext('webgl')
         // like https://github.com/flyskywhy/react-native-gcanvas/issues/24
-        GCanvas.GBridge.render(this.id);
+        GCanvas.GBridge.callNative(
+          this.id,
+          '365',
+          false,
+          'webgl',
+          'sync',
+          'execWithDisplay',
+        );
 
         setInterval(render, 16);
       }
@@ -122,7 +136,14 @@ export default class GCanvas extends Element {
         context._drawCommands = '';
 
         if (commands !== '') {
-          GCanvas.GBridge.render2d(this.id, commands);
+          GCanvas.GBridge.callNative(
+            this.id,
+            commands,
+            false,
+            '2d',
+            'async',
+            'execWithDisplay',
+          );
         }
         this._needRender = false;
       };

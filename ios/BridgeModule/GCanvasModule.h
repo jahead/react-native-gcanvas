@@ -46,7 +46,6 @@ typedef void (^GCanvasModuleCallback)(id result);
 
 - (dispatch_queue_t)gcanvasExecuteQueue;
 
-#pragma mark - Export Method of Context2D
 /**
  * Export JS method for initialize GCanvas Module, a synchronize method
  *
@@ -56,14 +55,7 @@ typedef void (^GCanvasModuleCallback)(id result);
  */
 - (NSString*)enable:(NSDictionary *)args;
 
-/**
- * Export JS method for context 2D render
- *
- * @param   commands    render commands from js
- * @param   componentId GCanvas component identifier
- */
-- (void)render:(NSString *)commands componentId:(NSString*)componentId;
-
+#pragma mark - Export Method of Context2D
 /**
  * Export JS method for reset GCanvas component while disappear
  * [iOS only]
@@ -109,17 +101,24 @@ typedef void (^GCanvasModuleCallback)(id result);
  */
 - (void)setLogLevel:(NSUInteger)level;
 
-
-
-#pragma mark - Export Method of WebGL
-
+#pragma mark - Export Async RN Method
 /**
- * JS call native directly just for WebGL, a synchronize method
+ * Export JS method for context 2d or webgl render
  *
- * @param   dict    input WebGL command
+ * @param   componentId GCanvas component identifier
+ * @param   commands    render commands from js
+ * @param   type        render type
+ */
+- (void)render:(NSString *)componentId commands:(NSString*)commands type:(NSUInteger)type;
+
+#pragma mark - Export Sync RN Method
+/**
+ * JS call native directly for 2d or webgl, a synchronize method
+ *
+ * @param   dict    input command
  *          dict[@"contextId"] - GCanvas component identifier
  *          dict[@"type"] - type
- *          dict[@"args"] - WebGL command
+ *          dict[@"args"] - command
  *
  * @return          return execute result
  */

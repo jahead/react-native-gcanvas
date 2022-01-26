@@ -63,6 +63,8 @@ void nsLog(const char *tag, const char *log) {
     gcanvasSystemLog = nsLog;
 
     if (self){
+//        self.mExecCommands = dispatch_semaphore_create(1);
+        self.mSyncSem = dispatch_semaphore_create(0);
         self.renderCommandArray = [[NSMutableArray alloc] init];
         self.textureDict = NSMutableDictionary.dictionary;
 
@@ -122,8 +124,9 @@ void nsLog(const char *tag, const char *log) {
     }
 }
 
-- (void)addCommands:(NSString*)commands{
-    if (commands){
+- (void)addCommands:(NSDictionary*)commands{
+    if (commands[@"args"]) {
+//        dispatch_semaphore_wait(self.mExecCommands, DISPATCH_TIME_FOREVER);
         @synchronized (self) {
             [self.renderCommandArray addObject:commands];
         }
@@ -144,14 +147,34 @@ void nsLog(const char *tag, const char *log) {
         if (count == 0) {
             return;
         }
+
+        // TODO: use dispatch_semaphore_wait instead of @synchronized to improve performance,
+        // ref to [iOS中保证线程安全的几种方式与性能对比](https://www.cnblogs.com/fengmin/p/5662268.html)
+        // dispatch_semaphore_wait(self.mExecCommands, DISPATCH_TIME_FOREVER);
+        GCVLOG_METHOD(@"execCommands array.count:%d", count);
+        for (int i = 0; i < count; i++) {
+            NSString* cmd = self.renderCommandArray[i][@"args"];
+            int cmdLen = (int)strlen(cmd.UTF8String);
+            self.gcanvas->Render(cmd.UTF8String, cmdLen);
+            if ([self.renderCommandArray[i][@"isSyncWithDisplay"] boolValue]) {
+                GCVLOG_METHOD(@"isSyncWithDisplay, end wait");
+                dispatch_semaphore_signal(self.mSyncSem);
+            }
+        }
+        [self removeCommands];
+        // dispatch_semaphore_signal(self.mExecCommands);
+        return;
+
 #if 0
+#if 1
 //        if (count > 3) { // use this for not too much frameskip
 //            count  = 3;
 //        }
-        NSString* cmd = self.renderCommandArray[0];
+        NSString* cmd = self.renderCommandArray[0][@"args"];
+        BOOL isSyncWithDisplay = [self.renderCommandArray[0][@"isSyncWithDisplay"] boolValue];
         NSMutableIndexSet *indexes = [NSMutableIndexSet indexSetWithIndex:0];
         for (int i = 1; i < count; i++) {
-            cmd = [cmd stringByAppendingString:self.renderCommandArray[i]];
+            cmd = [cmd stringByAppendingString:self.renderCommandArray[i][@"args"]];
             [indexes addIndex:i];
        }
         int cmdLen = (int)strlen(cmd.UTF8String);
@@ -159,13 +182,25 @@ void nsLog(const char *tag, const char *log) {
         self.gcanvas->Render(cmd.UTF8String, cmdLen);
         [self.renderCommandArray removeObjectsAtIndexes:indexes];
 #else // only exec last cmd comes from last 16ms with `setInterval(render, 16)` in `packages/gcanvas/src/env/canvas.js`, is enough for one drawInRect
-        NSString* cmd = self.renderCommandArray[count - 1];
+        NSString* cmd = self.renderCommandArray[count - 1][@"args"];
+        BOOL isSyncWithDisplay = [self.renderCommandArray[count - 1][@"isSyncWithDisplay"] boolValue];
         int cmdLen = (int)strlen(cmd.UTF8String);
         GCVLOG_METHOD(@"execCommands, frameskip:%d, len:%d, command=%@", count - 1, cmdLen, cmd);
         self.gcanvas->Render(cmd.UTF8String, cmdLen);
         [self.renderCommandArray removeAllObjects];
 #endif
+        if (isSyncWithDisplay == YES) {
+            GCVLOG_METHOD(@"isSyncWithDisplay, end wait");
+            dispatch_semaphore_signal(self.mSyncSem);
+        }
+
+        dispatch_semaphore_signal(self.mExecCommands);
+#endif
     }
+}
+
+- (void)waitUtilTimeout{
+    dispatch_semaphore_wait(self.mSyncSem, dispatch_time(DISPATCH_TIME_NOW, GCANVAS_TIMEOUT * 1000 * 1000));
 }
 
 - (void)releaseManager{

@@ -29,6 +29,8 @@ typedef GCanvasPlugin* (^FetchPluginBlock)(NSString * componentId);
 
 @interface GCanvasPlugin : NSObject
 
+//@property(strong, nonatomic) dispatch_semaphore_t mExecCommands;
+@property(strong, nonatomic) dispatch_semaphore_t mSyncSem;
 
 @property(nonatomic, assign) BOOL gcanvasInited;
 
@@ -65,7 +67,7 @@ typedef GCanvasPlugin* (^FetchPluginBlock)(NSString * componentId);
  *  @abstract   add commamds received from JS Bridge "render"
  *  @param  commands    commands from JS
  */
-- (void)addCommands:(NSString *)commands;
+- (void)addCommands:(NSDictionary*)commands;
 
 /**
  *  @abstract   execute command received from JS Bridge "render"
@@ -76,6 +78,8 @@ typedef GCanvasPlugin* (^FetchPluginBlock)(NSString * componentId);
  *  @abstract   remove commands after execute
  */
 - (void)removeCommands;
+
+- (void)waitUtilTimeout;
 
 /**
  *  @abstract   release manager when release webview

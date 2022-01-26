@@ -17,12 +17,13 @@
 #include "support/Log.h"
 #include "export.h"
 
+#define GCANVAS_TIMEOUT 800
+
 #ifdef ANDROID
 
 #include <queue>
 #include <jni.h>
 #include <semaphore.h>
-#define GCANVAS_TIMEOUT 800
 
 #endif
 

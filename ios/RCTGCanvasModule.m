@@ -80,12 +80,6 @@ RCT_EXPORT_METHOD(disable:(NSString*) componentId)
 {
 }
 
-//render
-RCT_EXPORT_METHOD(render:(NSString *)commands componentId:(NSString*)componentId)
-{
-    [self.gcanvasModule render:commands componentId:componentId];
-}
-
 //preload image
 RCT_EXPORT_METHOD(preLoadImage:(NSArray *)data callback:(RCTResponseSenderBlock)callback)
 {
@@ -130,7 +124,13 @@ RCT_EXPORT_METHOD(resetComponent:(NSString*)componentId)
     [self.gcanvasModule resetComponent:componentId];
 }
 
-#pragma mark - WebGL
+#pragma mark - Export Async RN Method
+RCT_EXPORT_METHOD(render:(NSString*)componentId commands:(NSString *)commands type:(NSUInteger)type)
+{
+    [self.gcanvasModule render:componentId commands:commands type:type];
+}
+
+#pragma mark - Export Sync RN Method
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(extendCallNative:(NSDictionary*)dict)
 {
     return [self.gcanvasModule extendCallNative:dict];

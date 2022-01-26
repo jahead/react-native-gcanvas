@@ -80,67 +80,100 @@ const GBridge = {
     GBridge.GCanvasModule.resetComponent && GBridge.GCanvasModule.resetComponent(componentId);
   },
 
-  render: function(componentId) {
-    return GBridge.GCanvasModule.extendCallNative({
-      contextId: componentId,
-      type: 0x60000001,
-      args: '365', // 365 is a nonexistent webgl command, but need it to display graphics on react-native-gcanvas
-    });
-  },
+  callNative: function(
+    componentId,
+    cmdArgs,
+    isCacheCmd = false,
+    contextType = 'webgl',
+    methodType = 'sync',
+    optionType = 'execWithoutDisplay',
+  ) {
+    if (contextType === '2d') {
+      if (isDebugging) {
+        console.log('>>> exec commands: ' + cmdArgs);
+      }
 
-  render2d: function(componentId, commands) {
-    if (isDebugging) {
-      console.log('>>> >>> render2d ===');
-      console.log('>>> commands: ' + commands);
-    }
+      if (methodType === 'sync') {
+        /* call native type description
+         +---------------------------------------------------+
+         |                   32 bit integer                  |
+         +---------------------------------------------------+
+         |    31~30    |    29      |      (28~0)            |
+         | ContextType | MethodType |     OptionType         |
+         +---------------------------------------------------+
+         |    1-WebGL  | 0-async RN |  0-execWithoutDisplay  |
+         |    0-2D     | 1-sync RN  |  1-execWithDisplay     |
+         +---------------------------------------------------+
+         */
+        // MethodType sync RN above means:
+        // on Android, will waitUtilTimeout() cmd async exec in QueueProc()
+        // on iOS, if with OptionType execWithDisplay, will waitUtilTimeout() cmd async exec in drawInRect(), and decrease js FPS quickly, so execWithoutDisplay is better
+        //
+        // OptionType execWithDisplay above means:
+        // on Android, after async exec cmd, will eglSwapBuffers() to render graphics on screen
+        // on iOS, will setNeedsDisplay() to render graphics on screen, and thus impliedly invoke drawInRect() to async exec cmd
+        //
+        // OptionType execWithoutDisplay above means:
+        // on Android, just async exec cmd
+        // on iOS, just sync exec cmd
 
-    GBridge.GCanvasModule.render(commands, componentId);
-  },
+        let type = optionType === 'execWithDisplay' ? 0x20000001 : 0x20000000;
+        // extendCallNative() is a sync RN method, if want get exec cmd result, must use it
+        const result = GBridge.GCanvasModule.extendCallNative({
+          contextId: componentId,
+          args: cmdArgs,
+          type,
+        });
 
-  render2dResult: function(componentId, commands) {
-    if (isDebugging) {
-      console.log('>>> >>> render2dResult ===');
-      console.log('>>> commands: ' + commands);
-    }
+        const res = result && result.result;
 
-    return GBridge.callNative(componentId, commands, false, 0x20000001);
-  },
+        if (isDebugging) {
+          console.log('>>> result: ' + res);
+        }
 
-  flushNative: function(componentId, type) {
-    const cmdArgs = joinArray(commandsCache[componentId], ';');
-    commandsCache[componentId] = [];
+        return res;
+      } else {
+        let type = optionType === 'execWithDisplay' ? 0x00000001 : 0x00000000;
+        // render() is an async RN method
+        GBridge.GCanvasModule.render(componentId, cmdArgs, type);
+      }
+    } else { // 'webgl'
+      if (isDebugging) {
+        logCommand(componentId, cmdArgs);
+      }
 
-    if (isDebugging) {
-      console.log('>>> >>> flush native ===');
-      console.log('>>> commands: ' + cmdArgs);
-    }
+      commandsCache[componentId].push(cmdArgs);
 
-    const result = GBridge.GCanvasModule.extendCallNative({
-      contextId: componentId,
-      type: type || 0x60000000,
-      args: cmdArgs,
-    });
+      if (!isCacheCmd || isComboDisabled) {
+        const commands = joinArray(commandsCache[componentId], ';');
+        commandsCache[componentId] = [];
 
-    const res = result && result.result;
+        if (isDebugging) {
+          console.log('>>> exec commands: ' + commands);
+        }
 
-    if (isDebugging) {
-      console.log('>>> result: ' + res);
-    }
+        if (methodType === 'sync') {
+          // most gl ops should be sync, otherwise may cause issue like
+          // https://stackoverflow.com/questions/9008291/webgls-getattriblocation-oddly-returns-1
+          let type = optionType === 'execWithDisplay' ? 0x60000001 : 0x60000000;
+          const result = GBridge.GCanvasModule.extendCallNative({
+            contextId: componentId,
+            args: commands,
+            type,
+          });
 
-    return res;
-  },
+          const res = result && result.result;
 
-  callNative: function(componentId, cmdArgs, cache, type) {
-    if (isDebugging) {
-      logCommand(componentId, cmdArgs);
-    }
+          if (isDebugging) {
+            console.log('>>> result: ' + res);
+          }
 
-    commandsCache[componentId].push(cmdArgs);
-
-    if (!cache || isComboDisabled) {
-      return GBridge.flushNative(componentId, type);
-    } else {
-      return undefined;
+          return res;
+        } else {
+          let type = optionType === 'execWithDisplay' ? 0x40000001 : 0x40000000;
+          GBridge.GCanvasModule.render(componentId, commands, type);
+        }
+      }
     }
   },
 

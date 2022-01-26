@@ -127,18 +127,19 @@ public interface IGBridgeModule<JSCallback> {
     void resetGlViewport(String canvasId);
 
     /**
-     * Send render command to specified canvas 2D.
-     * @param cmd
+     * Send async render command to specified textureView.
      * @param canvasId
+     * @param cmd
+     * @param type
      */
-    void render(String cmd, String canvasId);
+    void render(String canvasId, String cmd, int type);
 
     /**
-     * Send render command to specified canvas WebGL.
-     * @param cmd
+     * Send sync render command to specified textureView.
      * @param canvasId
+     * @param cmd
      * @param type
      * @return String result
      */
-    String extendCallNative(String cmd, String canvasId, int type);
+    String extendCallNative(String canvasId, String cmd, int type);
 }

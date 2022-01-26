@@ -1188,5 +1188,6 @@ export default class WebGLRenderingContext {
       GLmethod.viewport + ',' + x + ',' + y + ',' + width + ',' + height,
       true
     );
+    // TODO: this._canvas._needRender = true;
   }
 }

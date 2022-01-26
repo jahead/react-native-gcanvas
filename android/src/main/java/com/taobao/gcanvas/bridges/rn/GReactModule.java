@@ -79,15 +79,17 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
 
     private class RenderCmd implements IReactCacheCmd {
         private String canvasId, cmd;
+        private int type;
 
-        public RenderCmd(String canvasId, String cmd) {
+        public RenderCmd(String canvasId, String cmd, int type) {
             this.canvasId = canvasId;
             this.cmd = cmd;
+            this.type = type;
         }
 
         @Override
         public void execute() {
-            render(cmd, canvasId);
+            render(canvasId, cmd, type);
         }
     }
 
@@ -313,13 +315,13 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         }
 
         @Override
-        public void render(String canvasId, String cmd) {
+        public void render(String canvasId, String cmd, int type) {
             GReactTextureView textureView = mViews.get(canvasId);
             if (null == textureView) {
                 GLog.w(TAG, "render() can not find canvas with id ===> " + canvasId);
                 return;
             }
-            GCanvasJNI.render(textureView.getCanvasKey(), cmd, 0x00000001);
+            GCanvasJNI.render(textureView.getCanvasKey(), cmd, type);
         }
 
         @Override
@@ -395,7 +397,7 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
 
 
     @ReactMethod
-    public void render(String cmd, String canvasId) {
+    public void render(String canvasId, String cmd, int type) {
         if (TextUtils.isEmpty(canvasId) || TextUtils.isEmpty(cmd)) {
             return;
         }
@@ -403,11 +405,11 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         GReactTextureView textureView = mViews.get(canvasId);
         if (null == textureView) {
             GLog.w(TAG, "render ==> can not find canvas with id ===> " + canvasId);
-            addCacheCommand(canvasId, new RenderCmd(canvasId, cmd));
+            addCacheCommand(canvasId, new RenderCmd(canvasId, cmd, type));
             return;
         }
 
-        mImpl.render(canvasId, cmd);
+        mImpl.render(canvasId, cmd, type);
     }
 
 
@@ -417,9 +419,9 @@ public class GReactModule extends ReactContextBaseJavaModule implements Lifecycl
         int type = args.getInt("type");
         String cmd = args.getString("args");
 
-        WritableMap result = Arguments.createMap();
-        result.putString("result", mImpl.extendCallNative(canvasId, cmd, type));
-        return result;
+        WritableMap retMap = Arguments.createMap();
+        retMap.putString("result", mImpl.extendCallNative(canvasId, cmd, type));
+        return retMap;
     }
 
 
