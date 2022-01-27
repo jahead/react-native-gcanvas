@@ -257,6 +257,9 @@ export default class App extends Component {
       imageHttp.src =
         'https://gw.alicdn.com/tfs/TB1KwRTlh6I8KJjy0FgXXXXzVXa-225-75.png';
 
+      let imagedata = this.ctx.getImageData(25, 25, 50, 50);
+      this.ctx.putImageData(imagedata, 100, 0, 12, 12, 25, 25);
+
       let imageRequire = Platform.OS === 'web' ? new Image() : new GImage();
       imageRequire.onload = () => {
         this.ctx.drawImage(imageRequire, 0, 100, 120, 120);

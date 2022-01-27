@@ -593,8 +593,8 @@ export default class CanvasRenderingContext2D {
       sy = dirtyY;
       // dirtyWidth in https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/putImageData
       // means the width of the (src) image data
-      sw = Math.min(dirtyWidth, tw);
-      sh = Math.min(dirtyHeight, th);
+      sw = dirtyWidth;
+      sh = dirtyHeight;
     }
 
     this._drawCommands = this._drawCommands.concat('P' + base64Data + ',' + tw + ',' + th + ','

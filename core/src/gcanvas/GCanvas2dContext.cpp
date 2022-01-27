@@ -2118,8 +2118,6 @@ void GCanvasContext::PutImageData(const unsigned char *rgbaData, int tw,
 
     sw = sw > tw ? tw : sw;
     sh = sh > th ? th : sh;
-    sw -= sx;
-    sh -= sy;
     DrawImage(glID, tw, th, sx, sy, sw, sh, x + sx, y + sy, sw, sh);
 
     SendVertexBufferToGPU();
