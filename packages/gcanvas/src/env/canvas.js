@@ -11,6 +11,7 @@ export default class GCanvas extends Element {
   static GBridge = null;
 
   id = null;
+  _renderLoopId = null;
   _context = null;
   _clientWidth = 100;
   _clientHeight = 150;
@@ -77,15 +78,15 @@ export default class GCanvas extends Element {
   }
 
   getContext(type) {
-    let context = null;
+    this._context = null;
 
     if (type.match(/webgl/i)) {
-      context = new GContextWebGL(this);
+      this._context = new GContextWebGL(this);
 
-      context.drawingBufferWidth = this._clientWidth * PixelRatio.get();
-      context.drawingBufferHeight = this._clientHeight * PixelRatio.get();
+      this._context.drawingBufferWidth = this._clientWidth * PixelRatio.get();
+      this._context.drawingBufferHeight = this._clientHeight * PixelRatio.get();
 
-      context.componentId = this.id;
+      this._context.componentId = this.id;
 
       GCanvas.GBridge.callSetContextType(this.id, 1); // 0 for 2d; 1 for webgl
 
@@ -113,35 +114,20 @@ export default class GCanvas extends Element {
       // like https://github.com/flyskywhy/react-native-gcanvas/issues/24
       sleepMs(100);
     } else if (type.match(/2d/i)) {
-      context = new GContext2D(this);
-
-      context.componentId = this.id;
-
-      const render = () => {
-        const commands = context._drawCommands;
-        context._drawCommands = '';
-
-        if (commands !== '') {
-          GCanvas.GBridge.callNative(
-            this.id,
-            commands,
-            false,
-            '2d',
-            'async',
-            'execWithDisplay',
-          );
-        }
-        this._needRender = false;
-      };
-      setInterval(render, 16); // 16ms is just enough for drawInRect as described with `execCommands` in `ios/BridgeModule/GCanvasPlugin.mm`
-
+      this._context = new GContext2D(this);
+      this._context.componentId = this.id;
       GCanvas.GBridge.callSetContextType(this.id, 0);
+      this._renderLoopId = requestAnimationFrame(this._renderLoop.bind(this));
     } else {
       throw new Error('not supported context ' + type);
     }
 
-    this._context = context;
-    return context;
+    return this._context;
+  }
+
+  _renderLoop() {
+    this._context.flushJsCommands2CallNative();
+    this._renderLoopId = requestAnimationFrame(this._renderLoop.bind(this));
   }
 
   // default 0.92 comes from https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toDataURL

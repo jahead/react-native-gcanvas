@@ -539,11 +539,41 @@ export default class CanvasRenderingContext2D {
     }
   }
 
+  flushJsCommands2CallNative(
+    methodType = 'async',
+    optionType = 'execWithDisplay',
+  ) {
+    const commands = this._drawCommands;
+    this._drawCommands = '';
+
+    if (commands !== '') {
+      CanvasRenderingContext2D.GBridge.callNative(
+        this.componentId,
+        commands,
+        false,
+        '2d',
+        methodType,
+        optionType,
+      );
+    }
+  }
+
   // no need ctx.getImageData(x * PixelRatio.get(), y * PixelRatio.get(), w * PixelRatio.get(), h * PixelRatio.get())
   // e.g. ctx.getImageData(0, 0, 2, 2) will return a `w === 2, h === 2` ImageData
   // since PixelsSampler() in GetImageData() of core/src/gcanvas/GCanvas2dContext.cpp
   // will scale the image automatically
   getImageData(sx, sy, sw, sh) {
+    // if not stop _renderLoop(), sometimes will cause display issue with 'lightener' tool of https://github.com/flyskywhy/PixelShapeRN
+    cancelAnimationFrame(this._canvas._renderLoopId);
+    // Use 'sync' + 'execWithoutDisplay' here to make sure last graphics be generated before execute getImageData's 'R'.
+    // If use 'async' here, will cause last commands be executed after getImageData's 'sync'.
+    // If use 'execWithDisplay' here, will cause low JS FPS on iOS with 'lightener' tool of https://github.com/flyskywhy/PixelShapeRN ,
+    // because 'lightener' will call getImageData frequently while moving finger, will cause setNeedsDisplay() then
+    // drawInRect() be invoked more than 1 times in 16ms e.g. 1times/1ms thus cause low JS FPS!
+    this.flushJsCommands2CallNative('sync', 'execWithoutDisplay');
+    // now can getImageData from last generated (even not displayed) graphics, otherwise will `return new ImageData(w, h)`
+    // thus `this.ctx.putImageData()` has no effect with the first 'Click me to draw some on canvas' in README.md
+
     let x = sx;
     let y = sy;
     let w = sw;
@@ -565,6 +595,15 @@ export default class CanvasRenderingContext2D {
       'sync',
       'execWithoutDisplay',
     );
+
+    // start _renderLoop() again, and thus display last generated graphics on screen
+    // TODO: allow empty commands invoke callNative() once in flushJsCommands2CallNative()
+    //       while start _renderLoop() just in case no commands after getImageData's 'R'
+    //       thus no display
+    // TODO: this.flushJsCommands2CallNative('sync', 'execWithDisplay') on Android
+    //       test with 'lightener' tool of https://github.com/flyskywhy/PixelShapeRN
+    //       to see if low JS FPS
+    this._canvas._renderLoopId = requestAnimationFrame(this._canvas._renderLoop.bind(this._canvas));
 
     if (base64Data === '') {
       console.warn('getImageData: not good to be here, should refactor source code somewhere');

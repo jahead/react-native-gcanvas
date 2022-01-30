@@ -510,6 +510,21 @@ static NSMutableDictionary  *_staticModuleExistDict;
         component.glkview.hidden = YES;
     }
 
+    // if (true) {
+    // Test with ContextType 2D, if use `if (true) {` above to want exec cmd then setNeedsDisplay() just
+    // like exec cmd then eglSwapBuffers() on Android in execWithDisplay, will cause some display issue,
+    // even will crash if remove `[plugin execCommands]` in drawInRect() with sync and execWithDisplay
+    // and long commands test with 'lightener' tool of https://github.com/flyskywhy/PixelShapeRN , so
+    // need use `if (!isExecWithDisplay) {` below.
+    if (!isExecWithDisplay) {
+        // need setCurrentContext() before exec some gl ops,
+        // ref to https://stackoverflow.com/questions/14021682/glgetintegervgl-viewport-rect-returns-gl-invalid-enum-on-ios
+        // and https://stackoverflow.com/questions/13953755/glgenvertexarraysoes-returns-a-zero-vao-on-ios-sometimes
+        // and https://developer.apple.com/forums/thread/29129
+        [EAGLContext setCurrentContext:component.glkview.context];
+        [plugin execCommands];
+    }
+
     if (isExecWithDisplay) {
         GCVWeakSelf
         if (isWebgl) {
@@ -525,13 +540,6 @@ static NSMutableDictionary  *_staticModuleExistDict;
                 }
             });
         }
-    } else {
-        // need setCurrentContext() before exec some gl ops,
-        // ref to https://stackoverflow.com/questions/14021682/glgetintegervgl-viewport-rect-returns-gl-invalid-enum-on-ios
-        // and https://stackoverflow.com/questions/13953755/glgenvertexarraysoes-returns-a-zero-vao-on-ios-sometimes
-        // and https://developer.apple.com/forums/thread/29129
-        [EAGLContext setCurrentContext:component.glkview.context];
-        [plugin execCommands];
     }
 
     if (isSync) {
@@ -617,11 +625,11 @@ static NSMutableDictionary  *_staticModuleExistDict;
     }
     id<GCanvasViewProtocol> component = gcanvasInst.component;
     GCanvasPlugin *plugin = gcanvasInst.plugin;
-    if( !component || !plugin ){
+    if (!component || !plugin){
         return;
     }
 
-    if( ![commands isEqualToString:@"365"] ){
+    if (![commands isEqualToString:@"365"] && ![commands isEqualToString:@""]) {
         [plugin addCommands:@{
             @"isSyncWithDisplay": @NO,
             @"args": commands,
@@ -650,7 +658,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
         return retDict;
     }
 
-    if (![args isEqualToString:@"365"]) {
+    if (![args isEqualToString:@"365"] && ![args isEqualToString:@""]) {
         BOOL isExecWithDisplay = type & 0x01;
         [plugin addCommands:@{
             @"isSyncWithDisplay": isExecWithDisplay ? @YES : @NO,
