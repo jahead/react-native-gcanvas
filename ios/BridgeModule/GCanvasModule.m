@@ -330,6 +330,19 @@ static NSMutableDictionary  *_staticModuleExistDict;
     GCanvasPlugin *plugin = gcanvasInst.plugin;
     if( plugin ){
         [plugin setContextType:(int)type];
+
+        // since now `component.needChangeEAGLContenxt == YES`
+        // since now `component.glkview.delegate != nil` so that drawInRect() will be invoked by setNeedsDisplay()
+        // let `plugin setClearColor` be invoked in refreshPlugin() at the very first, otherwise can't
+        // `gl.clearColor` right away on canvas.getContext('webgl') like https://github.com/flyskywhy/react-native-gcanvas/issues/24
+        //
+        // and with 2d, can let the first not second GCanvas.GBridge.callNative() display graphics on screen
+        id<GCanvasViewProtocol> component = gcanvasInst.component;
+        if (component) {
+            dispatch_main_sync_safe(^{
+                [component.glkview setNeedsDisplay];
+            });
+        }
     }
 }
 
@@ -340,6 +353,15 @@ static NSMutableDictionary  *_staticModuleExistDict;
     [plugin reInitContext];
     [plugin setContextType:contextType];
     gcanvasInst.component.needChangeEAGLContenxt = YES;
+
+    // ref to comment in setContextType() above
+    // TODO: `component.glkview.delegate = weakSelf;` for webgl? but webgl just seems working well after resetGlViewport() when canvas resize
+    id<GCanvasViewProtocol> component = gcanvasInst.component;
+    if (component) {
+        dispatch_main_sync_safe(^{
+            [component.glkview setNeedsDisplay];
+        });
+    }
 }
 
 - (NSString*)toDataURL:(NSString*)componentId mimeType:(NSString*)mimeType quality:(CGFloat)quality {

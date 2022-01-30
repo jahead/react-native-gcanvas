@@ -104,20 +104,6 @@ export default class GCanvas extends Element {
           }
         };
 
-        // On iOS, need run `GCanvas.GBridge.callSetContextType(this.id, 1);`
-        // above then run `GCanvas.GBridge.render(this.id);` below to
-        // let `plugin setClearColor` be invoked in refreshPlugin() of ios/BridgeModule/GCanvasModule.m
-        // at the very first, otherwise can't `gl.clearColor` right away on canvas.getContext('webgl')
-        // like https://github.com/flyskywhy/react-native-gcanvas/issues/24
-        GCanvas.GBridge.callNative(
-          this.id,
-          '365',
-          false,
-          'webgl',
-          'sync',
-          'execWithDisplay',
-        );
-
         setInterval(render, 16);
       }
 
