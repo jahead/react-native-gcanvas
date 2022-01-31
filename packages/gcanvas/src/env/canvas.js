@@ -98,7 +98,7 @@ export default class GCanvas extends Element {
               '365',
               false,
               'webgl',
-              'sync',
+              'async',
               'execWithDisplay',
             );
             this._needRender = false;
