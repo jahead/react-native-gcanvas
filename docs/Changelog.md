@@ -3,6 +3,15 @@
 All notable changes of this project will be documented in.
 
 
+## [2.3.11] - 2022-01-31 Happy Chinese New Year
+
+### Changed
+
+* React Native GCanvas Component
+	* feat: let iOS also has the ability to get the log comes from cpp
+	* feat: support getImageData() on iOS
+
+
 ## [2.3.10] - 2022-01-13
 
 ### Changed
