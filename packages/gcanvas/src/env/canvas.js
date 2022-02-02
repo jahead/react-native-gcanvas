@@ -93,14 +93,14 @@ export default class GCanvas extends Element {
       if (!this._disableAutoSwap) {
         const render = () => {
           if (this._needRender) {
-            GCanvas.GBridge.callNative(
-              this.id,
-              '365',
-              false,
-              'webgl',
-              'async',
-              'execWithDisplay',
-            );
+      //       GCanvas.GBridge.callNative(
+      //         this.id,
+      //         '365',
+      //         false,
+      //         'webgl',
+      //         'async',
+      //         'execWithDisplay',
+      //       );
             this._needRender = false;
           }
         };

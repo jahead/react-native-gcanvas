@@ -196,7 +196,11 @@ export default class WebGLRenderingContext {
   clear = function(mask) {
     WebGLRenderingContext.GBridge.callNative(
       this._canvas.id,
-      GLmethod.clear + ',' + mask
+      GLmethod.clear + ',' + mask,
+      false,
+      'webgl',
+      'sync',
+      'execWithDisplay',
     );
     this._canvas._needRender = true;
   }
@@ -443,7 +447,8 @@ export default class WebGLRenderingContext {
   drawArrays = function(mode, first, count) {
     WebGLRenderingContext.GBridge.callNative(
       this._canvas.id,
-      GLmethod.drawArrays + ',' + mode + ',' + first + ',' + count
+      GLmethod.drawArrays + ',' + mode + ',' + first + ',' + count,
+      true,
     );
     this._canvas._needRender = true;
   }
@@ -451,7 +456,8 @@ export default class WebGLRenderingContext {
   drawElements = function(mode, count, type, offset) {
     WebGLRenderingContext.GBridge.callNative(
       this._canvas.id,
-      GLmethod.drawElements + ',' + mode + ',' + count + ',' + type + ',' + offset
+      GLmethod.drawElements + ',' + mode + ',' + count + ',' + type + ',' + offset,
+      true,
     );
     this._canvas._needRender = true;
   }
