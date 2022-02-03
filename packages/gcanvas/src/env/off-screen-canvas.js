@@ -24,7 +24,14 @@ export default class GOffScreenCanvas {
       if (!this._disableAutoSwap) {
         const render = () => {
           if (this._needRender) {
-            GOffScreenCanvas.GBridge.render(this.id);
+            GOffScreenCanvas.GBridge.callNative(
+              this.id,
+              '',
+              false,
+              'webgl',
+              'sync',
+              'execWithDisplay',
+            );
             this._needRender = false;
           }
         };

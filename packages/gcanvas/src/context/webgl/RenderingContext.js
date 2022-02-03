@@ -194,15 +194,30 @@ export default class WebGLRenderingContext {
   }
 
   clear = function(mask) {
-    WebGLRenderingContext.GBridge.callNative(
-      this._canvas.id,
-      GLmethod.clear + ',' + mask,
-      false,
-      'webgl',
-      'sync',
-      'execWithDisplay',
-    );
-    this._canvas._needRender = true;
+    if (this._canvas._disableAutoSwap) {
+      WebGLRenderingContext.GBridge.callNative(
+        this._canvas.id,
+        '',
+        false,
+        'webgl',
+        'sync',
+        'execWithDisplay',
+      );
+      // above exec cached cmds to generate and display graphics
+      // below add gl.clear to cmds cache to be exec next time
+      WebGLRenderingContext.GBridge.callNative(
+        this._canvas.id,
+        GLmethod.clear + ',' + mask,
+        true,
+      );
+    } else {
+      WebGLRenderingContext.GBridge.callNative(
+        this._canvas.id,
+        GLmethod.clear + ',' + mask,
+        true, // TODO: no matter true or false in https://github.com/flyskywhy/snakeRN can keep 60 JS FPS, maybe need more APP code to test
+      );
+      this._canvas._needRender = true;
+    }
   }
 
   clearColor = function(r, g, b, a) {
@@ -951,7 +966,8 @@ export default class WebGLRenderingContext {
   uniform1f = function(location, v0) {
     WebGLRenderingContext.GBridge.callNative(
       this._canvas.id,
-      GLmethod.uniform1f + ',' + location.id + ',' + v0
+      GLmethod.uniform1f + ',' + location.id + ',' + v0,
+      true,
     );
   }
 
@@ -1189,11 +1205,24 @@ export default class WebGLRenderingContext {
   }
 
   viewport = function(x, y, width, height) {
-    WebGLRenderingContext.GBridge.callNative(
-      this._canvas.id,
-      GLmethod.viewport + ',' + x + ',' + y + ',' + width + ',' + height,
-      true
-    );
-    // TODO: this._canvas._needRender = true;
+    // TODO: need some APP code to test which is better that will not cause low JS FPS if change
+    //       viewport() frequently just like comments in getImageData() of `2d/RenderingContext.js`
+    if (this._canvas._disableAutoSwap) {
+      WebGLRenderingContext.GBridge.callNative(
+        this._canvas.id,
+        GLmethod.viewport + ',' + x + ',' + y + ',' + width + ',' + height,
+        false,
+        'webgl',
+        'sync',
+        'execWithDisplay',
+      );
+    } else {
+      WebGLRenderingContext.GBridge.callNative(
+        this._canvas.id,
+        GLmethod.viewport + ',' + x + ',' + y + ',' + width + ',' + height,
+        true, // TODO: no matter true or false in https://github.com/flyskywhy/snakeRN can keep 60 JS FPS, maybe need more APP code to test
+      );
+      this._canvas._needRender = true;
+    }
   }
 }

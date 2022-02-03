@@ -157,7 +157,9 @@ void nsLog(const char *tag, const char *log) {
             int cmdLen = (int)strlen(cmd.UTF8String);
             self.gcanvas->Render(cmd.UTF8String, cmdLen);
             if ([self.renderCommandArray[i][@"isSyncWithDisplay"] boolValue]) {
-                GCVLOG_METHOD(@"isSyncWithDisplay, end wait");
+                // should not comes here, so use NSLog instead of GCVLOG_METHOD which only log when setLogLevel(LOG_LEVEL_DEBUG),
+                // ref to the comment of "isSyncWithDisplay, start wait" in GCanvasModule.m
+                NSLog(@"isSyncWithDisplay, end wait");
                 dispatch_semaphore_signal(self.mSyncSem);
             }
         }

@@ -77,6 +77,14 @@ export default class GCanvasView extends Component {
     // when isGestureResponsible is false.
     // Default is true, so that zdog can be "mousemove".
     isGestureResponsible: true,
+    // only affect webgl
+    // false: use AutoSwap, means gcanvas use a setInterval(render, 16) to exec cached cmds
+    //        to generate and display graphics
+    // true: not use AutoSwap, means APP use it's own loop to call gl.clear(), thus gcanvas
+    //       will exec cached cmds to generate and display graphics, then add gl.clear to
+    //       cmds cache to be exec next time, and also offer APP a canvas._swapBuffers() if
+    //       APP want exec cached cmds to generate and display graphics manually
+    disableAutoSwap: false,
   };
 
   eventTouch2Mouse = (nativeEvent) => {
@@ -145,7 +153,10 @@ export default class GCanvasView extends Component {
           height,
         },
       },
-      {bridge: ReactNativeBridge},
+      {
+        disableAutoSwap: this.props.disableAutoSwap,
+        bridge: ReactNativeBridge,
+      },
     );
 
     if (this.props.onCanvasCreate) {
@@ -154,6 +165,8 @@ export default class GCanvasView extends Component {
   };
 
   componentDidMount() {
+    // on iOS, sometimes setLogLevel(0) will cause APP stuck if running in Xcode (because too many logs?), but setLogLevel(0)
+    // will not cause APP stuck if not running in damn Xcode, tested in https://github.com/flyskywhy/snakeRN
     // ReactNativeBridge.GCanvasModule.setLogLevel(0); // 0 means DEBUG
 
     if (Platform.OS === 'ios') {

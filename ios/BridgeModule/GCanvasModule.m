@@ -511,12 +511,17 @@ static NSMutableDictionary  *_staticModuleExistDict;
     }
 
     // if (true) {
-    // Test with ContextType 2D, if use `if (true) {` above to want exec cmd then setNeedsDisplay() just
+    // Test with ContextType 2d, if use `if (true) {` above to want exec cmd then setNeedsDisplay() just
     // like exec cmd then eglSwapBuffers() on Android in execWithDisplay, will cause some display issue,
     // even will crash if remove `[plugin execCommands]` in drawInRect() with sync and execWithDisplay
     // and long commands test with 'lightener' tool of https://github.com/flyskywhy/PixelShapeRN , so
     // need use `if (!isExecWithDisplay) {` below.
-    if (!isExecWithDisplay) {
+    if (
+        !isExecWithDisplay ||
+        // with ContextType webgl, because `component.glkview.delegate = nil;` will cause drawInRect()
+        // not be invoke by setNeedsDisplay() in execWithDisplay, so need exec cmd here
+        (isExecWithDisplay && component.glkview.delegate == nil)
+    ) {
         // need setCurrentContext() before exec some gl ops,
         // ref to https://stackoverflow.com/questions/14021682/glgetintegervgl-viewport-rect-returns-gl-invalid-enum-on-ios
         // and https://stackoverflow.com/questions/13953755/glgenvertexarraysoes-returns-a-zero-vao-on-ios-sometimes
@@ -543,8 +548,10 @@ static NSMutableDictionary  *_staticModuleExistDict;
     }
 
     if (isSync) {
-        if (isExecWithDisplay) {
-            GCVLOG_METHOD(@"isSyncWithDisplay, start wait");
+        if (isExecWithDisplay && component.glkview.delegate != nil) {
+            // I'm wondering which command comes here, since 'low JS FPS' described in
+            // callNative() of `react-native-gcanvas/packages/gcanvas/src/bridge/react-native.js`
+            NSLog(@"isSyncWithDisplay, start wait");
             [plugin waitUtilTimeout];
         }
 
@@ -629,7 +636,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
         return;
     }
 
-    if (![commands isEqualToString:@"365"] && ![commands isEqualToString:@""]) {
+    if (![commands isEqualToString:@""]) {
         [plugin addCommands:@{
             @"isSyncWithDisplay": @NO,
             @"args": commands,
@@ -658,12 +665,23 @@ static NSMutableDictionary  *_staticModuleExistDict;
         return retDict;
     }
 
-    if (![args isEqualToString:@"365"] && ![args isEqualToString:@""]) {
-        BOOL isExecWithDisplay = type & 0x01;
-        [plugin addCommands:@{
-            @"isSyncWithDisplay": isExecWithDisplay ? @YES : @NO,
-            @"args": args,
-        }];
+    if (![args isEqualToString:@""]) {
+        BOOL isWebgl = (type >> 30 & 0x01) == 1;
+        if (isWebgl) {
+            [plugin addCommands:@{
+                // webgl will `component.glkview.delegate = nil;`,thus even setNeedsDisplay()
+                // in execWithDisplay, will not invoke drawInRect(), thus no need to
+                // waitUtilTimeout() cmd exec indirectly by drawInRect()
+                @"isSyncWithDisplay": @NO,
+                @"args": args,
+            }];
+        } else {
+            BOOL isExecWithDisplay = type & 0x01;
+            [plugin addCommands:@{
+                @"isSyncWithDisplay": isExecWithDisplay ? @YES : @NO,
+                @"args": args,
+            }];
+        }
     }
 
     retDict = [self execCommandById:componentId type:type];

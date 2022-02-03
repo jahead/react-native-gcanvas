@@ -108,20 +108,27 @@ const GBridge = {
         // MethodType async RN above means call native async and resume JS
         //
         // MethodType sync RN above means call native untill native return then resume JS:
-        // on Android, will waitUtilTimeout() cmd exec async by QueueProc()
-        // on iOS, if with OptionType execWithDisplay, will waitUtilTimeout() cmd exec async by drawInRect()
+        // on Android, will waitUtilTimeout() cmd exec indirectly by QueueProc(), then resume JS
+        // on iOS, if with ContextType 2d and OptionType execWithDisplay, will waitUtilTimeout() cmd exec indirectly
+        //         by drawInRect(), then resume JS, but actually, since cause low JS FPS as described in getImageData()
+        //         of `context/2d/RenderingContext.js`, seems `2d + sync RN + execWithDisplay` situation will not happen;
+        //         if with ContextType webgl, ref to below
         //
         // OptionType execWithDisplay in 2d above means:
-        // on Android, after async exec cmd to generate new graphics, will eglSwapBuffers() to display new graphics on screen
-        // on iOS, will setNeedsDisplay() to display old graphics on screen, and thus will impliedly invoke drawInRect() to async exec cmd to generate new graphics (can then be getImageData())
+        // on Android, indirectly exec cmd to generate new graphics then eglSwapBuffers() to display new graphics
+        //             on screen by QueueProc()
+        // on iOS, setNeedsDisplay() to display old graphics on screen, and thus will impliedly invoke drawInRect()
+        //         to indirectly exec cmd to generate new graphics (can then be getImageData() even not be displayed)
         //
         // OptionType execWithDisplay in webgl above means:
-        // on Android, same with 2d
-        // on iOS, no exec cmd, just setNeedsDisplay() to display last graphics on screen, and will not impliedly invoke drawInRect() since `component.glkview.delegate = nil;`
+        // on Android, indirectly exec cmd to generate new graphics then eglSwapBuffers() to display new graphics
+        //             on screen by QueueProc()
+        // on iOS, directly exec cmd to generate new graphics then setNeedsDisplay() to display new graphics on
+        //         screen, and will not impliedly invoke drawInRect() since `component.glkview.delegate = nil;`
         //
         // OptionType execWithoutDisplay in 2d or webgl above means:
-        // on Android, just async exec cmd by QueueProc() to generate new graphics
-        // on iOS, just sync exec cmd to generate new graphics
+        // on Android, just indirectly exec cmd by QueueProc() to generate new graphics
+        // on iOS, just directly exec cmd to generate new graphics
 
         let type = optionType === 'execWithDisplay' ? 0x20000001 : 0x20000000;
         // extendCallNative() is a sync RN method, if want get exec cmd result, must use it
@@ -148,7 +155,9 @@ const GBridge = {
         logCommand(componentId, cmdArgs);
       }
 
-      commandsCache[componentId].push(cmdArgs);
+      if (cmdArgs) {
+        commandsCache[componentId].push(cmdArgs);
+      }
 
       if (!isCacheCmd || isComboDisabled) {
         const commands = joinArray(commandsCache[componentId], ';');
