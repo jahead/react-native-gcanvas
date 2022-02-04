@@ -55,6 +55,8 @@ export default class WebGLRenderingContext {
 
   className = 'WebGLRenderingContext';
 
+  componentId = null;
+
   constructor(canvas, type, attrs) {
     this._canvas = canvas;
     this._type = type;
@@ -193,16 +195,24 @@ export default class WebGLRenderingContext {
     return Number(result);
   }
 
+  // not a Web webgl API, used by @flyskywhy/react-native-gcanvas
+  flushJsCommands2CallNative(
+    methodType = 'sync',
+    optionType = 'execWithDisplay',
+  ) {
+    WebGLRenderingContext.GBridge.callNative(
+      this.componentId,
+      '',
+      false, // here false will let cmds cache be empty
+      'webgl',
+      methodType,
+      optionType,
+    );
+  }
+
   clear = function(mask) {
     if (this._canvas._disableAutoSwap) {
-      WebGLRenderingContext.GBridge.callNative(
-        this._canvas.id,
-        '',
-        false,
-        'webgl',
-        'sync',
-        'execWithDisplay',
-      );
+      this.flushJsCommands2CallNative();
       // above exec cached cmds to generate and display graphics
       // below add gl.clear to cmds cache to be exec next time
       WebGLRenderingContext.GBridge.callNative(

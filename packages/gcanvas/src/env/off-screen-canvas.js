@@ -5,6 +5,7 @@ export default class GOffScreenCanvas {
   static GBridge = null;
 
   id = null;
+  _context = null;
 
   _needRender = true;
 
@@ -14,24 +15,14 @@ export default class GOffScreenCanvas {
   }
 
   getContext(type) {
-    let context = null;
-
     if (type.match(/webgl/i)) {
-      context = new GContextWebGL(this);
-
-      context.componentId = this.id;
+      this._context = new GContextWebGL(this);
+      this._context.componentId = this.id;
 
       if (!this._disableAutoSwap) {
         const render = () => {
           if (this._needRender) {
-            GOffScreenCanvas.GBridge.callNative(
-              this.id,
-              '',
-              false,
-              'webgl',
-              'sync',
-              'execWithDisplay',
-            );
+            this._context.flushJsCommands2CallNative();
             this._needRender = false;
           }
         };
@@ -41,16 +32,16 @@ export default class GOffScreenCanvas {
       GOffScreenCanvas.GBridge.callSetContextType(this.id, 1); // 0 for 2d; 1 for webgl
     } else if (type.match(/2d/i)) {
       if (this.context2d) {
-        context = this.context2d;
+        this._context = this.context2d;
       } else {
-        this.context2d = context = new GContext2D(this);
-        context.componentId = this.id;
+        this.context2d = this._context = new GContext2D(this);
+        this._context.componentId = this.id;
       }
     } else {
       throw new Error('not supported context ' + type);
     }
 
-    return context;
+    return this._context;
   }
 
   get drawCommands() {

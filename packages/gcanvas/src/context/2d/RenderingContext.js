@@ -539,12 +539,13 @@ export default class CanvasRenderingContext2D {
     }
   }
 
+  // not a Web canvas API, used by @flyskywhy/react-native-gcanvas
   flushJsCommands2CallNative(
     methodType = 'async',
     optionType = 'execWithDisplay',
   ) {
     const commands = this._drawCommands;
-    this._drawCommands = '';
+    this._drawCommands = ''; // let cmds cache be empty
 
     if (commands !== '') {
       CanvasRenderingContext2D.GBridge.callNative(

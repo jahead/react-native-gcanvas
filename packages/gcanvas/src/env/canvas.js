@@ -25,18 +25,9 @@ export default class GCanvas extends Element {
     this.id = id;
 
     this._disableAutoSwap = disableAutoSwap;
-    if (disableAutoSwap) {
-      this._swapBuffers = () => {
-        GCanvas.GBridge.callNative(
-          this.id,
-          '',
-          false,
-          'webgl',
-          'sync',
-          'execWithDisplay',
-        );
-      };
-    }
+    this._swapBuffers = () => {
+      this._context && this._context.flushJsCommands2CallNative();
+    };
 
     this._clientWidth = style.width;
     this._clientHeight = style.height;
@@ -85,8 +76,6 @@ export default class GCanvas extends Element {
   }
 
   getContext(type) {
-    this._context = null;
-
     if (type.match(/webgl/i)) {
       this._context = new GContextWebGL(this);
 
@@ -100,14 +89,7 @@ export default class GCanvas extends Element {
       if (!this._disableAutoSwap) {
         const render = () => {
           if (this._needRender) {
-            GCanvas.GBridge.callNative(
-              this.id,
-              '',
-              false,
-              'webgl',
-              'sync',
-              'execWithDisplay',
-            );
+            this._context.flushJsCommands2CallNative();
             this._needRender = false;
           }
         };
