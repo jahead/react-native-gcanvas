@@ -3,6 +3,14 @@
 All notable changes of this project will be documented in.
 
 
+## [2.3.12] - 2022-02-04 Wish the Beijing 2022 Winter Olympics and Winter Paralympics a complete success
+
+### Changed
+
+* React Native GCanvas Component
+	* fix: improve `WebGL performance` #26 , increase JS FPS from 1 to 60 test with https://github.com/flyskywhy/snakeRN on iPhone 7 in Xcode debug build configuration
+
+
 ## [2.3.11] - 2022-01-31 Happy Chinese New Year
 
 ### Changed
