@@ -300,7 +300,8 @@ export default class WebGLRenderingContext {
     WebGLRenderingContext.GBridge.callNative(
       this._canvas.id,
       GLmethod.copyTexSubImage2D + ',' + target + ',' + level + ',' + xoffset + ',' + yoffset + ',' + x + ',' + y + ',' +
-          width + ',' + height
+          width + ',' + height,
+      true, // TODO: maybe need more APP code to test
     );
   }
 
@@ -898,7 +899,8 @@ export default class WebGLRenderingContext {
   shaderSource = function(shader, source) {
     WebGLRenderingContext.GBridge.callNative(
       this._canvas.id,
-      GLmethod.shaderSource + ',' + shader.id + ',' + source
+      GLmethod.shaderSource + ',' + shader.id + ',' + source,
+      // true, // if true, will cause no display in https://github.com/flyskywhy/snakeRN
     );
   }
 
@@ -965,7 +967,8 @@ export default class WebGLRenderingContext {
   texParameteri = function(target, pname, param) {
     WebGLRenderingContext.GBridge.callNative(
       this._canvas.id,
-      GLmethod.texParameteri + ',' + target + ',' + pname + ',' + param
+      GLmethod.texParameteri + ',' + target + ',' + pname + ',' + param,
+      true, // TODO: maybe need more APP code to test
     );
   }
 
@@ -993,7 +996,7 @@ export default class WebGLRenderingContext {
     WebGLRenderingContext.GBridge.callNative(
       this._canvas.id,
       GLmethod.uniform1i + ',' + location.id + ',' + v0,
-      // true
+      true, // TODO: maybe need more APP code to test
     );
   }
 
