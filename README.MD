@@ -196,9 +196,9 @@ export default class App extends Component {
     this.ctx = this.canvas.getContext('2d');
   };
 
-  onCanvasResize = ({width, height}) => {
-    this.canvas.width = width;
-    this.canvas.height = height;
+  onCanvasResize = ({width, height, canvas}) => {
+    canvas.width = width;
+    canvas.height = height;
     this.drawSome();
   };
 

@@ -48,9 +48,9 @@ export default class App extends Component {
     this.gl = this.canvas.getContext('webgl');
   };
 
-  onCanvasResize = ({width, height}) => {
-    this.canvas.width = width;
-    this.canvas.height = height;
+  onCanvasResize = ({width, height, canvas}) => {
+    canvas.width = width;
+    canvas.height = height;
 
     this.interval && clearInterval(this.interval);
     this.drawSome();

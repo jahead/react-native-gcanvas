@@ -135,7 +135,7 @@ export default class GCanvasView extends Component {
         this.canvas.clientHeight = height;
         if (this.props.onCanvasResize) {
           // APP can `this.canvas.width = width` in onCanvasResize()
-          this.props.onCanvasResize({width, height});
+          this.props.onCanvasResize({width, height, canvas: this.canvas});
         }
       return;
     }
