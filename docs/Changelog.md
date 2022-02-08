@@ -3,6 +3,15 @@
 All notable changes of this project will be documented in.
 
 
+## [2.3.13] - 2022-02-08
+
+### Changed
+
+* React Native GCanvas Component
+	* feat: add `canvas` into onCanvasResize({}) to easily `canvas.width = width;`
+	* fix: sometimes gl.viewport() has no effect on iOS
+
+
 ## [2.3.12] - 2022-02-04 Wish the Beijing 2022 Winter Olympics and Winter Paralympics a complete success
 
 ### Changed
