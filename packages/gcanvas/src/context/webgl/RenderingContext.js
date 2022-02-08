@@ -1218,24 +1218,37 @@ export default class WebGLRenderingContext {
   }
 
   viewport = function(x, y, width, height) {
-    // TODO: need some APP code to test which is better that will not cause low JS FPS if change
-    //       viewport() frequently just like comments in getImageData() of `2d/RenderingContext.js`
-    if (this._canvas._disableAutoSwap) {
-      WebGLRenderingContext.GBridge.callNative(
-        this._canvas.id,
-        GLmethod.viewport + ',' + x + ',' + y + ',' + width + ',' + height,
-        false,
-        'webgl',
-        'sync',
-        'execWithDisplay',
-      );
+    const cmdArgs = GLmethod.viewport + ',' + x + ',' + y + ',' + width + ',' + height;
+    if (WebGLRenderingContext.GBridge.Platform.OS === 'ios') {
+      // ref to the comment in WebGLRenderingContext.GBridge.callNative()
+      WebGLRenderingContext.GBridge.callViewport(this._canvas.id, cmdArgs);
     } else {
-      WebGLRenderingContext.GBridge.callNative(
-        this._canvas.id,
-        GLmethod.viewport + ',' + x + ',' + y + ',' + width + ',' + height,
-        true, // TODO: no matter true or false in https://github.com/flyskywhy/snakeRN can keep 60 JS FPS, maybe need more APP code to test
-      );
-      this._canvas._needRender = true;
+      // TODO: need some APP code to test which is better that will not cause low JS FPS if change
+      //       viewport() frequently just like comments in getImageData() of `2d/RenderingContext.js`
+      if (this._canvas._disableAutoSwap) {
+        WebGLRenderingContext.GBridge.callNative(
+          this._canvas.id,
+          cmdArgs,
+          false,
+          'webgl',
+          'sync',
+          'execWithDisplay',
+        );
+        // TODO: no matter above or below in https://github.com/flyskywhy/snakeRN can keep 30 JS FPS on Huawei Mate 20, maybe need more APP code to test
+        // WebGLRenderingContext.GBridge.callNative(
+        //   this._canvas.id,
+        //   cmdArgs,
+        //   true,
+        // );
+      } else {
+        WebGLRenderingContext.GBridge.callNative(
+          this._canvas.id,
+          cmdArgs,
+          true, // TODO: no matter true or false in https://github.com/flyskywhy/snakeRN can keep 30 JS FPS on Huawei Mate 20, maybe need more APP code to test
+        );
+      }
     }
+
+    this._canvas._needRender = true;
   }
 }

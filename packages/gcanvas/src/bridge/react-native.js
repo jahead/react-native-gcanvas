@@ -40,6 +40,7 @@ function joinArray(arr, sep) {
 }
 
 const commandsCache = {};
+const viewport2commands = {};
 
 const GBridge = {
 
@@ -78,6 +79,10 @@ const GBridge = {
 
   callReset: function(componentId) {
     GBridge.GCanvasModule.resetComponent && GBridge.GCanvasModule.resetComponent(componentId);
+  },
+
+  callViewport: (componentId, viewportArgs) => {
+    viewport2commands[componentId] = viewportArgs;
   },
 
   callNative: function(
@@ -160,8 +165,20 @@ const GBridge = {
       }
 
       if (!isCacheCmd || isComboDisabled) {
-        const commands = joinArray(commandsCache[componentId], ';');
+        let commands = joinArray(commandsCache[componentId], ';');
         commandsCache[componentId] = [];
+
+        if (isReactNativeIOS()) {
+          // if no hack additional viewportArgs beyond the commands, glViewport() in C++ will has no
+          // effect in:
+          // 1. `webgl_demo/cube.js` which invoke gl.viewport() every 16ms , and _disableAutoSwap is true
+          // 2. https://github.com/flyskywhy/snakeRN which invoke gl.viewport() twice within pixi.js
+          // damn iOS
+          const viewportArgs = viewport2commands[componentId];
+          if (viewportArgs) {
+            commands = viewportArgs + ';' + commands;
+          }
+        }
 
         if (isDebugging) {
           console.log('>>> exec commands: ' + commands);

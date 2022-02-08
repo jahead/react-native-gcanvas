@@ -510,6 +510,10 @@ static NSMutableDictionary  *_staticModuleExistDict;
         component.glkview.hidden = YES;
     }
 
+    // Test with ContextType webgl, if move `execCommands` code line after setNeedsDisplay code line will cause display
+    // issue even hack `commands = viewportArgs + ';' + commands;` in `packages/gcanvas/src/bridge/react-native.js` ,
+    // besides ref to https://stackoverflow.com/questions/27613134/why-do-i-need-to-call-glclear-in-drawinrect
+    // and found can `execCommands` here or in drawInRect() invoked by setNeedsDisplay() , I choose `execCommands` here.
     // if (true) {
     // Test with ContextType 2d, if use `if (true) {` above to want exec cmd then setNeedsDisplay() just
     // like exec cmd then eglSwapBuffers() on Android in execWithDisplay, will cause some display issue,
@@ -519,7 +523,7 @@ static NSMutableDictionary  *_staticModuleExistDict;
     if (
         !isExecWithDisplay ||
         // with ContextType webgl, because `component.glkview.delegate = nil;` will cause drawInRect()
-        // not be invoke by setNeedsDisplay() in execWithDisplay, so need exec cmd here
+        // not be invoked by setNeedsDisplay() in execWithDisplay, so need exec cmd here
         (isExecWithDisplay && component.glkview.delegate == nil)
     ) {
         // need setCurrentContext() before exec some gl ops,
